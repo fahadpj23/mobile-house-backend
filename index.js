@@ -4,6 +4,8 @@ var cors=require("cors");
 const upload=require('express-fileupload')
 app.use(upload())
 app.use(cors());
+app.use(express.static('public')); 
+app.use('products/images', express.static('images'));
 var bodyParser=require("body-parser");
 var jsonParser=bodyParser.json();
 var parseUrlencoded = bodyParser.urlencoded({ extended: false });   
@@ -20,6 +22,9 @@ const ProductList=require('./routes/AdminPanel/productlist')
 
 const addProduct=require('./routes/productadd/Add')
 const con=require('./database')
+const path = require('path')
+
+app.use(express.static(path.join(__dirname, 'products')))
 app.use(ProductList)
 app.use(Homerouter)
 app.use(SearchRouter)

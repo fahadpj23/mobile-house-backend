@@ -13,11 +13,12 @@ router.get("/headset",function(req,res)
 {
  con.query("SELECT * FROM headset",(err,result,fields)=>{
      if(err) throw(err);
+     
      res.send(result)
  }) 
  
 })
-router.get("/productcover",function(req,res)
+router.get("/cover",function(req,res)
 {
  con.query("SELECT * FROM cover",(err,result,fields)=>{
      if(err) throw(err);
@@ -28,6 +29,7 @@ router.get("/access",function(req,res)
 {
  con.query("SELECT * FROM access",(err,result,fields)=>{
      if(err) throw(err);
+    
      res.send(result)
  })   
 })
