@@ -1,20 +1,37 @@
 const express=require('express')
 const router = express.Router()
 const con=require('../database')
+const { verify } = require("jsonwebtoken");
 var bodyParser=require("body-parser");
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 const {sign}=require('jsonwebtoken')
 const {check,validationResult}=require('express-validator')
+const validateToken=require("../middlewares/authmiddelware")
+
 router.get("/login",function(req,res)
 {
     console.log(req.query.username)
   
-    loginqr=`SELECT COUNT(*) as count FROM users where username="${req.query.username}" AND password="${req.query.password}"`
+    loginqr=`SELECT * FROM users where username="${req.query.username}" `
     con.query(loginqr,(err,result,fields)=>{
             if(err)throw (err);
-            res.send(result)
+            if(result[0].password)
+            {
+                const UserToken=sign({username:req.query.username},"importantsecret");
+             
+                res.json({ UserToken: UserToken,username:req.query.username})
+            }
+            else
+            {
+                res.json("invalid username")
+            }
          })
 
+})
+
+router.get("/userAuthentication",validateToken,function(req,res)
+{
+    res.json({"success":"success"})
 })
 
 
@@ -47,7 +64,7 @@ parseUrlencoded,function(req,res)
     adduser=`insert into users (username,phone,password) values ('${user.username}','${user.MobileNumber}','${UserToken}')`
     con.query(adduser,(err,result,fields)=>{
             if(err)throw (err);
-            res.json({UserToken: UserToken})
+            res.json({UserToken: UserToken,username:user.username})
          })
     }
    }
