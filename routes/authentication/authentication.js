@@ -7,4 +7,4 @@ const validateToken=require("../../middlewares/authmiddelware")
  })
 
 
- module.exports=router;
+ module.exports=router; 

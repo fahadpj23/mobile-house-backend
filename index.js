@@ -37,6 +37,7 @@ app.use(CategoryViewallRouter)
 app.use(OrderProductRouter)
 app.use(OrderList)
 app.use(addProduct)
+app.use(express.json())
 
 
 app.get("/fake",function(req,res)

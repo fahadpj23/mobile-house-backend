@@ -3,7 +3,7 @@ const router = express.Router()
 const con=require('../../database')
 const validateToken=require("../../middlewares/authmiddelware")
 
-router.get("/orderdetails",validateToken,(req,res)=>
+router.get("/orderdetails",(req,res)=>
     {
        
         searchqr=`SELECT * FROM productorder`
