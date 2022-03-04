@@ -7,6 +7,7 @@ const bcrypt=require('bcrypt')
 const {sign}=require('jsonwebtoken')
 router.get("/adminlogin",function(req,res)
  {
+   
     searchqr=`SELECT * FROM admin  where username='${req.query.username}' `
     console.log(req.query.password)
     con.query(searchqr,(err,result,fields)=>{
@@ -18,14 +19,20 @@ router.get("/adminlogin",function(req,res)
       }
       else
       {
-      try{
-        bcrypt.compare(result[0].password,req.query.password)
-        const accessToken=sign({username:req.query.username},"importantsecret");
-        res.json({"accessToken":accessToken})
-      }
-      catch{
-        res.send("password is incorrect")
-      }
+       
+        bcrypt.compare(req.query.password,result[0].password).then((match)=>{
+        
+          if(!match) res.json({error:"password is incorrect"})
+          else
+          {
+            const accessToken=sign({username:req.query.username},"importantsecret");
+            res.json({"accessToken":accessToken})
+         
+          }
+        })
+       
+        
+     
     }
   }) 
   

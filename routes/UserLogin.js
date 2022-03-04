@@ -7,6 +7,7 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 const {sign}=require('jsonwebtoken')
 const {check,validationResult}=require('express-validator')
 const validateToken=require("../middlewares/authmiddelware")
+const bcrypt=require("bcrypt")
 
 router.get("/login",function(req,res)
 {
@@ -17,9 +18,18 @@ router.get("/login",function(req,res)
             if(err)throw (err);
             if(result[0].password)
             {
-                const UserToken=sign({username:req.query.username},"importantsecret");
-             
-                res.json({ UserToken: UserToken,username:req.query.username})
+                bcrypt.compare(req.query.password,result[0].password).then((match)=>{
+        
+                    if(!match) res.json({error:"password is incorrect"})
+                    else
+                    {
+                      const accessToken=sign({username:req.query.username},"importantsecret");
+                      res.json({"accessToken":accessToken})
+                   
+                    }
+                  })
+                 
+               
             }
             else
             {
@@ -35,6 +45,7 @@ router.get("/userAuthentication",validateToken,function(req,res)
 })
 
 
+//register the user
 router.post("/UserRegister",
 [
 check('username').notEmpty(),
@@ -51,27 +62,45 @@ parseUrlencoded,function(req,res)
    }
    else
    {
-    const user=req.body
-    const usernamejwt=req.body.username
-    if(user.password!=user.ConfirmPassword)
-    {
-        res.json({error:"password is not match"})
-    }
-    else
-    {
-     const UserToken=sign({usernamejwt},"importantsecret")
-
-    adduser=`insert into users (username,phone,password) values ('${user.username}','${user.MobileNumber}','${UserToken}')`
-    con.query(adduser,(err,result,fields)=>{
-            if(err)throw (err);
-            res.json({UserToken: UserToken,username:user.username})
-         })
-    }
-   }
-    user=req.body
     
-    console.log("fdf")
-    console.log(req.body)
+    serachuser=`SELECT COUNT(username) as count FROM users where username="${req.body.username}" `
+    count=
+    con.query(serachuser,(err,result,fields)=>{
+    if(err)throw (err);
+    else 
+    {
+        if(result[0].count!=0)
+        {
+            res.json({"alreadyexist":" username already exist"})
+
+        }
+        else
+        {
+            const user=req.body
+            const usernamejwt=req.body.username
+            if(user.password!=user.ConfirmPassword)
+            {
+                res.json({error:"password is not match"})
+            }
+            else
+            {
+            const UserToken=sign({usernamejwt},"importantsecret")
+            bcrypt.hash(user.password,10).then((hash)=>{
+                adduser=`insert into users (username,phone,password) values ('${user.username}','${user.MobileNumber}','${hash}')`
+                con.query(adduser,(err,result,fields)=>{
+                    if(err)throw (err);
+                    res.json({UserToken: UserToken,username:user.username})
+                })
+            
+            })
+            }
+            
+        }   
+    }
+    })
+       
+   }
+   
  
 
 })
