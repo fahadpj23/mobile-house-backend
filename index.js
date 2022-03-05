@@ -6,9 +6,6 @@ app.use(upload())
 app.use(cors());
 app.use(express.static('public')); 
 app.use('products/images', express.static('images'));
-var bodyParser=require("body-parser");
-var jsonParser=bodyParser.json();
-var parseUrlencoded = bodyParser.urlencoded({ extended: false });   
 const Homerouter=require('./routes/Home')
 const SearchRouter=require('./routes/ProductSearch')
 const Adminrouter=require('./routes/Admin')
@@ -23,6 +20,7 @@ const authentication=require('./routes/authentication/authentication')
 const addProduct=require('./routes/productadd/Add')
 const con=require('./database')
 const path = require('path')
+const category=require('./routes/AdminPanel/category/categoryApi')
 
 app.use(express.static(path.join(__dirname, 'products')))
 app.use(ProductList)
@@ -37,6 +35,7 @@ app.use(CategoryViewallRouter)
 app.use(OrderProductRouter)
 app.use(OrderList)
 app.use(addProduct)
+app.use(category)
 app.use(express.json())
 
 

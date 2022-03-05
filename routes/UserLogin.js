@@ -24,7 +24,7 @@ router.get("/login",function(req,res)
                     else
                     {
                       const accessToken=sign({username:req.query.username},"importantsecret");
-                      res.json({"accessToken":accessToken})
+                      res.json({"UserToken":accessToken,"username":req.query.username})
                    
                     }
                   })
