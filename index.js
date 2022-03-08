@@ -21,7 +21,7 @@ const addProduct=require('./routes/productadd/Add')
 const con=require('./database')
 const path = require('path')
 const category=require('./routes/AdminPanel/category/categoryApi')
-
+const attribute=require('./routes/AdminPanel/attribute/attribute')
 app.use(express.static(path.join(__dirname, 'products')))
 app.use(ProductList)
 app.use(Homerouter)
@@ -37,7 +37,7 @@ app.use(OrderList)
 app.use(addProduct)
 app.use(category)
 app.use(express.json())
-
+app.use(attribute)
 
 app.get("/fake",function(req,res)
  {
