@@ -4,7 +4,8 @@ const con=require("../../../database")
 var bodyParser=require("body-parser");
 var jsonParser=bodyParser.json();
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
-const {check,validationResult}=require('express-validator')
+const {check,validationResult}=require('express-validator');
+const { disable } = require('express/lib/application');
 
 router.post('/attrubuteAdd',
 [
@@ -63,6 +64,51 @@ parseUrlencoded,function(req,res)
     
   }
  
+})
+
+router.get('/getattrirbute',function(req,res){
+   var attribute;
+  var responsemodel;
+  let itemmodel=[];
+    getatt='select * from attribute'
+    con.query(getatt,(err,result)=>{
+      if(err) throw (err)
+      else
+      {
+        result.map((item,key)=>{
+          getattvalues=`select value from attributevalue where attributeid=${item.id}`
+          con.query(getattvalues,(err1,result1)=>{
+            if(err1) throw (err1)
+            else
+              setattribute(item,result1,result.length)
+          })
+        })
+      }
+    })
+
+    function setattribute(attribute,attributevalues,length)
+    {
+     console.log(length)
+      let attirbuteval=[];
+
+      attributevalues.map((item,key)=>{
+        attirbuteval.push(item.value)
+      })
+     
+      
+      
+       itemmodel.push({id:attribute.id,attributename:attribute.attributeName,status:attribute.status==1 ?"active" : "disable" ,values:attirbuteval})
+       if(itemmodel.length==length)
+       {
+         res.send(itemmodel )
+       }
+      
+      
+    }
+
+  console.log(itemmodel)
+ 
+  
 })
 
 module.exports=router 
