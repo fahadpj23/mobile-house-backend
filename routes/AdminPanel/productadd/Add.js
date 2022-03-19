@@ -5,7 +5,37 @@ const router = express.Router()
 const con=require('../../../database');
 const { func } = require('react-globally');
 const { Result } = require('express-validator');
+var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 
+
+router.post("/productAdd",parseUrlencoded,function(req,res){
+  let product=req.body
+   console.log(req.body)
+  const file=req.files.image
+
+  file.mv(`products/images/${file.name}`)
+  addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.category}')`;
+  con.query(addqr,(err,result)=>{
+
+    if(err) throw (err);
+  else 
+  {
+    // addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.category}')`;
+    columnfetch=`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ${product.category};`
+    con.query(columnfetch,(err,result)=>{
+      if(err) throw (err)
+      else
+      {
+       result.map((item,key)=>{
+         console.log(item)
+       })
+      }
+     
+    })
+    console.log(result.insertId)
+  }
+})
+})
 
 router.get('/categoryAttribute',function(req,res){
  console.log(req.query)
@@ -32,6 +62,8 @@ router.post('/uploadaccessories',function(req,res)
     }
     
 )
+
+
 
 router.post('/uploadcover',function(req,res)
 {
