@@ -2,8 +2,20 @@ const express=require('express')
 var bodyParser=require("body-parser");
 var jsonParser=bodyParser.json();
 const router = express.Router()
-const con=require('../../database')
+const con=require('../../../database');
+const { func } = require('react-globally');
+const { Result } = require('express-validator');
 
+
+router.get('/categoryAttribute',function(req,res){
+ console.log(req.query)
+  categoryAttribute=`select * from categoryvalue where categoryId="${req.query.categoryid}"`
+  con.query(categoryAttribute,(err,result)=>{
+    if(err) throw (err)
+    else
+      res.send(result)
+  })
+})
 router.post('/uploadaccessories',function(req,res)
 {
     let product=req.body

@@ -66,7 +66,7 @@ parseUrlencoded,function(req,res)
  
 })
 
-router.get('/getattrirbute',function(req,res){
+router.get('/getattribute',function(req,res){
    var attribute;
   var responsemodel;
   let itemmodel=[];
@@ -97,7 +97,7 @@ router.get('/getattrirbute',function(req,res){
      
       
       
-       itemmodel.push({id:attribute.id,attributename:attribute.attributeName,status:attribute.status==1 ?"active" : "disable" ,values:attirbuteval})
+       itemmodel.push({id:attribute.id,attributeName:attribute.attributeName,status:attribute.status==1 ?"active" : "disable" ,values:attirbuteval})
        if(itemmodel.length==length)
        {
          res.send(itemmodel )
