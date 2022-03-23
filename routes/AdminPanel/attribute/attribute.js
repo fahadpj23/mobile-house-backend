@@ -117,5 +117,15 @@ router.get('/getattribute',function(req,res){
   
 })
 
+// router.get('/editattribute', (req,res)=>{
+
+//   attributevaluefetch=`select * from attributevalue where id="${req.query.attributeid}"`
+//   con.query(attributevaluefetch,(err,result)=>{
+//     if(err) throw (err)
+//     else
+//     res.send()
+//   })
+// })
+
 module.exports=router 
 

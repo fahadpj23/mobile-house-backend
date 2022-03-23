@@ -10,7 +10,7 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 router.post("/productAdd",parseUrlencoded,function(req,res){
   let product=req.body
-
+  console.log(product)
   const file=req.files.image
   let columnarray=[]
   let columnvalue=[]
@@ -54,14 +54,31 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
 })
 })
 
-router.get('/categoryAttribute',function(req,res){
+router.get('/getcategoryAttribute',function(req,res){
+  let attributevaluearray=[]
  console.log(req.query)
   categoryAttribute=`select * from categoryvalue where categoryId="${req.query.categoryid}"`
   con.query(categoryAttribute,(err,result)=>{
     if(err) throw (err)
     else
-      res.send(result)
+      result.map((item,key)=>{
+        attributevalueget=`select * from attributevalue  where attributeid="${item.attributeId}"`
+        console.log(attributevalueget)
+        con.query(attributevalueget,(err,result1)=>{
+          if(err) throw (err)
+          else
+          {
+            let value={"attributeid" : item.attributeId,"attributeName":item.attributeName,"value":result1}
+            attributevaluearray.push(value)
+            if(key==result.length-1)
+            {
+              res.send(attributevaluearray)
+            }
+          }
+        })
+      })
   })
+ 
 })
 router.post('/uploadaccessories',function(req,res)
 {
