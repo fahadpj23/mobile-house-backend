@@ -10,14 +10,14 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 router.post("/productAdd",parseUrlencoded,function(req,res){
   let product=req.body
-   console.log(req.body)
+
   const file=req.files.image
   let columnarray=[]
   let columnvalue=[]
 
   file.mv(`products/images/${file.name}`)
   addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.category}')`;
-  console.log(addqr)
+
   con.query(addqr,(err,result)=>{
 
     if(err) throw (err);
@@ -25,22 +25,22 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
   {
    
     // addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.category}')`;
-    columnfetch=`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = "${product.category}";`
-    con.query(columnfetch,(err,result1)=>{
+    // columnfetch=`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = "${product.category}";`
+    categoryattribute=`select * from categoryvalue where  categoryId="${product.categoryid}"`
+    con.query(categoryattribute,(err,result1)=>{
       if(err) throw (err)
       else
       {
     
        result1.map((item,key)=>{
-         columnarray.push(item.COLUMN_NAME)
-         if(key!=0)
-         {
-         
-          columnvalue.push("'"+product[item.COLUMN_NAME]+"'")
-         }
+         columnarray.push(item.attributeName)
+        
+          columnvalue.push("'"+product[item.attributeName]+"'")
+       
          
        })
-       insertquery=`insert into ${product.category} (${columnarray}) values ('${result.insertId}',${columnvalue})`
+       insertquery=`insert into productattribute (id,${columnarray}) values ('${result.insertId}',${columnvalue})`
+       console.log(insertquery)
        con.query(insertquery,(err,result)=>{
          if(err) throw (err)
          else

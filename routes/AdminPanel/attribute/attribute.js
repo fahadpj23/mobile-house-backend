@@ -29,6 +29,12 @@ parseUrlencoded,function(req,res)
       }
       else
       {
+        columninsert=`Alter table productattribute add ${req.body.name} varchar(255)`
+        con.query(columninsert,(err,result,fields)=>
+        {
+        
+        if(err) throw(err);
+        })
         addattribute=`insert into attribute (attributeName,status) values ('${req.body.name}','${req.body.status=="active" ? 1 : 0}')`
         console.log(addattribute)
         con.query(addattribute,(err,result)=>{

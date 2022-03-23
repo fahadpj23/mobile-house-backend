@@ -79,23 +79,23 @@ router.get('/getCategory',function(req,res){
                     let attributes=[];
                     const{name,status}=req.body
                     let attribute=JSON.parse(req.body.categoryvalues)
-
+                   
                     addcatgeory=`insert into category (categoryName,status) values ('${req.body.name}','${req.body.status=="active" ? 1 : 0}')`
                    con.query(addcatgeory,(err,result1)=>{
                            if(err) throw (err);
                             else
                               {
-                              createtable=`create table ${req.body.name}(id int) `
-                              con.query(createtable,(err1,result1)=>{
-                                  if(err) throw (err)
-                              })
+                              // createtable=`create table ${req.body.name}(id int) `
+                              // con.query(createtable,(err1,result1)=>{
+                              //     if(err) throw (err)
+                              // })
                                 Object.values(attribute).length>0 &&  Object.values(attribute).map((item,key)=>{
-                                    columninsert=`Alter table ${req.body.name} add ${item} varchar(255)`
-                                    con.query(columninsert,(err,result,fields)=>
-                                    {
+                                    // columninsert=`Alter table ${req.body.name} add ${item} varchar(255)`
+                                    // con.query(columninsert,(err,result,fields)=>
+                                    // {
                                     
-                                    if(err) throw(err);
-                                    })
+                                    // if(err) throw(err);
+                                    // })
                                     con.query(`select * from  attribute where attributeName='${item}'`,(err,result,fields)=>
                                     {
                                     
