@@ -6,7 +6,6 @@ var jsonParser=bodyParser.json();
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 const {check,validationResult}=require('express-validator');
 const { disable } = require('express/lib/application');
-
 router.post('/attrubuteAdd',
 [
   check('name').notEmpty(),
@@ -14,6 +13,9 @@ router.post('/attrubuteAdd',
 ],
 parseUrlencoded,function(req,res)
 {
+
+  if(req.body.operation=="")
+  {
   const{name,status}=req.body
   const error=validationResult(req);
   if(!error.isEmpty)
@@ -69,14 +71,63 @@ parseUrlencoded,function(req,res)
     })
     
   }
- 
+  }
+
+  else
+
+  {
+    
+                attributeUpdate=`UPDATE attribute SET attributeName='${req.body.name}', status= ${req.body.status=="active" ? 1 : 0} WHERE id=${req.body.operationid}`
+                con.query(attributeUpdate,(err,result)=>{
+                  if(err) throw (err);
+                  else {
+                    if(JSON.parse(req.body.attributevalues).length!=0)
+                    {
+                     deletequery=`DELETE FROM attributevalue WHERE attributeid=${req.body.operationid}`
+                     con.query(deletequery,(err,result)=>{
+                       if(err) throw (err)
+                       else
+                       {
+                        let insertvalues=""
+                        JSON.parse(req.body.attributevalues).map((item,key)=>{
+                          if(JSON.parse(req.body.attributevalues).length!= key+1)
+                          {
+                          insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" + ",")
+                          }
+                          else
+                          {
+                            insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" )
+                          }
+                        })
+                        valueaddquery=`insert into attributevalue (attributeid,value) values ${insertvalues}`
+                        console.log(insertvalues)
+                        con.query(valueaddquery,(err,result)=>{ 
+                          if(err) throw (err)
+                          else
+                          {
+                            res.json({"success":"Attribute updated successfully"})
+                          }
+                        })
+                       }
+                     })
+                        
+                    }
+                  }
+                
+                }) 
+  }
 })
+       
+              
+ 
+
+
 
 router.get('/getattribute',function(req,res){
    var attribute;
   var responsemodel;
   let itemmodel=[];
-    getatt='select * from attribute'
+    getatt='select * from attribute where status=1'
     con.query(getatt,(err,result)=>{
       if(err) throw (err)
       else

@@ -62,7 +62,7 @@ router.get('/getcategoryAttribute',function(req,res){
     if(err) throw (err)
     else
       result.map((item,key)=>{
-        attributevalueget=`select * from attributevalue  where attributeid="${item.attributeId}"`
+        attributevalueget=`select * from attributevalue  where attributeid="${item.attributeId} AND status==1"`
         console.log(attributevalueget)
         con.query(attributevalueget,(err,result1)=>{
           if(err) throw (err)
