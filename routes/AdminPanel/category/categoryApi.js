@@ -9,7 +9,7 @@ const {check,validationResult}=require('express-validator');
 const { object } = require('react-globally');
 
 router.get('/getCategory',function(req,res){
-  
+ 
 
    let itemmodel=[];
      getatt='select * from category'
@@ -17,39 +17,44 @@ router.get('/getCategory',function(req,res){
        if(err) throw (err)
        else
        {
-        //  result.map((item,key)=>{
-        //    getcatvalues=`select  * from categoryvalue where categoryId=${item.id}`
-        //    con.query(getcatvalues,(err1,result1)=>{
-        //      if(err1) throw (err1)
-        //      else
-        //        setcategory(item,result1,result.length)
-        //    })
-        //  })
-        res.send(result)
+        
+         result.map((item,key)=>{
+           getcatvalues=`select  * from categoryvalue where categoryId=${item.id}`
+           con.query(getcatvalues,(err1,result1)=>{
+             if(err1) throw (err1)
+             else
+             setcategory(item,result1,result.length)
+
+           })
+         })
+       
        }
      })
  
      function setcategory(category,categoryvalues,length)
      {
-      console.log(length)
+      console.log(categoryvalues)
        let categoryval=[];
- 
+      
        categoryvalues.map((item,key)=>{
-        categoryval.push(item.value)
+        let attributeId=item.attributeId
+        let  attributeName=item.attributeName
+        categoryval.push(item.attributeName)
        })
       
        
        
-        itemmodel.push({id:category.id,categoryname:category.categoryName,status:category.status==1 ?"active" : "disable" ,values:categoryval})
+        itemmodel.push({id:category.id,Name:category.categoryName,status:category.status==1 ?"active" : "disable" ,values:categoryval})
         if(itemmodel.length==length)
         {
-          res.send(itemmodel )
+          let tablehead=['SlNo','category Name','status','values']
+           res.json({ "Data":itemmodel,"TableHead":tablehead })
         }
        
        
      }
  
-   console.log(itemmodel)
+  
   
    
  })
@@ -62,6 +67,8 @@ router.get('/getCategory',function(req,res){
       ],
     parseUrlencoded,(req,res)=>
     {
+      if(req.body.operation=="")
+      {
         const error=validationResult(req);
         if(!error.isEmpty)
         return res.json({error:error.array})
@@ -100,8 +107,8 @@ router.get('/getCategory',function(req,res){
                                     {
                                     
                                     if(err) throw(err);
-                                else
-                                {
+                                    else
+                                    {
                                 
                                             
                                             addcatgeoryattribute=`insert into categoryvalue (categoryId,attributeId,attributeName) values ('${result1.insertId}','${ result[0].id}','${ result[0].attributeName}')`
@@ -129,6 +136,59 @@ router.get('/getCategory',function(req,res){
                                                                                     
 
         }
+      }
+      else
+      {
+        console.log("dsds")
+        console.log(req.body.operationid)
+        console.log(req.body.categoryvalues)
+        attributeUpdate=`UPDATE category SET categoryName='${req.body.name}', status= ${req.body.status=="active" ? 1 : 0} WHERE id=${req.body.operationid}`
+        con.query(attributeUpdate,(err,result)=>{
+          if(err) throw (err);
+          else {
+            
+             deletequery=`DELETE FROM categoryvalue WHERE categoryId=${req.body.operationid}`
+             con.query(deletequery,(err,result)=>{
+               if(err) throw (err)
+               else
+               {
+
+
+                JSON.parse(req.body.categoryvalues).length>0 &&  JSON.parse(req.body.categoryvalues).map((item,key)=>{
+                      
+                      con.query(`select * from  attribute where attributeName='${item}'`,(err,result,fields)=>
+                      {
+                      
+                      if(err) throw(err);
+                      else
+                      {
+                        // console.log(item)
+                                  
+                                  addcatgeoryattribute=`insert into categoryvalue (categoryId,attributeId,attributeName) values ('${req.body.operationid}','${ result[0].id}','${ result[0].attributeName}')`
+                                  con.query(addcatgeoryattribute,(err,result)=>{
+                                      if(err) throw (err);
+                                      else {
+                                      
+                                          if(JSON.parse(req.body.categoryvalues).length== key+1)
+                                          res.json({"success":"success"})
+                                      
+                                      }
+                              
+                              })
+                          
+                      }
+                    })
+                  })
+
+
+               }
+             })
+                
+           
+          }
+        
+        }) 
+      }
 
     })
 

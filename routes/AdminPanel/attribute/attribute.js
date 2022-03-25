@@ -6,7 +6,7 @@ var jsonParser=bodyParser.json();
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 const {check,validationResult}=require('express-validator');
 const { disable } = require('express/lib/application');
-router.post('/attrubuteAdd',
+router.post('/attributeAdd',
 [
   check('name').notEmpty(),
   check('status').notEmpty(),
@@ -154,10 +154,12 @@ router.get('/getattribute',function(req,res){
      
       
       
-       itemmodel.push({id:attribute.id,attributeName:attribute.attributeName,status:attribute.status==1 ?"active" : "disable" ,values:attirbuteval})
+       itemmodel.push({id:attribute.id,Name:attribute.attributeName,status:attribute.status==1 ?"active" : "disable" ,values:attirbuteval})
        if(itemmodel.length==length)
        {
-         res.send(itemmodel )
+        let tablehead=['SlNo','attribute Name','status','values']
+        res.json({ "Data":itemmodel,"TableHead":tablehead })
+       
        }
       
       
