@@ -13,8 +13,8 @@ router.post('/attributeAdd',
 ],
 parseUrlencoded,function(req,res)
 {
-
-  if(req.body.operation=="")
+ console.log(req.body)
+  if(req.body.operation=="select")
   {
   const{name,status}=req.body
   const error=validationResult(req);
@@ -76,45 +76,52 @@ parseUrlencoded,function(req,res)
   else
 
   {
-    
-                attributeUpdate=`UPDATE attribute SET attributeName='${req.body.name}', status= ${req.body.status=="active" ? 1 : 0} WHERE id=${req.body.operationid}`
-                con.query(attributeUpdate,(err,result)=>{
-                  if(err) throw (err);
-                  else {
-                    if(JSON.parse(req.body.attributevalues).length!=0)
-                    {
-                     deletequery=`DELETE FROM attributevalue WHERE attributeid=${req.body.operationid}`
-                     con.query(deletequery,(err,result)=>{
-                       if(err) throw (err)
-                       else
-                       {
-                        let insertvalues=""
-                        JSON.parse(req.body.attributevalues).map((item,key)=>{
-                          if(JSON.parse(req.body.attributevalues).length!= key+1)
-                          {
-                          insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" + ",")
-                          }
-                          else
-                          {
-                            insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" )
-                          }
-                        })
-                        valueaddquery=`insert into attributevalue (attributeid,value) values ${insertvalues}`
-                        console.log(insertvalues)
-                        con.query(valueaddquery,(err,result)=>{ 
-                          if(err) throw (err)
-                          else
-                          {
-                            res.json({"success":"Attribute updated successfully"})
-                          }
-                        })
-                       }
-                     })
-                        
-                    }
+                updateproductattributecolumnname=`alter table productattribute change ${req.body.oldattributeName} ${req.body.name} varchar(2000)`
+                con.query(updateproductattributecolumnname,(err,result)=>{
+                  if(err) throw (err)
+                  else
+                  {
+                    attributeUpdate=`UPDATE attribute SET attributeName='${req.body.name}', status= ${req.body.status=="active" ? 1 : 0} WHERE id=${req.body.operationid}`
+                    con.query(attributeUpdate,(err,result)=>{
+                      if(err) throw (err);
+                      else {
+                        if(JSON.parse(req.body.attributevalues).length!=0)
+                        {
+                         deletequery=`DELETE FROM attributevalue WHERE attributeid=${req.body.operationid}`
+                         con.query(deletequery,(err,result)=>{
+                           if(err) throw (err)
+                           else
+                           {
+                            let insertvalues=""
+                            JSON.parse(req.body.attributevalues).map((item,key)=>{
+                              if(JSON.parse(req.body.attributevalues).length!= key+1)
+                              {
+                              insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" + ",")
+                              }
+                              else
+                              {
+                                insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" )
+                              }
+                            })
+                            valueaddquery=`insert into attributevalue (attributeid,value) values ${insertvalues}`
+                            console.log(insertvalues)
+                            con.query(valueaddquery,(err,result)=>{ 
+                              if(err) throw (err)
+                              else
+                              {
+                                res.json({"success":"Attribute updated successfully"})
+                              }
+                            })
+                           }
+                         })
+                            
+                        }
+                      }
+                    
+                    }) 
                   }
-                
-                }) 
+                })
+               
   }
 })
        
@@ -154,10 +161,10 @@ router.get('/getattribute',function(req,res){
      
       
       
-       itemmodel.push({id:attribute.id,Name:attribute.attributeName,status:attribute.status==1 ?"active" : "disable" ,values:attirbuteval})
+       itemmodel.push({id:attribute.id,attributeName:attribute.attributeName,status:attribute.status==1 ?"active" : "disable" ,values:attirbuteval})
        if(itemmodel.length==length)
        {
-        let tablehead=['SlNo','attribute Name','status','values']
+        let tablehead=['SlNo','attributeName','status','values']
         res.json({ "Data":itemmodel,"TableHead":tablehead })
        
        }

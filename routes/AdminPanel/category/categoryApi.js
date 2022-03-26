@@ -44,10 +44,10 @@ router.get('/getCategory',function(req,res){
       
        
        
-        itemmodel.push({id:category.id,Name:category.categoryName,status:category.status==1 ?"active" : "disable" ,values:categoryval})
+        itemmodel.push({id:category.id,categoryName:category.categoryName,status:category.status==1 ?"active" : "disable" ,values:categoryval})
         if(itemmodel.length==length)
         {
-          let tablehead=['SlNo','category Name','status','values']
+          let tablehead=['SlNo','categoryName','status','values']
            res.json({ "Data":itemmodel,"TableHead":tablehead })
         }
        
@@ -67,7 +67,7 @@ router.get('/getCategory',function(req,res){
       ],
     parseUrlencoded,(req,res)=>
     {
-      if(req.body.operation=="")
+      if(req.body.operation=="select")
       {
         const error=validationResult(req);
         if(!error.isEmpty)
