@@ -1,16 +1,43 @@
 const express=require('express')
+const { object } = require('react-globally')
 const router = express.Router()
 const con=require('../database')
+
+
+//get the single product detail
 router.get("/singleview",function(req,res)
 {
   
-    singleqr=`SELECT * FROM ${req.query.type} where id="${req.query.product}"`
-    // singleqr=`SELECT name,price,color,mrp,image FROM headset  where name='${req.query.product}' union aLL SELECT name,price,color,mrp,image FROM accessories  where name='${req.query.product}' union aLL SELECT name,price,color,mrp,image FROM cover where name='${req.query.product}'`
+    singleqr=`SELECT * FROM products where id="${req.query.productId}"`
 
     con.query(singleqr,(err,result,fields)=>{
     if(err)throw (err);
-    res.send(result)
+    else
+    {
+        
+        singleproductattribute=`SELECT * FROM productattribute where id="${req.query.productId}" `  
+        con.query(singleproductattribute,(err1,result1)=>{
+           if(err) throw (err)
+           else
+           {
+               Object.entries(result1[0]).map((item,key)=>{
+                   if(item[0]!="id" && item[1]!=null)
+                   {
+                       result[0][item[0]]=item[1]
+                       
+                   }
+                   
+               })
+              res.send(result[0])
+             
+               
+           }
+        })
+       
+    }
+    
 })
+
 })
 router.get("/pincode",function(req,res)
 {

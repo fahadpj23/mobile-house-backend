@@ -1,14 +1,18 @@
 const express=require('express')
 const router = express.Router()
 const con=require('../database')
-// router.get("/accessories",function(req,res)
-// {
-//  con.query("SELECT * FROM accessories",(err,result,fields)=>{
-//      if(err) throw(err);
-//      res.send(result)
-//  }) 
+router.get("/getProducts",function(req,res)
+{
+ con.query("SELECT * FROM products",(err,result,fields)=>{
+     if(err) throw(err);
+     else
+     {
+    
+       res.send(result)
+     }
+ }) 
  
-// })
+})
 // router.get("/headset",function(req,res)
 // {
 //  con.query("SELECT * FROM headset",(err,result,fields)=>{

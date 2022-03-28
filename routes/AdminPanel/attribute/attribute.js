@@ -13,7 +13,7 @@ router.post('/attributeAdd',
 ],
 parseUrlencoded,function(req,res)
 {
- console.log(req.body)
+ //check attribute update or add
   if(req.body.operation=="select")
   {
   const{name,status}=req.body
@@ -76,52 +76,62 @@ parseUrlencoded,function(req,res)
   else
 
   {
+              
                 updateproductattributecolumnname=`alter table productattribute change ${req.body.oldattributeName} ${req.body.name} varchar(2000)`
                 con.query(updateproductattributecolumnname,(err,result)=>{
                   if(err) throw (err)
                   else
                   {
-                    attributeUpdate=`UPDATE attribute SET attributeName='${req.body.name}', status= ${req.body.status=="active" ? 1 : 0} WHERE id=${req.body.operationid}`
-                    con.query(attributeUpdate,(err,result)=>{
-                      if(err) throw (err);
-                      else {
-                        if(JSON.parse(req.body.attributevalues).length!=0)
-                        {
-                         deletequery=`DELETE FROM attributevalue WHERE attributeid=${req.body.operationid}`
-                         con.query(deletequery,(err,result)=>{
-                           if(err) throw (err)
-                           else
-                           {
-                            let insertvalues=""
-                            JSON.parse(req.body.attributevalues).map((item,key)=>{
-                              if(JSON.parse(req.body.attributevalues).length!= key+1)
-                              {
-                              insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" + ",")
-                              }
-                              else
-                              {
-                                insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" )
-                              }
-                            })
-                            valueaddquery=`insert into attributevalue (attributeid,value) values ${insertvalues}`
-                            console.log(insertvalues)
-                            con.query(valueaddquery,(err,result)=>{ 
-                              if(err) throw (err)
-                              else
-                              {
-                                res.json({"success":"Attribute updated successfully"})
-                              }
-                            })
-                           }
-                         })
-                            
-                        }
+                    updatecategoryvalueattribute=`UPDATE categoryvalue SET attributeName= '${req.body.name}' WHERE attributeId=${req.body. operationid} `
+                    con.query(updatecategoryvalueattribute,(err,result)=>{
+                      if(err) throw (err)
+                      else
+                      {
+                        attributeUpdate=`UPDATE attribute SET attributeName='${req.body.name}', status= ${req.body.status=="active" ? 1 : 0} WHERE id=${req.body.operationid}`
+                        con.query(attributeUpdate,(err,result)=>{
+                          if(err) throw (err);
+                          else {
+                            if(JSON.parse(req.body.attributevalues).length!=0)
+                            {
+                             deletequery=`DELETE FROM attributevalue WHERE attributeid=${req.body.operationid}`
+                             con.query(deletequery,(err,result)=>{
+                               if(err) throw (err)
+                               else
+                               {
+                                let insertvalues=""
+                                JSON.parse(req.body.attributevalues).map((item,key)=>{
+                                  if(JSON.parse(req.body.attributevalues).length!= key+1)
+                                  {
+                                  insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" + ",")
+                                  }
+                                  else
+                                  {
+                                    insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" )
+                                  }
+                                })
+                                valueaddquery=`insert into attributevalue (attributeid,value) values ${insertvalues}`
+                                console.log(insertvalues)
+                                con.query(valueaddquery,(err,result)=>{ 
+                                  if(err) throw (err)
+                                  else
+                                  {
+                                    res.json({"success":"Attribute updated successfully"})
+                                  }
+                                })
+                               }
+                             })
+                                
+                            }
+                          }
+                        
+                        }) 
                       }
-                    
-                    }) 
-                  }
-                })
-               
+                    })
+         
+                      }
+                    })
+
+                             
   }
 })
        
