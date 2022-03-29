@@ -1,9 +1,33 @@
 const express=require('express')
 const router = express.Router()
 const con=require('../database')
-router.get("/getProducts",function(req,res)
+router.get("/getcover",function(req,res)
 {
- con.query("SELECT * FROM products",(err,result,fields)=>{
+ con.query("SELECT * FROM products WHERE category='cover' ",(err,result,fields)=>{
+     if(err) throw(err);
+     else
+     {
+    
+       res.send(result)
+     }
+ }) 
+ 
+})
+router.get("/getheadset",function(req,res)
+{
+ con.query("SELECT * FROM products WHERE category='headset' ",(err,result,fields)=>{
+     if(err) throw(err);
+     else
+     {
+    
+       res.send(result)
+     }
+ }) 
+ 
+})
+router.get("/getaccessories",function(req,res)
+{
+ con.query("SELECT * FROM products WHERE category='accessories' ",(err,result,fields)=>{
      if(err) throw(err);
      else
      {

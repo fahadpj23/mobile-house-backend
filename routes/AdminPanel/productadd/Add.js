@@ -95,6 +95,11 @@ router.get('/getProduct',(req,res)=>{
     })
 
 })
+router.get('/productdetails',(req,res)=>{
+
+  console.log(req.query)
+
+})
 
 
 module.exports=router;  
