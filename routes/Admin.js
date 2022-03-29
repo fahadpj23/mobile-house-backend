@@ -19,7 +19,7 @@ router.get("/adminlogin",function(req,res)
       }
       else
       {
-       
+      
         bcrypt.compare(req.query.password,result[0].password).then((match)=>{
         
           if(!match) res.json({error:"password is incorrect"})
