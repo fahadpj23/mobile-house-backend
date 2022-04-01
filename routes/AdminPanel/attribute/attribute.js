@@ -14,7 +14,7 @@ router.post('/attributeAdd',
 parseUrlencoded,function(req,res)
 {
  //check attribute update or add
-  if(req.body.operation=="select")
+  if(req.body.operation=="")
   {
   const{name,status}=req.body
   const error=validationResult(req);

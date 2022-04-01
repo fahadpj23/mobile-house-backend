@@ -11,7 +11,7 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 router.post("/productAdd",parseUrlencoded,function(req,res){
   let product=req.body
-  if(req.body.operation=="select")
+  if(req.body.operation=="")
   {
             const file=req.files.image
             let columnarray=[]

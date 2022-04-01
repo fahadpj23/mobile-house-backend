@@ -67,7 +67,7 @@ router.get('/getCategory',function(req,res){
       ],
     parseUrlencoded,(req,res)=>
     {
-      if(req.body.operation=="select")
+      if(req.body.operation=="")
       {
         const error=validationResult(req);
         if(!error.isEmpty)
