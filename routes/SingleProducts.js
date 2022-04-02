@@ -49,12 +49,13 @@ router.get("/pincode",function(req,res)
 })
 router.get("/related",function(req,res)
 {
-
- related=`SELECT * FROM ${req.query.type} where brand="${req.query.brand}"`  
+    console.log(req.query)
+ related=`SELECT * FROM products where name="${req.query.name}" and category="${req.query.category}"`  
+ console.log(related)
  con.query(related,(err,result,fields)=>{
     if(err) throw(err);
     res.send(result)
 })
- 
+
 })
 module.exports=router;
