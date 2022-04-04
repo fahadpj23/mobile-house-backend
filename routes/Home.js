@@ -35,8 +35,23 @@ router.get("/getaccessories",function(req,res)
        res.send(result)
      }
  }) 
- 
 })
+
+
+router.get("/getphone",function(req,res)
+{
+ con.query("SELECT * FROM products WHERE category='phone' ",(err,result,fields)=>{
+     if(err) throw(err);
+     else
+     {
+    
+       res.send(result)
+     }
+ }) 
+})
+
+
+
 // router.get("/headset",function(req,res)
 // {
 //  con.query("SELECT * FROM headset",(err,result,fields)=>{

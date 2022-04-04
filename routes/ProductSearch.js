@@ -5,7 +5,7 @@ router.get("/searchProduct",function(req,res)
  {
     // console.log(req.query.searchitem)
     
-    searchqr=`SELECT name,price,color,mrp,image FROM headset  where name LIKE N'%${req.query.searchitem}%' union SELECT name,price,color,mrp,image FROM accessories  where name LIKE N'%${req.query.searchitem}%' union SELECT name,price,color,mrp,image FROM cover where name LIKE N'%${req.query.searchitem}%'`
+    searchqr=`SELECT * from products where name LIKE N'%${req.query.searchitem}%'`
     con.query(searchqr,(err,result,fields)=>{
 
       if(err) throw(err);

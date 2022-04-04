@@ -7,6 +7,7 @@ app.use(cors());
 app.use(express.static('public')); 
 app.use('products/images', express.static('images'));
 const Homerouter=require('./routes/Home')
+const ProductListWebsite=require('./routes/ProductListWebsite')
 const SearchRouter=require('./routes/ProductSearch')
 const Adminrouter=require('./routes/Admin')
 const SingleProductrouter=require('./routes/SingleProducts')
@@ -38,7 +39,7 @@ app.use(addProduct)
 app.use(category)
 app.use(express.json())
 app.use(attribute)
-
+app.use(ProductListWebsite)
 app.get("/fake",function(req,res)
  {
     searchqr=`SELECT name,image,mrp,price FROM headset`
