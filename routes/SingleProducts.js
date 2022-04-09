@@ -20,9 +20,7 @@ router.get("/singleview",function(req,res)
            if(err) throw (err)
            else
            {
-               console.log("fdf")
-                console.log( Object.entries(result1[0]).length)
-                console.log("fdffddd")
+            
                Object.entries(result1[0]).map((item,key)=>{
                    if(item[0]!="id" && item[1]!=null)
                    {
@@ -30,7 +28,7 @@ router.get("/singleview",function(req,res)
                        
                    }
                  
-                   console.log(key)
+                
                    if( Object.entries(result1[0]).length==key+1)
                    {
                     res.send(result[0])
@@ -58,12 +56,35 @@ router.get("/pincode",function(req,res)
 })
 router.get("/variantproduct",function(req,res)
 {
-    console.log(req.query)
+   
  variant=`select * from products where name='${req.query.name}' and price='${req.query.price}' and mrp='${req.query.mrp}' and category='${req.query.category}' and id !='${req.query.productId}'  `
- console.log(variant)
+
+ let variantproduct=[];
  con.query(variant,(err,result)=>{
     if(err) throw (err);
-   console.log(result)
+    else
+    {
+        result && Object.values(result).map((item,key)=>{
+            variantattribute=`select * from productattribute where id='${item.id}' `
+        con.query(variantattribute,(err1,result1)=>{
+            if(err1) throw (err1)
+            else
+            {
+
+            
+                    let val={...item,...result1[0]}
+                    variantproduct.push(val)
+                    if(Object.values(result).length-1 ==key)
+                    {
+                        res.send(variantproduct)
+                    }
+               
+            }
+        })
+        })
+        
+    
+    }
 })
 })
 
@@ -80,7 +101,7 @@ router.get("/related",function(req,res)
 {
    
  related=`SELECT * FROM products where name="${req.query.name}" and category="${req.query.category}" and id != '${req.query.productId}'`  
- console.log(related)
+ 
  con.query(related,(err,result,fields)=>{
     if(err) throw(err);
     res.send(result)
