@@ -28,7 +28,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
             
               // addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.category}')`;
               // columnfetch=`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = "${product.category}";`
-              categoryattribute=`select * from categoryvalue where  categoryId="${product.categoryid}"`
+              categoryattribute=`select * from categoryattribute where  categoryId="${product.categoryid}"`
               con.query(categoryattribute,(err,result1)=>{
                 if(err) throw (err)
                 else
@@ -78,7 +78,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
     {
     
       
-      categoryattribute=`select * from categoryvalue where  categoryId="${product.categoryid}"`
+      categoryattribute=`select * from categoryattribute where  categoryId="${product.categoryid}"`
       con.query(categoryattribute,(err,result1)=>{
         if(err) throw (err)
         else
@@ -112,7 +112,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
 router.get('/getcategoryAttribute',function(req,res){
   let attributevaluearray=[]
  console.log(req.query)
-  categoryAttribute=`select * from categoryvalue where categoryId="${req.query.categoryid}"`
+  categoryAttribute=`select * from categoryattribute where categoryId="${req.query.categoryid}"`
   con.query(categoryAttribute,(err,result)=>{
     if(err) throw (err)
     else

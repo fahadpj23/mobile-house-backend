@@ -7,7 +7,7 @@ const con=require('../database')
 //get the single product detail
 router.get("/singleview",function(req,res)
 {
-  
+   let attributevalue=[];;
     singleqr=`SELECT * FROM products where id="${req.query.productId}"`
 
     con.query(singleqr,(err,result,fields)=>{
@@ -20,23 +20,37 @@ router.get("/singleview",function(req,res)
            if(err) throw (err)
            else
            {
-            
+                
                Object.entries(result1[0]).map((item,key)=>{
                    if(item[0]!="id" && item[1]!=null)
                    {
-                       result[0][item[0]]=item[1]
+                       con.query(`select value from attributevalue where id=${item[1]}`,(err2,result2)=>{
+                            if(err2) throw (err2)
+                            else
+                            {
+                                val={attributeId:item[1],attributeValue:result2[0].value}
+                              
+                                result[0][item[0]]=val
+                                
+                            }
+                       })
+                     
+                      
                        
                    }
+                   console.log(Object.entries(result1[0]).length)
+                   console.log(key)
+                   console.log(result[0])
                  
                 
-                   if( Object.entries(result1[0]).length==key+1)
-                   {
-                    res.send(result[0])
-                   }
+                //    if( Object.entries(result1[0]).length==key+1)
+                //                 {
+                //                     res.send(result[0])
+                //                 }
                    
                })
              
-             
+               
                
            }
         })

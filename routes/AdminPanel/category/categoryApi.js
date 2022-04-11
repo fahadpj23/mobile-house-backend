@@ -19,7 +19,7 @@ router.get('/getCategory',function(req,res){
        {
         
          result.map((item,key)=>{
-           getcatvalues=`select  * from categoryvalue where categoryId=${item.id}`
+           getcatvalues=`select  * from categoryattribute where categoryId=${item.id}`
            con.query(getcatvalues,(err1,result1)=>{
              if(err1) throw (err1)
              else
@@ -111,7 +111,7 @@ router.get('/getCategory',function(req,res){
                                     {
                                 
                                             
-                                            addcatgeoryattribute=`insert into categoryvalue (categoryId,attributeId,attributeName) values ('${result1.insertId}','${ result[0].id}','${ result[0].attributeName}')`
+                                            addcatgeoryattribute=`insert into categoryattribute (categoryId,attributeId,attributeName) values ('${result1.insertId}','${ result[0].id}','${ result[0].attributeName}')`
                                             con.query(addcatgeoryattribute,(err,result)=>{
                                                 if(err) throw (err);
                                                 else {
@@ -164,7 +164,7 @@ router.get('/getCategory',function(req,res){
                       {
                         // console.log(item)
                                   
-                                  addcatgeoryattribute=`insert into categoryvalue (categoryId,attributeId,attributeName) values ('${req.body.operationid}','${ result[0].id}','${ result[0].attributeName}')`
+                                  addcatgeoryattribute=`insert into categoryattribute (categoryId,attributeId,attributeName) values ('${req.body.operationid}','${ result[0].id}','${ result[0].attributeName}')`
                                   con.query(addcatgeoryattribute,(err,result)=>{
                                       if(err) throw (err);
                                       else {
