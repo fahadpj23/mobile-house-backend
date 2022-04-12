@@ -1,5 +1,6 @@
 const express=require('express')
 const { object } = require('react-globally')
+const { commit } = require('../database')
 const router = express.Router()
 const con=require('../database')
 
@@ -35,6 +36,7 @@ router.get("/singleview",function(req,res)
                    
                })
                attributevalue.map((item,key)=>{
+                
                 con.query(`select value from attributevalue where id=${item[1]}`,(err2,result2)=>{
                     if(err2) throw (err2)
                     else
@@ -72,7 +74,7 @@ router.get("/variantproduct",function(req,res)
 {
    
  variant=`select * from products where name='${req.query.name}' and price='${req.query.price}' and mrp='${req.query.mrp}' and category='${req.query.category}' and id !='${req.query.productId}'  `
-
+ 
  let variantproduct=[];
  con.query(variant,(err,result)=>{
     if(err) throw (err);
@@ -85,13 +87,38 @@ router.get("/variantproduct",function(req,res)
             else
             {
 
-            
-                    let val={...item,...result1[0]}
-                    variantproduct.push(val)
-                    if(Object.values(result).length-1 ==key)
-                    {
-                        res.send(variantproduct)
-                    }
+                //  console.log(result1[0])
+                
+           
+                    Object.entries(result1[0]).map((item1,key1)=>{
+                     
+                        attributevalue=`select value from attributevalue where id='${item1[1]}' `
+                        con.query(attributevalue,(err2,result2)=>{
+                            if(err2) throw (err2)
+                            else
+                            {
+                               
+                              if(item1[0]!="id")
+                              {
+                                 result1[0][item1[0]]= result2[0] ? result2[0].value :undefined
+                                if( Object.entries(result1[0]).length== +key1 +1)
+                                {
+                                    
+                                    let val={...item,...result1[0]}
+                                    variantproduct.push(val)
+                                    if(Object.entries(result).length ==key+1)
+                                    {
+                                        res.send(variantproduct)
+                                    }
+                                }
+                               
+                              }
+                            }
+                        })
+                       
+
+                    })
+                   
                
             }
         })
