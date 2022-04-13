@@ -73,7 +73,7 @@ router.get("/pincode",function(req,res)
 router.get("/variantproduct",function(req,res)
 {
    
- variant=`select * from products where name='${req.query.name}' and price='${req.query.price}' and mrp='${req.query.mrp}' and category='${req.query.category}' and id !='${req.query.productId}'  `
+ variant=`select * from products where name='${req.query.name}' and price='${req.query.price}' and mrp='${req.query.mrp}' and category='${req.query.category}'   `
  
  let variantproduct=[];
  con.query(variant,(err,result)=>{
@@ -100,7 +100,7 @@ router.get("/variantproduct",function(req,res)
                                
                               if(item1[0]!="id")
                               {
-                                 result1[0][item1[0]]= result2[0] ? result2[0].value :undefined
+                                 result1[0][item1[0]]= {attributeId:item1[1],attributeValue:result2[0] ? result2[0].value :undefined}
                                 if( Object.entries(result1[0]).length== +key1 +1)
                                 {
                                     
