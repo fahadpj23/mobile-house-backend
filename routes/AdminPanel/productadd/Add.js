@@ -11,14 +11,27 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 router.post("/productAdd",parseUrlencoded,function(req,res){
   let product=req.body
-  if(req.body.operation=="")
-  {
+ 
+  if(req.body.operation=="" || req.body.operation=="variant" )
+  { 
+ 
+           
+            if(req.files)
+            {
             const file=req.files.image
+            file.mv(`products/images/${file.name}`)
+            addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.category}')`;
+            }
+            else
+            {
+             
+              addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${product.variantimage}','${product.Brand}','${product.qty}','${product.category}')`;
+         
+            }
             let columnarray=[]
             let columnvalue=[]
 
-            file.mv(`products/images/${file.name}`)
-            addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.category}')`;
+         
 
             con.query(addqr,(err,result)=>{
 
@@ -42,7 +55,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
                   
                 })
                 insertquery=`insert into productattribute (id,${columnarray}) values ('${result.insertId}',${columnvalue})`
-                console.log(insertquery)
+               
                 con.query(insertquery,(err,result)=>{
                   if(err) throw (err)
                   else
@@ -57,7 +70,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
   }
   else
   {
-   console.log(req.body.operationid)
+  
     let columnarray=[]
     let columnvalue=[]
     if(req.files)
@@ -94,7 +107,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
         })
         
         insertquery=`UPDATE productattribute SET  ${columnarray.toString()} where id='${product.operationid}'`
-        console.log(insertquery)
+       
         con.query(insertquery,(err,result)=>{
           if(err) throw (err)
           else
@@ -111,14 +124,14 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
 
 router.get('/getcategoryAttribute',function(req,res){
   let attributevaluearray=[]
- console.log(req.query)
+
   categoryAttribute=`select * from categoryattribute where categoryId="${req.query.categoryid}"`
   con.query(categoryAttribute,(err,result)=>{
     if(err) throw (err)
     else
       result.map((item,key)=>{
         attributevalueget=`select * from attributevalue  where attributeid="${item.attributeId}" `
-        console.log(attributevalueget)
+      
         con.query(attributevalueget,(err,result1)=>{
           if(err) throw (err)
           else
@@ -161,14 +174,14 @@ router.get('/productdetails',(req,res)=>{
            if(err) throw (err)
            else
           {
-            console.log(Object.entries(result1[0]).length)
+           
            Object.entries(result1[0]).map((item,key)=>{
             if(item[1]!=null)
             {
               result[0][item[0]]=item[1]
             }
               
-               console.log(key)
+            
                if(Object.entries(result1[0]).length ==  +key+1 )
                {
                  res.send(result[0])
