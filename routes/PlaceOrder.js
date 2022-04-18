@@ -40,7 +40,7 @@ router.get("/orderDetails",function(req,res)
 
 router.post("/customerOrders",
 [
-    check('customername').notEmpty(),
+    check('name').notEmpty(),
     check('phone').notEmpty(),
     check('pincode').notEmpty(),
     check('address').notEmpty(),
@@ -48,47 +48,65 @@ router.post("/customerOrders",
   ],
 jsonParser,function(req,res)
     {
+        const{name,phone,pincode,address}=req.body
+        
         const UTCTime = new Date() 
         const time = UTCTime.toLocaleTimeString()
         const date= UTCTime.toDateString()
         const orderdate=time+date
         const error=validationResult(req);
-        if(!error.isEmpty)
-        return res.json({error:error.array})
+        console.log(error.errors)
+        if(error.errors.length!=0)
+        {
+            console.log("fdddddddd")
+        return res.json({error:error.errors})
+        }
         else
         {
         
-        let orderinfo=req.body;
-        console.log(orderinfo)
-        let products=JSON.parse(orderinfo.product)
-      
-          
-      
-        
-        addqr=`insert into productorder ( date, customername, phone, pincode, address,orderCount ) values ('${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}')`;
-            con.query(addqr,(err,result)=>{
+            let orderinfo=req.body;
+            let products=JSON.parse(orderinfo.product)
+            addqr=`insert into productorder ( date, customername, phone, pincode, address,orderCount ) values ('${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}')`;
+                con.query(addqr,(err,result)=>{
 
-              if(err) throw (err);
-            else 
-            {
-                console.log(result.insertId)
-                Object.values( products).map((item,key)=>{
-                productDetail=`insert into orderdetails (orderId,productid,qty) values('${result.insertId}','${item.id}','${item.qty}')`
-                con.query(productDetail,(err1,result1)=>{
-                    if(err1) throw (err1)
-                    else
-                    {
-                       if( Object.values( products).length== key+1)
-                       {
-                           res.json({"success":"order placed successfully"})
-                       } 
-                    }
-                })
-                })
-            }
+                if(err) throw (err);
+                else 
+                {
+                
+                    Object.values( products).map((item,key)=>{
+                    
+                    productDetail=`insert into orderdetails (orderId,productid,qty) values('${result.insertId}','${item.id}','${item.qty}')`
+                    con.query(productDetail,(err1,result1)=>{
+                        if(err1) throw (err1)
+                        else
+                        {
+                            productselect=`select * from products where id=${item.id}`
+                            con.query(productselect,(err2,result2)=>{
+                                if(err2) throw (err2)
+                                else
+                                {
+                                    let qty=result2[0].qty - item.qty
+                                    qtyupdate=`UPDATE  products SET qty="${qty}" WHERE id="${item.id}" ` 
+                                    con.query(qtyupdate,(err3,result3)=>{
+                                        if(err2) throw (err2)
+                                        else
+                                        {
+                                            if( Object.values( products).length== key+1)
+                                            {
+                                                res.json({"orderId":result.insertId})
+                                            } 
+                                        }
+                                    })
+                                }
+                            })
+                        
+                        }
+                    })
+                    })
+                }
+                
+            })
             
-          })
-         
         
     }  
     }

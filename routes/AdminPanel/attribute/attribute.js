@@ -82,7 +82,7 @@ parseUrlencoded,function(req,res)
                   if(err) throw (err)
                   else
                   {
-                    updatecategoryvalueattribute=`UPDATE categoryvalue SET attributeName= '${req.body.name}' WHERE attributeId=${req.body. operationid} `
+                    updatecategoryvalueattribute=`UPDATE categoryattribute SET attributeName= '${req.body.name}' WHERE attributeId=${req.body. operationid} `
                     con.query(updatecategoryvalueattribute,(err,result)=>{
                       if(err) throw (err)
                       else
