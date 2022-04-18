@@ -9,28 +9,13 @@ router.get("/orderDetails",function(req,res)
  {
     // console.log(req.query.searchitem)
     
-    singleqr=`SELECT * FROM products where id="${req.query.productId}"`
-
+    // singleqr=`SELECT * FROM products where id="${req.query.productId}"`
+    singleqr=` SELECT * FROM products INNER JOIN productattribute ON products.id = productattribute.id where productattribute.id=${req.query.productId}  `
     con.query(singleqr,(err,result,fields)=>{
     if(err)throw (err);
     else
     {
-        
-        singleproductattribute=`SELECT * FROM productattribute where id="${req.query.productId}" `  
-        con.query(singleproductattribute,(err1,result1)=>{
-           if(err) throw (err)
-           else
-           {
-                
-            let val={...result[0],...result1[0]}
-                      
-           
-           
-                res.send(val)
-            
-               
-           }
-        })
+        res.send(result[0])
        
     }
     
@@ -58,7 +43,7 @@ jsonParser,function(req,res)
         console.log(error.errors)
         if(error.errors.length!=0)
         {
-            console.log("fdddddddd")
+           
         return res.json({error:error.errors})
         }
         else

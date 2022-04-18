@@ -70,8 +70,11 @@ router.get('/getCategory',function(req,res){
       if(req.body.operation=="")
       {
         const error=validationResult(req);
-        if(!error.isEmpty)
-        return res.json({error:error.array})
+        if(error.errors.length!=0)
+        {
+           
+        return res.json({error:error.errors})
+        }
         else
         {
             searchqr=`select Count(*) as  count from category where categoryName='${req.body.name}'`

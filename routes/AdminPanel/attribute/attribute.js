@@ -18,8 +18,11 @@ parseUrlencoded,function(req,res)
   {
   const{name,status}=req.body
   const error=validationResult(req);
-  if(!error.isEmpty)
-    return res.json({error:error.array})
+  if(error.errors.length!=0)
+        {
+           
+        return res.json({error:error.errors})
+        }
   else
   {
     searchqr=`select Count(*) as  count from attribute where attributeName='${req.body.name}'`
