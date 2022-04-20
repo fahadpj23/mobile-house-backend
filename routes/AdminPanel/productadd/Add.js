@@ -11,7 +11,8 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 router.post("/productAdd",parseUrlencoded,function(req,res){
   let product=req.body
- 
+  console.log("dsssss")
+  console.log(product)
   if(req.body.operation=="" || req.body.operation=="variant" )
   { 
  
@@ -20,12 +21,12 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
             {
             const file=req.files.image
             file.mv(`products/images/${file.name}`)
-            addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.category}')`;
+            addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category,variantid) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.category}','${product.operationid}')`;
             }
             else
             {
              
-              addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${product.variantimage}','${product.Brand}','${product.qty}','${product.category}')`;
+              addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category,variantid) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${product.variantimage}','${product.Brand}','${product.qty}','${product.category}','${product.operationid}')`;
          
             }
             let columnarray=[]
@@ -38,7 +39,17 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
               if(err) throw (err);
             else 
             {
-            
+             
+              if(product.operationid=="")
+              {
+                console.log(result.insertId)
+                variantupdate=`UPDATE products SET variantid="${result.insertId}" WHERE id="${result.insertId}" ` 
+                con.query(variantupdate,(err1,result1)=>
+                {
+                  if(err1) throw (err1)
+                })
+
+              }
               // addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.category}')`;
               // columnfetch=`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = "${product.category}";`
               categoryattribute=`select * from categoryattribute where  categoryId="${product.categoryid}"`
