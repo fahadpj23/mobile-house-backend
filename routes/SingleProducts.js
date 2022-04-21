@@ -73,7 +73,7 @@ router.get("/pincode",function(req,res)
 router.get("/variantproduct",function(req,res)
 {
    
- variant=`select * from products where name='${req.query.name}' and price='${req.query.price}' and mrp='${req.query.mrp}' and category='${req.query.category}'   `
+ variant=`select * from products where variantid='${req.query.variantid}'    `
  
  let variantproduct=[];
  con.query(variant,(err,result)=>{
