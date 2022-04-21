@@ -62,12 +62,23 @@ router.get("/singleview",function(req,res)
 })
 
 })
-router.get("/pincode",function(req,res)
+router.get("/pincodecheck",function(req,res)
 {
- pinsearch=`select * from pincode where pincode='${req.query.pincodeno}'`
+ pinsearch=`select COUNT(*) as count from pincode where pincode='${req.query.pincodeno}'`
  con.query(pinsearch,(err,result)=>{
     if(err) throw (err);
-    else res.send(result)
+    else 
+    {
+        if(result[0].length>0)
+        {
+            res.json({availability:"available"})
+        }
+        else
+        {
+            res.json({availability:"notavailable"})  
+        }
+    }
+   
 })
 })
 router.get("/variantproduct",function(req,res)
