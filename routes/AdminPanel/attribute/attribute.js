@@ -3,10 +3,12 @@ const router = express.Router()
 const con=require("../../../database")
 var bodyParser=require("body-parser");
 var jsonParser=bodyParser.json();
+const validateToken=require("../../../middlewares/authmiddelware")
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
+
 const {check,validationResult}=require('express-validator');
 const { disable } = require('express/lib/application');
-router.post('/attributeAdd',
+router.post('/attributeAdd',validateToken,
 [
   check('name').notEmpty(),
   check('status').notEmpty(),
@@ -143,7 +145,7 @@ parseUrlencoded,function(req,res)
 
 
 
-router.get('/getattribute',function(req,res){
+router.get('/getattribute',validateToken,function(req,res){
    var attribute;
   var responsemodel;
   let itemmodel=[];

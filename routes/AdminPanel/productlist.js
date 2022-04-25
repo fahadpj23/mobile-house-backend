@@ -4,7 +4,8 @@ var bodyParser=require("body-parser");
 var jsonParser=bodyParser.json();
 var parseUrlencoded = bodyParser.urlencoded({ extended: false });   
 const con=require('../../database')
-router.get("/products",function(req,res)
+const validateToken=require("../../middlewares/authmiddelware")
+router.get("/products",validateToken,function(req,res)
     {
        
         addqr=`SELECT id,name,price,color,mrp,warranty,brand,maxqty,type FROM cover union SELECT id,name,price,color,mrp,warranty,brand,maxqty,type FROM headset union SELECT id,name,price,color,mrp,warranty,brand,maxqty,type FROM accessories`;
@@ -18,7 +19,7 @@ router.get("/products",function(req,res)
     )
 
 
-router.post("/productdelete",function(req,res)
+router.post("/productdelete",validateToken,function(req,res)
 {
     
     query=`DELETE FROM ${req.body.database} Where id=${req.body.id}`
@@ -30,7 +31,7 @@ router.post("/productdelete",function(req,res)
     
 
 })
-router.get("/updateproductdetails",function(req,res)
+router.get("/updateproductdetails",validateToken,function(req,res)
 {
     
     query=`SELECT * FROM ${req.query.database} Where id=${req.query.id}`
@@ -43,7 +44,7 @@ router.get("/updateproductdetails",function(req,res)
     
 
 })
-router.post("/Editproduct",parseUrlencoded,function(req,res)
+router.post("/Editproduct",validateToken,parseUrlencoded,function(req,res)
 {
     if(req.body.type=="cover")
     {

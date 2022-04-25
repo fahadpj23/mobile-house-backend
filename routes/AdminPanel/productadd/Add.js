@@ -3,16 +3,13 @@ var bodyParser=require("body-parser");
 var jsonParser=bodyParser.json();
 const router = express.Router()
 const con=require('../../../database');
-const { func } = require('react-globally');
-const { Result } = require('express-validator');
-const { commit } = require('../../../database');
+const validateToken=require("../../../middlewares/authmiddelware")
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 
 
-router.post("/productAdd",parseUrlencoded,function(req,res){
+router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
   let product=req.body
-  console.log("dsssss")
-  console.log(product)
+
   if(req.body.operation=="" || req.body.operation=="variant" )
   { 
  
@@ -21,12 +18,12 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
             {
             const file=req.files.image
             file.mv(`products/images/${file.name}`)
-            addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category,variantid) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.category}','${product.operationid}')`;
+            addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,GST,category,variantid) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.GST}','${product.category}','${product.operationid}')`;
             }
             else
             {
              
-              addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category,variantid) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${product.variantimage}','${product.Brand}','${product.qty}','${product.category}','${product.operationid}')`;
+              addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,GST,category,variantid) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${product.variantimage}','${product.Brand}','${product.qty}','${product.GST}','${product.category}','${product.operationid}')`;
          
             }
             let columnarray=[]
@@ -88,11 +85,11 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
     {
     const file=req.files.image
     file.mv(`products/images/${file.name}`)
-    addqr=`UPDATE products SET  name='${product.Name}' , price='${product.Price}', mrp='${product.MRP}' ,warranty='${product.Warranty}', image='${file.name}', Brand='${product.Brand}',qty='${product.qty}' ,category='${product.category}' where id='${product.operationid}'`;
+    addqr=`UPDATE products SET  name='${product.Name}' , price='${product.Price}', mrp='${product.MRP}' ,warranty='${product.Warranty}', image='${file.name}', Brand='${product.Brand}',qty='${product.qty}' ,GST='${product.GST}',category='${product.category}' where id='${product.operationid}'`;
     }
     else
     {
-      addqr=`UPDATE products SET  name='${product.Name}' , price='${product.Price}', mrp='${product.MRP}' ,warranty='${product.Warranty}',  Brand='${product.Brand}',qty='${product.qty}' ,category='${product.category}' where id='${product.operationid}'`;
+      addqr=`UPDATE products SET  name='${product.Name}' , price='${product.Price}', mrp='${product.MRP}' ,warranty='${product.Warranty}',  Brand='${product.Brand}',qty='${product.qty}' ,GST='${product.GST}',category='${product.category}' where id='${product.operationid}'`;
  
     }
     con.query(addqr,(err,result)=>{
@@ -133,7 +130,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
   }
 })
 
-router.get('/getcategoryAttribute',function(req,res){
+router.get('/getcategoryAttribute',validateToken,function(req,res){
   let attributevaluearray=[]
 
   categoryAttribute=`select * from categoryattribute where categoryId="${req.query.categoryid}"`
