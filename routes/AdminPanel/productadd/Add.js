@@ -7,7 +7,7 @@ const validateToken=require("../../../middlewares/authmiddelware")
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 
 
-router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
+router.post("/productAdd",parseUrlencoded,function(req,res){
   let product=req.body
 
   if(req.body.operation=="" || req.body.operation=="variant" )
@@ -130,7 +130,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
   }
 })
 
-router.get('/getcategoryAttribute',validateToken,function(req,res){
+router.get('/getcategoryAttribute',function(req,res){
   let attributevaluearray=[]
 
   categoryAttribute=`select * from categoryattribute where categoryId="${req.query.categoryid}"`

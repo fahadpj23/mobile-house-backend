@@ -8,7 +8,7 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 const {check,validationResult}=require('express-validator');
 const { object } = require('react-globally');
 
-router.get('/getCategory',function(req,res){
+router.get('/getCategory',validateToken,function(req,res){
  
 
    let itemmodel=[];

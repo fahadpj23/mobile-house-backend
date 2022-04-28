@@ -7,8 +7,8 @@ const validateToken=require("../../../middlewares/authmiddelware")
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 
 const {check,validationResult}=require('express-validator');
-const { disable } = require('express/lib/application');
-router.post('/attributeAdd',validateToken,
+
+router.post('/attributeAdd',
 [
   check('name').notEmpty(),
   check('status').notEmpty(),
@@ -145,7 +145,7 @@ parseUrlencoded,function(req,res)
 
 
 
-router.get('/getattribute',validateToken,function(req,res){
+router.get('/getattribute',function(req,res){
    var attribute;
   var responsemodel;
   let itemmodel=[];
