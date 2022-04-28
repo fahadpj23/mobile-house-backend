@@ -17,6 +17,12 @@ router.get('/purchaseProductSearch',(req,res)=>{
         else
         // res.json({products:result})
         {
+            if(result.length==0)
+            {
+                res.json({noProduct:"No Product Found"})
+            }
+            else
+            {
              Object.values( result).map((item,key)=>{
                 variant=`select * from productattribute  where id=${item.id}`
                 con.query(variant,(err1,result1)=>{
@@ -25,7 +31,7 @@ router.get('/purchaseProductSearch',(req,res)=>{
                     {
                     let pro={...item,...result1[0]}
                     product.push(pro)
-                    console.log(product)
+                   
                         if(Object.values( result).length==key+1)
                         {
                             res.json({products:product})
@@ -35,6 +41,7 @@ router.get('/purchaseProductSearch',(req,res)=>{
                 })
                
             })
+            }
         }
     })
 })
