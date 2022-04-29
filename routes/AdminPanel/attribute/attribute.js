@@ -43,7 +43,7 @@ parseUrlencoded,function(req,res)
         if(err) throw(err);
         })
         addattribute=`insert into attribute (attributeName,status) values ('${req.body.name}','${req.body.status=="active" ? 1 : 0}')`
-        console.log(addattribute)
+  
         con.query(addattribute,(err,result)=>{
           if(err) throw (err);
           else {
@@ -115,7 +115,7 @@ parseUrlencoded,function(req,res)
                                   }
                                 })
                                 valueaddquery=`insert into attributevalue (attributeid,value) values ${insertvalues}`
-                                console.log(insertvalues)
+                      
                                 con.query(valueaddquery,(err,result)=>{ 
                                   if(err) throw (err)
                                   else
@@ -167,7 +167,7 @@ router.get('/getattribute',function(req,res){
 
     function setattribute(attribute,attributevalues,length)
     {
-     console.log(length)
+     
       let attirbuteval=[];
 
       attributevalues.map((item,key)=>{
@@ -187,7 +187,7 @@ router.get('/getattribute',function(req,res){
       
     }
 
-  console.log(itemmodel)
+
  
   
 })
