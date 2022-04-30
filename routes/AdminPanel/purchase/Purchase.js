@@ -47,6 +47,34 @@ router.get('/purchaseProductSearch',(req,res)=>{
     })
 })
 
+router.get('/getPurchase',(req,res)=>{
+    let Tablehead=[];
+    getpurchase=`select * from purchase`
+    con.query(getpurchase,(err,result)=>{
+        if(err) throw (err)
+        else
+        {
+            Object.entries(result[0]).map((item,key)=>{
+                if(item[0]!="TaxAmount" && item[0]!="otherExpense")
+                Tablehead.push(item[0])
+              
+                
+            })
+
+            getsupplier=`select * from supplier where id='${result[0].supplier}'`
+                     console.log(getsupplier)
+                     con.query(getsupplier,(err1,result1)=>{
+                         if(err1) throw (err1)
+                         else
+                         result[0].supplier=result1[0].supplierName
+                         res.json({ "Data":result,"TableHead":Tablehead })
+                     })
+           
+           
+        }
+    })
+})
+
 router.post("/purchaseupload",
 [
     check('invoiceno').notEmpty(),
@@ -63,7 +91,7 @@ parseUrlencoded,(req,res)=>{
     else
     {
     purchase=req.body
-    purchaseinsertquery=`insert into purchase (invoiceNo,paymentMethod,supplier,productNo,TaxAmount,otherExpense,grandTotal) values ( '${purchase.invoiceno}','${purchase.paymentMethod}','${purchase.supplier}','${ JSON.parse( purchase.products).length}','${purchase.TaxAmount}','${purchase.otherexpense}','${purchase.GrandTotal}')`
+    purchaseinsertquery=`insert into purchase (invoiceNo,paymentMethod,supplier,NoProduct,TaxAmount,otherExpense,grandTotal) values ( '${purchase.invoiceno}','${purchase.paymentMethod}','${purchase.supplier}','${ JSON.parse( purchase.products).length}','${purchase.TaxAmount}','${purchase.otherexpense}','${purchase.GrandTotal}')`
     con.query(purchaseinsertquery,(err,result)=>{
         if(err)throw(err)
         else
