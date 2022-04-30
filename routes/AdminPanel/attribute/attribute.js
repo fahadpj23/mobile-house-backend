@@ -176,7 +176,7 @@ router.get('/getattribute',function(req,res){
      
       
       
-       itemmodel.push({id:attribute.id,attributeName:attribute.attributeName,status:attribute.status==1 ?"active" : "disable" ,values:attirbuteval})
+       itemmodel.push({id:attribute.id,attributeName:attribute.attributeName,status:attribute.status ,values:attirbuteval})
        if(itemmodel.length==length)
        {
         let tablehead=['SlNo','attributeName','status','values']

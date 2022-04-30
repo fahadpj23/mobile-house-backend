@@ -44,7 +44,7 @@ router.get('/getCategory',validateToken,function(req,res){
       
        
        
-        itemmodel.push({id:category.id,categoryName:category.categoryName,status:category.status==1 ?"active" : "disable" ,values:categoryval})
+        itemmodel.push({id:category.id,categoryName:category.categoryName,status:category.status,values:categoryval})
         if(itemmodel.length==length)
         {
           let tablehead=['SlNo','categoryName','status','values']
