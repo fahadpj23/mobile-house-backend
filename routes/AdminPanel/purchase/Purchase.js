@@ -61,13 +61,13 @@ router.get('/getPurchase',(req,res)=>{
                 
             })
 
-            getsupplier=`select * from supplier where id='${result[0].supplier}'`
+            getsupplier=`select * from purchaseproduct where purchaseId='${result[0].id}'`
                      console.log(getsupplier)
                      con.query(getsupplier,(err1,result1)=>{
                          if(err1) throw (err1)
                          else
-                         result[0].supplier=result1[0].supplierName
-                         res.json({ "Data":result,"TableHead":Tablehead })
+                        //  result[0].supplier=result1[0].supplierName
+                         res.json({ "Data":result1,"TableHead":Tablehead })
                      })
            
            
@@ -98,6 +98,20 @@ parseUrlencoded,(req,res)=>{
         {
             console.log(result.insertId)
             JSON.parse( purchase.products).map((item,key)=>{
+                //update qty of product
+               productselect=`select * from products where id=${item.id} `
+               con.query(productselect,(err3,result3)=>{
+                   if(err3) throw (err3)
+                   else
+                   {
+                   updateQtyQuery=`UPDATE products SET qty=${result3[0].qty + item.productqty} where id=${result3[0].id}`
+                   con.query(updateQtyQuery,(err4,result4)=>{
+                       if(err4) throw (err4)
+
+                   })
+                   }
+               })
+               //purchased items add to table
                purchaseproductquery=`insert into purchaseproduct (purchaseId,product) values ( '${result.insertId}','${item}')`
                con.query(purchaseproductquery,(err1,result1)=>{
                    if(err1) throw (err1)
