@@ -18,12 +18,12 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
             {
             const file=req.files.image
             file.mv(`products/images/${file.name}`)
-            addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,GST,category,variantid) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.GST}','${product.category}','${product.operationid}')`;
+            addqr=`insert into products (  name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty, image, Brand,qty ,GST,category,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.GST}','${product.category}','${product.operationid}')`;
             }
             else
             {
              
-              addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,GST,category,variantid) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${product.variantimage}','${product.Brand}','${product.qty}','${product.GST}','${product.category}','${product.operationid}')`;
+              addqr=`insert into products (  name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty, image, Brand,qty ,GST,category,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${product.variantimage}','${product.Brand}','${product.qty}','${product.GST}','${product.category}','${product.operationid}')`;
          
             }
             let columnarray=[]
@@ -78,18 +78,18 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
   }
   else
   {
-  
+    console.log(product)
     let columnarray=[]
     let columnvalue=[]
     if(req.files)
     {
     const file=req.files.image
     file.mv(`products/images/${file.name}`)
-    addqr=`UPDATE products SET  name='${product.Name}' , price='${product.Price}', mrp='${product.MRP}' ,warranty='${product.Warranty}', image='${file.name}', Brand='${product.Brand}',qty='${product.qty}' ,GST='${product.GST}',category='${product.category}' where id='${product.operationid}'`;
+    addqr=`UPDATE products SET  name='${product.Name}' , purchasePrice='${product.purchasePrice}',sellingPrice='${product.sellingPrice}',salesPrice='${product.salesPrice}', mrp='${product.MRP}' ,warranty='${product.Warranty}', image='${file.name}', Brand='${product.Brand}',qty='${product.qty}' ,GST='${product.GST}',category='${product.category}' where id='${product.operationid}'`;
     }
     else
     {
-      addqr=`UPDATE products SET  name='${product.Name}' , price='${product.Price}', mrp='${product.MRP}' ,warranty='${product.Warranty}',  Brand='${product.Brand}',qty='${product.qty}' ,GST='${product.GST}',category='${product.category}' where id='${product.operationid}'`;
+      addqr=`UPDATE products SET  name='${product.Name}' , purchasePrice='${product.purchasePrice}',sellingPrice='${product.sellingPrice}',salesPrice='${product.salesPrice}', mrp='${product.MRP}' ,warranty='${product.Warranty}',  Brand='${product.Brand}',qty='${product.qty}' ,GST='${product.GST}',category='${product.category}' where id='${product.operationid}'`;
  
     }
     con.query(addqr,(err,result)=>{
@@ -164,7 +164,7 @@ router.get('/getProduct',(req,res)=>{
        if(err) throw (err)
        else
       {
-       let tablehead=['SlNo','name','price','mrp','Brand','category']
+       let tablehead=['SlNo','name','purchasePrice','sellingPrice','salesPrice','mrp','Brand','category']
        res.json({ "Data":result,"TableHead":tablehead })
       }
     })

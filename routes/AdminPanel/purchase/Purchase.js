@@ -61,12 +61,12 @@ router.get('/getPurchase',(req,res)=>{
                 
             })
 
-            getsupplier=`select * from purchaseproduct where purchaseId='${result[0].id}'`
+            getsupplier=`select * from purchase where id='${result[0].id}'`
                      console.log(getsupplier)
                      con.query(getsupplier,(err1,result1)=>{
                          if(err1) throw (err1)
                          else
-                        //  result[0].supplier=result1[0].supplierName
+                         result[0].supplier=result1[0].supplierName
                          res.json({ "Data":result1,"TableHead":Tablehead })
                      })
            
