@@ -5,7 +5,7 @@ var jsonParser=bodyParser.json();
 const con=require('../database')
 const {check,validationResult}=require('express-validator');
 
-router.get("/orderDetails",function(req,res)
+router.get("/customerorderdetails",function(req,res)
  {
     // console.log(req.query.searchitem)
     
@@ -51,7 +51,7 @@ jsonParser,function(req,res)
         
             let orderinfo=req.body;
             let products=JSON.parse(orderinfo.product)
-            addqr=`insert into productorder ( date, customername, phone, pincode, address,orderCount ) values ('${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}')`;
+            addqr=`insert into customerOrder ( date, customername, phone, pincode, address,orderCount ) values ('${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}')`;
                 con.query(addqr,(err,result)=>{
 
                 if(err) throw (err);
@@ -60,7 +60,7 @@ jsonParser,function(req,res)
                 
                     Object.values( products).map((item,key)=>{
                     
-                    productDetail=`insert into orderdetails (orderId,productid,qty) values('${result.insertId}','${item.id}','${item.qty}')`
+                    productDetail=`insert into customerorderdetails (orderId,productid,qty) values('${result.insertId}','${item.id}','${item.qty}')`
                     con.query(productDetail,(err1,result1)=>{
                         if(err1) throw (err1)
                         else

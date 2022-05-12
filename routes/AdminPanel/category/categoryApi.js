@@ -150,7 +150,7 @@ router.get('/getCategory',validateToken,function(req,res){
           if(err) throw (err);
           else {
             
-             deletequery=`DELETE FROM categoryvalue WHERE categoryId=${req.body.operationid}`
+             deletequery=`DELETE FROM categoryattribute WHERE categoryId=${req.body.operationid}`
              con.query(deletequery,(err,result)=>{
                if(err) throw (err)
                else

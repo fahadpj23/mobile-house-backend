@@ -149,11 +149,12 @@ router.get('/getattribute',function(req,res){
    var attribute;
   var responsemodel;
   let itemmodel=[];
-    getatt='select * from attribute where status=1'
+    getatt='select * from attribute '
     con.query(getatt,(err,result)=>{
       if(err) throw (err)
       else
       {
+        console.log(result)
         result.map((item,key)=>{
           getattvalues=`select value from attributevalue where attributeid=${item.id}`
           con.query(getattvalues,(err1,result1)=>{
