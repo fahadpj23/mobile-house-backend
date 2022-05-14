@@ -42,7 +42,7 @@ parseUrlencoded,function(req,res)
         
         if(err) throw(err);
         })
-        addattribute=`insert into attribute (attributeName,status) values ('${req.body.name}','${req.body.status=="active" ? 1 : 0}')`
+        addattribute=`insert into attribute (attributeName,status) values ('${req.body.name}','${req.body.status}')`
   
         con.query(addattribute,(err,result)=>{
           if(err) throw (err);
@@ -92,7 +92,7 @@ parseUrlencoded,function(req,res)
                       if(err) throw (err)
                       else
                       {
-                        attributeUpdate=`UPDATE attribute SET attributeName='${req.body.name}', status= ${req.body.status=="active" ? 1 : 0} WHERE id=${req.body.operationid}`
+                        attributeUpdate=`UPDATE attribute SET attributeName='${req.body.name}', status= ${req.body.status} WHERE id=${req.body.operationid}`
                         con.query(attributeUpdate,(err,result)=>{
                           if(err) throw (err);
                           else {

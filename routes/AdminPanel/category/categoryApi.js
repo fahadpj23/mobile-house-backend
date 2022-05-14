@@ -77,7 +77,7 @@ router.get('/getCategory',validateToken,function(req,res){
         }
         else
         {
-            searchqr=`select Count(*) as  count from category where categoryName='${req.body.name}'`
+            searchqr=`select Count(*) as  count from category where categoryName='${req.body.categoryName}'`
 
                 con.query(searchqr,(err,result)=>{
                 if(result[0].count>0)
@@ -90,17 +90,17 @@ router.get('/getCategory',validateToken,function(req,res){
                     const{name,status}=req.body
                     let attribute=JSON.parse(req.body.categoryvalues)
                    
-                    addcatgeory=`insert into category (categoryName,status) values ('${req.body.name}','${req.body.status=="active" ? 1 : 0}')`
+                    addcatgeory=`insert into category (categoryName,status) values ('${req.body.categoryName}','${req.body.status}')`
                    con.query(addcatgeory,(err,result1)=>{
                            if(err) throw (err);
                             else
                               {
-                              // createtable=`create table ${req.body.name}(id int) `
+                              // createtable=`create table ${req.body.categoryName}(id int) `
                               // con.query(createtable,(err1,result1)=>{
                               //     if(err) throw (err)
                               // })
                                 Object.values(attribute).length>0 &&  Object.values(attribute).map((item,key)=>{
-                                    // columninsert=`Alter table ${req.body.name} add ${item} varchar(255)`
+                                    // columninsert=`Alter table ${req.body.categoryName} add ${item} varchar(255)`
                                     // con.query(columninsert,(err,result,fields)=>
                                     // {
                                     
@@ -145,7 +145,7 @@ router.get('/getCategory',validateToken,function(req,res){
         console.log("dsds")
         console.log(req.body.operationid)
         console.log(req.body.categoryvalues)
-        attributeUpdate=`UPDATE category SET categoryName='${req.body.name}', status= ${req.body.status=="active" ? 1 : 0} WHERE id=${req.body.operationid}`
+        attributeUpdate=`UPDATE category SET categoryName='${req.body.categoryName}', status= ${req.body.status} WHERE id=${req.body.operationid}`
         con.query(attributeUpdate,(err,result)=>{
           if(err) throw (err);
           else {
