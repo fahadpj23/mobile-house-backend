@@ -6,7 +6,7 @@ var bodyParser=require("body-parser");
 var jsonParser=bodyParser.json();
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 const {check,validationResult}=require('express-validator');
-const { object } = require('react-globally');
+
 
 router.get('/getCategory',validateToken,function(req,res){
  

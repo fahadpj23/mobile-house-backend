@@ -3,7 +3,7 @@ const router = express.Router()
 const con=require('../database')
 router.get("/getcover",function(req,res)
 {
- con.query("SELECT * FROM products WHERE category='cover' ",(err,result,fields)=>{
+ con.query("SELECT * FROM products WHERE category='46' ",(err,result,fields)=>{
      if(err) throw(err);
      else
      {
@@ -15,7 +15,7 @@ router.get("/getcover",function(req,res)
 })
 router.get("/getheadset",function(req,res)
 {
- con.query("SELECT * FROM products WHERE category='headset' ",(err,result,fields)=>{
+ con.query("SELECT * FROM products WHERE category='47' ",(err,result,fields)=>{
      if(err) throw(err);
      else
      {
@@ -27,7 +27,7 @@ router.get("/getheadset",function(req,res)
 })
 router.get("/getaccessories",function(req,res)
 {
- con.query("SELECT * FROM products WHERE category='accessories' ",(err,result,fields)=>{
+ con.query("SELECT * FROM products WHERE category='48' ",(err,result,fields)=>{
      if(err) throw(err);
      else
      {
@@ -40,7 +40,7 @@ router.get("/getaccessories",function(req,res)
 
 router.get("/getphone",function(req,res)
 {
- con.query("SELECT * FROM products WHERE category='phone' ",(err,result,fields)=>{
+ con.query("SELECT * FROM products WHERE category='49' ",(err,result,fields)=>{
      if(err) throw(err);
      else
      {
