@@ -82,17 +82,17 @@ parseUrlencoded,function(req,res)
 
   {
               
-                updateproductattributecolumnname=`alter table productattribute change ${req.body.oldattributeName} ${req.body.name} varchar(2000)`
+                updateproductattributecolumnname=`alter table productattribute change ${req.body.oldattributeName} ${req.body.attributeName} varchar(2000)`
                 con.query(updateproductattributecolumnname,(err,result)=>{
                   if(err) throw (err)
                   else
                   {
-                    updatecategoryvalueattribute=`UPDATE categoryattribute SET attributeName= '${req.body.name}' WHERE attributeId=${req.body. operationid} `
+                    updatecategoryvalueattribute=`UPDATE categoryattribute SET attributeName= '${req.body.attributeName}' WHERE attributeId=${req.body. operationid} `
                     con.query(updatecategoryvalueattribute,(err,result)=>{
                       if(err) throw (err)
                       else
                       {
-                        attributeUpdate=`UPDATE attribute SET attributeName='${req.body.name}', status= ${req.body.status} WHERE id=${req.body.operationid}`
+                        attributeUpdate=`UPDATE attribute SET attributeName='${req.body.attributeName}', status= ${req.body.status} WHERE id=${req.body.operationid}`
                         con.query(attributeUpdate,(err,result)=>{
                           if(err) throw (err);
                           else {
