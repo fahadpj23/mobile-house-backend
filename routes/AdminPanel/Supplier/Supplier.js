@@ -11,31 +11,32 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 const {check,validationResult}=require('express-validator');
 
 router.post('/SupplierAdd',
-[
-    check('name').notEmpty(),
-    check('phone').notEmpty(),
-    check('Address').notEmpty(),
-    check('Pincode').notEmpty(),
-    check('status').notEmpty(),
-],
+
 parseUrlencoded,(req,res)=>{
     const supplier=req.body
-    const error=validationResult(req);
-    if(error.errors.length!=0)
-          {
-         
-          return res.json({error:error.errors})
-          }
-    else
+    console.log(supplier)
+    if(supplier.operation=="")
     {
-        supplieraddquery=`insert into supplier (supplierName,phone,address,pincode,status)Values ('${supplier.name}','${supplier.phone}','${supplier.Address}','${supplier.Pincode}','${supplier.status=="active" ? 1 : 0}')`
+        supplieraddquery=`insert into supplier (supplierName,phone,address,pincode,status)Values ('${supplier.supplierName}','${supplier.phone}','${supplier.address}','${supplier.pincode}','${supplier.status}')`
         con.query(supplieraddquery,(err,result)=>{
             if(err) throw (err)
             else
             {
-                res.json({success:"supplier added"})
+                res.json({success:"supplier added successfully"})
             }
         })
+    }
+    else
+    {
+        suppliereditquery=`update supplier set supplierName='${supplier.supplierName}',phone='${supplier.phone}',address='${supplier.address}',pincode='${supplier.pincode}',status='${supplier.status}' where id='${supplier.operationid}'`
+        console.log(suppliereditquery)
+        con.query(suppliereditquery,(err,result)=>{
+            if(err) throw (err)
+            else
+            {
+                res.json({success:"supplier edited successfully"})
+            }
+        }) 
     }
 
 })
