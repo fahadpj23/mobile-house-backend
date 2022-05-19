@@ -9,25 +9,16 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 const {check,validationResult}=require('express-validator');
 
 router.post('/attributeAdd',
-[
-  check('name').notEmpty(),
-  check('status').notEmpty(),
-],
+
 parseUrlencoded,function(req,res)
 {
+  console.log(req.body)
  //check attribute update or add
   if(req.body.operation=="")
   {
-  const{name,status}=req.body
-  const error=validationResult(req);
-  if(error.errors.length!=0)
-        {
-           
-        return res.json({error:error.errors})
-        }
-  else
-  {
-    searchqr=`select Count(*) as  count from attribute where attributeName='${req.body.name}'`
+ 
+    //check attribute name already exist or not when add new attribute
+    searchqr=`select Count(*) as  count from attribute where attributeName='${req.body.attributeName}'`
 
     con.query(searchqr,(err,result)=>{
       if(result[0].count>0)
@@ -36,17 +27,20 @@ parseUrlencoded,function(req,res)
       }
       else
       {
-        columninsert=`Alter table productattribute add ${req.body.name} varchar(255)`
+        //add new column to product attribute  table
+        columninsert=`Alter table productattribute add ${req.body.attributeName} varchar(500)`
         con.query(columninsert,(err,result,fields)=>
         {
         
         if(err) throw(err);
         })
-        addattribute=`insert into attribute (attributeName,status) values ('${req.body.name}','${req.body.status}')`
+        //add attribute in to attribute table
+        addattribute=`insert into attribute (attributeName,status) values ('${req.body.attributeName}','${req.body.status}')`
   
         con.query(addattribute,(err,result)=>{
           if(err) throw (err);
           else {
+            // loop the attributes and add to attribute value table one by one
             if(JSON.parse(req.body.attributevalues).length!=0)
             {
                 let insertvalues=""
@@ -60,6 +54,7 @@ parseUrlencoded,function(req,res)
                     insertvalues=insertvalues+("("+ "'"  +result.insertId + "'" +  ","   + "'" +item + "'"+ ")" )
                   }
                 })
+                // query for add attribute value to attribute value table
                 valueaddquery=`insert into attributevalue (attributeid,value) values ${insertvalues}`
         
                 con.query(valueaddquery,(err,result)=>{ 
@@ -70,34 +65,41 @@ parseUrlencoded,function(req,res)
                   }
                 })
             }
+            else
+            {
+              res.json({"success":"Attribute added successfully"})
+            }
           }
         })
       }
     })
     
   }
-  }
+  
 
   else
 
   {
-              
+              //if operation value not null then it will be edit.query for update  product attribute column name if attribute name change.here always update 
                 updateproductattributecolumnname=`alter table productattribute change ${req.body.oldattributeName} ${req.body.attributeName} varchar(2000)`
                 con.query(updateproductattributecolumnname,(err,result)=>{
                   if(err) throw (err)
                   else
                   {
+                    // update catgeoryattribute value table  attributename using attribute id
                     updatecategoryvalueattribute=`UPDATE categoryattribute SET attributeName= '${req.body.attributeName}' WHERE attributeId=${req.body. operationid} `
                     con.query(updatecategoryvalueattribute,(err,result)=>{
                       if(err) throw (err)
                       else
                       {
-                        attributeUpdate=`UPDATE attribute SET attributeName='${req.body.attributeName}', status= ${req.body.status} WHERE id=${req.body.operationid}`
+                        //update attribute table using data
+                        attributeUpdate=`UPDATE attribute SET attributeName='${req.body.attributeName}', status= '${req.body.status}' WHERE id=${req.body.operationid}`
                         con.query(attributeUpdate,(err,result)=>{
                           if(err) throw (err);
                           else {
                             if(JSON.parse(req.body.attributevalues).length!=0)
                             {
+                              //deleet all value from attribute value table.here delet all value and reinsert 
                              deletequery=`DELETE FROM attributevalue WHERE attributeid=${req.body.operationid}`
                              con.query(deletequery,(err,result)=>{
                                if(err) throw (err)
@@ -114,6 +116,7 @@ parseUrlencoded,function(req,res)
                                     insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" )
                                   }
                                 })
+                                //attribute value table value change
                                 valueaddquery=`insert into attributevalue (attributeid,value) values ${insertvalues}`
                       
                                 con.query(valueaddquery,(err,result)=>{ 

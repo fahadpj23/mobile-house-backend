@@ -18,7 +18,7 @@ router.post('/HSNcodePost',parseUrlencoded,(req,res)=>{
     }
     else
     {
-        HsnInsert=`insert into hsn (HSN,product,cgst,sgst,igst,status) Values('${HSN_Code}','${Product}','${CGST}','${SGST}','${IGST}','${status=="active" ? 1 : 0}') `
+        HsnInsert=`insert into hsn (HSN_Code,product,cgst,sgst,igst,status) Values('${HSN_Code}','${Product}','${CGST}','${SGST}','${IGST}','${status=="active" ? 1 : 0}') `
         con.query(HsnInsert,(err,result)=>{
          if(err) throw(err)
          else

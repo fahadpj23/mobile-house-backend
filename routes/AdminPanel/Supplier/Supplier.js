@@ -18,6 +18,7 @@ parseUrlencoded,(req,res)=>{
     if(supplier.operation=="")
     {
         supplieraddquery=`insert into supplier (supplierName,phone,address,pincode,status)Values ('${supplier.supplierName}','${supplier.phone}','${supplier.address}','${supplier.pincode}','${supplier.status}')`
+        console.log(supplieraddquery)
         con.query(supplieraddquery,(err,result)=>{
             if(err) throw (err)
             else
