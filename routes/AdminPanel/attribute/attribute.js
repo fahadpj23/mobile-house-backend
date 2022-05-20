@@ -12,7 +12,7 @@ router.post('/attributeAdd',
 
 parseUrlencoded,function(req,res)
 {
-  console.log(req.body)
+
  //check attribute update or add
   if(req.body.operation=="")
   {
@@ -99,33 +99,54 @@ parseUrlencoded,function(req,res)
                           else {
                             if(JSON.parse(req.body.attributevalues).length!=0)
                             {
-                              //deleet all value from attribute value table.here delet all value and reinsert 
-                             deletequery=`DELETE FROM attributevalue WHERE attributeid=${req.body.operationid}`
-                             con.query(deletequery,(err,result)=>{
+                            let attributevalues=JSON.parse(req.body.attributevalues)
+                             getattribute=`select * from attributevalue WHERE attributeId=${req.body.operationid}`
+                             con.query(getattribute,(err,result3)=>{
                                if(err) throw (err)
                                else
                                {
-                                let insertvalues=""
-                                JSON.parse(req.body.attributevalues).map((item,key)=>{
-                                  if(JSON.parse(req.body.attributevalues).length!= key+1)
-                                  {
-                                  insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" + ",")
-                                  }
-                                  else
-                                  {
-                                    insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" )
-                                  }
-                                })
-                                //attribute value table value change
-                                valueaddquery=`insert into attributevalue (attributeid,value) values ${insertvalues}`
-                      
-                                con.query(valueaddquery,(err,result)=>{ 
-                                  if(err) throw (err)
-                                  else
-                                  {
-                                    res.json({"success":"Attribute updated successfully"})
-                                  }
-                                })
+                                 Object.values(result3).map((item,key)=>{
+                                    if(attributevalues.includes(item.value)==false)
+                                    {
+                                      deletequery=`delete from attributevalue where id='${item.id}' `
+                                      con.query(deletequery,(err,result)=>{
+                                        if(err ) throw (err)
+                                      })
+                                    }
+                                 })
+                                 attributevalues.map((item,key)=>{
+                                  insertValueQuery=`insert into attributevalue (attributeid,value) SELECT '${req.body.operationid}', '${item}' WHERE 0 = (SELECT COUNT(*) from attributevalue where value='${item}' )`
+                                  console.log(insertValueQuery)              
+                                  con.query(insertValueQuery,(err,result)=>{ 
+                                                  if(err) throw (err)
+                                                  else
+                                                  {
+                                                    if(attributevalues.length==key+1)
+                                                    res.json({"success":"Attribute updated successfully"})
+                                                  }
+                                                })
+                                 })
+                                // let insertvalues=""
+                                // JSON.parse(req.body.attributevalues).map((item,key)=>{
+                                //   if(JSON.parse(req.body.attributevalues).length!= key+1)
+                                //   {
+                                //   insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" + ",")
+                                //   }
+                                //   else
+                                //   {
+                                //     insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" )
+                                //   }
+                                // })
+                              
+                                // valueaddquery=`insert into attributevalue (attributeid,value) values ${insertvalues}`
+                                // console.log(valueaddquery)
+                                // con.query(valueaddquery,(err,result)=>{ 
+                                //   if(err) throw (err)
+                                //   else
+                                //   {
+                                //     res.json({"success":"Attribute updated successfully"})
+                                //   }
+                                // })
                                }
                              })
                                 
@@ -157,7 +178,7 @@ router.get('/getattribute',function(req,res){
       if(err) throw (err)
       else
       {
-        console.log(result)
+       
         result.map((item,key)=>{
           getattvalues=`select value from attributevalue where attributeid=${item.id}`
           con.query(getattvalues,(err1,result1)=>{
