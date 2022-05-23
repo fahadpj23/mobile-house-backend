@@ -159,12 +159,12 @@ router.get('/getcategoryAttribute',function(req,res){
 
 router.get('/getProduct',(req,res)=>{
 
-    getProduct=`select * from products`
+    getProduct=`select name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName from products`
     con.query(getProduct,(err,result)=>{
        if(err) throw (err)
        else
       {
-       let tablehead=['SlNo','name','purchasePrice','sellingPrice','salesPrice','mrp','Brand','category']
+       let tablehead=['SlNo','name','purchasePrice','sellingPrice','salesPrice','mrp','Brand','categoryName']
        res.json({ "Data":result,"TableHead":tablehead })
       }
     })
