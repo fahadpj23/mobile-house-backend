@@ -3,29 +3,35 @@ var bodyParser=require("body-parser");
 var jsonParser=bodyParser.json();
 const router = express.Router()
 const con=require('../../../database');
-const validateToken=require("../../../middlewares/authmiddelware")
+const validateToken=require("../../../middlewares/authmiddelware");
+const { parse } = require('express-form-data');
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 
 
 router.post("/productAdd",parseUrlencoded,function(req,res){
+
+
+  const productimage=(fi)=>{
+    file.mv(`products/images/${fi.name}`)
+  }
   let product=req.body
-  console.log(product)
+console.log(product)
   if(req.body.operation=="" || req.body.operation=="variant" )
   { 
  
            
-            if(req.files)
-            {
-            const file=req.files.image
-            file.mv(`products/images/${file.name}`)
-            addqr=`insert into products (  name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty, image, Brand,qty ,HSN,Tax,category,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.HSN}','${product.Tax}','${product.categoryid}','${product.operationid}')`;
-            }
-            else
-            {
+            // if(req.files)
+            // {
+            // const file=req.files.image
+            // file.mv(`products/images/${file.name}`)
+            addqr=`insert into products (  name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty,  Brand,qty ,HSN,Tax,category,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${product.Brand}','${product.qty}','${product.HSN}','${product.Tax}','${product.categoryid}','${product.operationid}')`;
+            // }
+            // else
+            // {
              
-              addqr=`insert into products (  name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty, image, Brand,qty ,HSN,Tax,category,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${product.variantimage}','${product.Brand}','${product.qty}','${product.HSN}','${product.Tax}','${product.categoryid}','${product.operationid}')`;
+            //   addqr=`insert into products (  name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty, image, Brand,qty ,HSN,Tax,category,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${product.variantimage}','${product.Brand}','${product.qty}','${product.HSN}','${product.Tax}','${product.categoryid}','${product.operationid}')`;
          
-            }
+            // }
             let columnarray=[]
             let columnvalue=[]
 
@@ -40,6 +46,34 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
               if(product.operationid=="")
               {
                 console.log(result.insertId)
+                let images=JSON.parse(product.productImage)
+               
+                 const file1=req.files.image1
+                 const file2=req.files.image2
+                 const file3=req.files.image3
+                 const file4=req.files.image4
+                 const file5=req.files.image5
+                 if(file1!=undefined)
+                 {
+                   productimage(file1)
+                 }
+                 if(file2!=undefined)
+                 {
+                   productimage(file2)
+                 }
+                 if(file3!=undefined)
+                 {
+                   productimage(file3)
+                 }
+                 if(file4!=undefined)
+                 {
+                   productimage(file4)
+                 }
+                 if(file5!=undefined)
+                 {
+                   productimage(file5)
+                 }
+             
                 variantupdate=`UPDATE products SET variantid="${result.insertId}" WHERE id="${result.insertId}" ` 
                 con.query(variantupdate,(err1,result1)=>
                 {
@@ -159,7 +193,7 @@ router.get('/getcategoryAttribute',function(req,res){
 
 router.get('/getProduct',(req,res)=>{
 
-    getProduct=`select name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName from products`
+    getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName from products`
     con.query(getProduct,(err,result)=>{
        if(err) throw (err)
        else
