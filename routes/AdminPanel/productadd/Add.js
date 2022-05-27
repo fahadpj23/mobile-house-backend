@@ -11,27 +11,23 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 router.post("/productAdd",parseUrlencoded,function(req,res){
 
 
-  const productimage=(fi)=>{
-    file.mv(`products/images/${fi.name}`)
+  const productimage=(file,dbid)=>{
+   
+    file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
+    imageaddqr=`insert into productimage (productId,image) values (${dbid},'${Math.round(new Date().getTime()/1000)}${file.name}')`
+    con.query(imageaddqr,(err,result)=>{
+      if(err)throw (err)
+    })
   }
   let product=req.body
 console.log(product)
   if(req.body.operation=="" || req.body.operation=="variant" )
   { 
  
+    console.log("dsdsd")
            
-            // if(req.files)
-            // {
-            // const file=req.files.image
-            // file.mv(`products/images/${file.name}`)
             addqr=`insert into products (  name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty,  Brand,qty ,HSN,Tax,category,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${product.Brand}','${product.qty}','${product.HSN}','${product.Tax}','${product.categoryid}','${product.operationid}')`;
-            // }
-            // else
-            // {
-             
-            //   addqr=`insert into products (  name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty, image, Brand,qty ,HSN,Tax,category,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${product.variantimage}','${product.Brand}','${product.qty}','${product.HSN}','${product.Tax}','${product.categoryid}','${product.operationid}')`;
-         
-            // }
+          
             let columnarray=[]
             let columnvalue=[]
 
@@ -42,38 +38,18 @@ console.log(product)
               if(err) throw (err);
             else 
             {
+              let images=JSON.parse(product.productImage)
+              for(let i=0;i<=5;i++)
+              {
+                let image=req.files["image"+(i)]
+                console.log(image)
+               image && productimage(image,result.insertId)
+              }
+              
              
               if(product.operationid=="")
               {
-                console.log(result.insertId)
-                let images=JSON.parse(product.productImage)
                
-                 const file1=req.files.image1
-                 const file2=req.files.image2
-                 const file3=req.files.image3
-                 const file4=req.files.image4
-                 const file5=req.files.image5
-                 if(file1!=undefined)
-                 {
-                   productimage(file1)
-                 }
-                 if(file2!=undefined)
-                 {
-                   productimage(file2)
-                 }
-                 if(file3!=undefined)
-                 {
-                   productimage(file3)
-                 }
-                 if(file4!=undefined)
-                 {
-                   productimage(file4)
-                 }
-                 if(file5!=undefined)
-                 {
-                   productimage(file5)
-                 }
-             
                 variantupdate=`UPDATE products SET variantid="${result.insertId}" WHERE id="${result.insertId}" ` 
                 con.query(variantupdate,(err1,result1)=>
                 {
@@ -81,8 +57,17 @@ console.log(product)
                 })
 
               }
-              // addqr=`insert into products (  name,  price, mrp ,warranty, image, Brand,qty ,category) values ('${product.Name}','${product.Price}','${product.MRP}','${product.Warranty}','${file.name}','${product.Brand}','${product.qty}','${product.category}')`;
-              // columnfetch=`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = "${product.category}";`
+              else
+              {
+                variantupdate=`UPDATE products SET variantid="${operationid}" WHERE id="${result.insertId}" ` 
+                con.query(variantupdate,(err1,result1)=>
+                {
+                  if(err1) throw (err1)
+                })
+                
+              }
+            
+              //select catgeory attribute and add priduct attribute to that catgeory attribute
               categoryattribute=`select * from categoryattribute where  categoryId="${product.categoryid}"`
               con.query(categoryattribute,(err,result1)=>{
                 if(err) throw (err)
@@ -92,10 +77,11 @@ console.log(product)
                 result1.map((item,key)=>{
                   columnarray.push(item.attributeName)
                   
-                    columnvalue.push("'"+product[item.attributeName]+"'")
+                    columnvalue.push(""+product[item.attributeName]+"")
                 
                   
                 })
+              
                 insertquery=`insert into productattribute (id,${columnarray}) values ('${result.insertId}',${columnvalue})`
                
                 con.query(insertquery,(err,result)=>{
@@ -206,7 +192,7 @@ router.get('/getProduct',(req,res)=>{
 })
 router.get('/productdetails',(req,res)=>{
 
-  getProduct=`select * from products  where id=${req.query.productId}`
+  getProduct=`select * from products  where id=${req.query.productId} innerjoin  productimage where id=${req.query.productId} `
     con.query(getProduct,(err,result)=>{
        if(err) throw (err)
        else
