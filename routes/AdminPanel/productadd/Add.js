@@ -43,8 +43,8 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
    
   }
   let product=req.body
-  let imageblob=JSON.parse(product.productImageblob)
-  let images=JSON.parse(product.productImage)
+  let imageblob=JSON.parse(req.body.productImageblob)
+ 
 
   
   if(req.body.operation=="" || req.body.operation=="variant" )
@@ -68,14 +68,13 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
               
               for(let i=1;i<=5;i++)
               {
-              
-               
+                if(imageblob[i-1])
+                {
                 
                   let image=req.files["image"+(i)] 
-                  console.log(req.files["image"+(i)])
-                  image && productimage(image,result.insertId,i)
-                 
-                
+                  console.log(image)
+                  image && productimage(image,result.insertId,i )
+                }
                 
               }
               
@@ -101,27 +100,23 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
               }
             
               //select catgeory attribute and add priduct attribute to that catgeory attribute
-              categoryattribute=`select * from categoryattribute where  categoryId="${product.categoryid}"`
+              categoryattribute=`select *  from categoryattribute where  categoryId="${product.categoryid}"`
+              console.log(categoryattribute)
               con.query(categoryattribute,(err,result1)=>{
                 if(err) throw (err)
                 else
                 {
-              
-                result1.map((item,key)=>{
-                  columnarray.push(item.attributeName)
+                  Object.values(result1).map((item,key)=>{
+                    console.log(product[item.attributeId])
+                    insertproductattributequery=`insert into productattribute (productid,attributeId,attributeValueId) values (${result.insertId},${item.attributeId},${product[item.attributeId]})`
+                    con.query(insertproductattributequery,(err,result)=>{
+                      if(err) throw (err)
+                      else
+                      if(Object.values(result1).length==key+1)
+                        res.json({"success":"success"})
+                    })
+                  })
                   
-                    columnvalue.push(""+product[item.attributeName]+"")
-                
-                  
-                })
-              
-                insertquery=`insert into productattribute (id,${columnarray}) values ('${result.insertId}',${columnvalue})`
-               
-                con.query(insertquery,(err,result)=>{
-                  if(err) throw (err)
-                  else
-                    res.json({"success":"success"})
-                })
                 }
               
               })
@@ -153,35 +148,32 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
         // console.log(req.files.image2 )
         // console.log("sfgdfgh")
        
-       
+        if(imageblob[i-1])
+        {
         
           let image=req.files["image"+(i)] 
           console.log(image)
           image && productimage(image,product.operationid,i )
+        }
         
       }
-      categoryattribute=`select * from categoryattribute where  categoryId="${product.categoryid}"`
+      categoryattribute=`select *  from categoryattribute where  categoryId="${product.categoryid}"`
+      console.log(categoryattribute)
       con.query(categoryattribute,(err,result1)=>{
         if(err) throw (err)
         else
         {
-      
-        result1.map((item,key)=>{
-          let updatequ=item.attributeName+ "="+ "'" +product[item.attributeName] + "'"
-          columnarray.push(updatequ)
+          Object.values(result1).map((item,key)=>{
+            console.log(product[item.attributeId])
+            insertproductattributequery=`UPDATE productattribute SET attributeValueId=${product[item.attributeId]} where productid=${product.operationid} and attributeId=${item.attributeId}`
+            con.query(insertproductattributequery,(err,result)=>{
+              if(err) throw (err)
+              else
+              if(Object.values(result1).length==key+1)
+                res.json({"success":"success"})
+            })
+          })
           
-           
-        
-          
-        })
-        
-        insertquery=`UPDATE productattribute SET  ${columnarray.toString()} where id='${product.operationid}'`
-       
-        con.query(insertquery,(err,result)=>{
-          if(err) throw (err)
-          else
-            res.json({"success":"success"})
-        })
         }
       
       })
@@ -239,27 +231,33 @@ router.get('/productdetails',(req,res)=>{
        if(err) throw (err)
        else
       {
-        getProduct=`select * from productattribute  where id=${req.query.productId}`
+        getProduct=`select * from productattribute  where productid=${req.query.productId}`
+        
         con.query(getProduct,(err1,result1)=>{
            if(err) throw (err)
            else
           {
            
-           Object.entries(result1[0]).map((item,key)=>{
-            if(item[1]!=null)
-            {
-              result[0][item[0]]=item[1]
-            }
+           Object.values(result1).map((item,key)=>{
+            //  console.log([item[1].attributeId])
+            //  console.log([item[1].attributeValueId])
+           
+          
+               result[0][item.attributeId]=item.attributeValueId
+               console.log(result)
+          //   }
               
             
-               if(Object.entries(result1[0]).length ==  +key+1 )
+               if(Object.values(result1).length ==  +key+1 )
                {
-                 res.send(result[0])
+                res.send(result[0])
                }
+            
+               })
              
             
              
-           })
+           
           }
         })
       }
