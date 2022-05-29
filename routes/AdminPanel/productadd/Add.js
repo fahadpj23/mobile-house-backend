@@ -11,21 +11,46 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 router.post("/productAdd",parseUrlencoded,function(req,res){
 
 
-  const productimage=(file,dbid)=>{
+  const productimage=(file,dbid,imgposition)=>{
+  
+    imageIsOrNotInDb=`select COUNT(*) as count from productimage where productId='${dbid}' and imageposition='${imgposition}'`
    
-    file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
-    imageaddqr=`insert into productimage (productId,image) values (${dbid},'${Math.round(new Date().getTime()/1000)}${file.name}')`
-    console.log(imageaddqr)
-    con.query(imageaddqr,(err,result)=>{
-      if(err)throw (err)
+    con.query(imageIsOrNotInDb,(err,result)=>{
+      if(err) throw (err)
+      else
+      {
+       
+       if(result[0].count==0)
+       {
+        file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
+        imageaddqr=`insert into productimage (productId,imagePosition,image) values (${dbid},'${imgposition}','${Math.round(new Date().getTime()/1000)}${file.name}')`
+       
+        con.query(imageaddqr,(err,result)=>{
+          if(err)throw (err)
+        })
+       }
+       else
+       {
+        file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
+        updateImage=`UPDATE  productimage set image='${Math.round(new Date().getTime()/1000)}${file.name}' where imagePosition='${imgposition}' and productId=${dbid}`
+        console.log(updateImage)
+        con.query(updateImage,(err,result)=>{
+          if(err)throw (err)
+        })
+       }
+      }
     })
+   
   }
   let product=req.body
+  let imageblob=JSON.parse(product.productImageblob)
+  let images=JSON.parse(product.productImage)
 
+  
   if(req.body.operation=="" || req.body.operation=="variant" )
   { 
  
- 
+
            
             addqr=`insert into products (  name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty,  Brand,qty ,HSN,Tax,category,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${product.Brand}','${product.qty}','${product.HSN}','${product.Tax}','${product.categoryid}','${product.operationid}')`;
           
@@ -39,27 +64,19 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
               if(err) throw (err);
             else 
             {
-              let imageblob=JSON.parse(product.productImageblob)
+             
               
-              for(let i=0;i<=5;i++)
+              for(let i=1;i<=5;i++)
               {
+              
                
-                if(imageblob[i])
-                {
-                 if(i==0)
-                 {
-                  let image=req.files.image
-                  console.log(image)
-                  image && productimage(image,result.insertId)
-                 }
-                 else
-                 {
-                  let image=req.files["image"+(i)] 
-                  console.log(i)
-                  image && productimage(image,result.insertId)
-                 }
                 
-                }
+                  let image=req.files["image"+(i)] 
+                  console.log(req.files["image"+(i)])
+                  image && productimage(image,result.insertId,i)
+                 
+                
+                
               }
               
              
@@ -114,7 +131,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
   }
   else
   {
-    console.log(product)
+  
     let columnarray=[]
     let columnvalue=[]
  
@@ -127,26 +144,21 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
     {
     
     
-      for(let i=0;i<=5;i++)
+      for(let i=1;i<=5;i++)
       {
-
-        if(imageblob[i])
-        {
-   
-         if(i==0)
-         {
-          let image=req.files.image
-         
-          image && productimage(image,result.insertId)
-         }
-         else
-         {
+        // console.log("dsdsdsd")
+        // console.log(imageblob[i])
+        // console.log(i)
+        // console.log("image"+(i))
+        // console.log(req.files.image2 )
+        // console.log("sfgdfgh")
+       
+       
+        
           let image=req.files["image"+(i)] 
+          console.log(image)
+          image && productimage(image,product.operationid,i )
         
-          image && productimage(image,result.insertId)
-         }
-        
-        }
       }
       categoryattribute=`select * from categoryattribute where  categoryId="${product.categoryid}"`
       con.query(categoryattribute,(err,result1)=>{
