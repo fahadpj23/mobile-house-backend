@@ -1,6 +1,19 @@
 const express=require('express')
 const router = express.Router()
 const con=require('../database')
+
+
+router.get('/HomePageCategory',function(req,res){
+ 
+    getatt='select * from category where status=1'
+    con.query(getatt,(err,result)=>{
+      if(err) throw (err)
+      else
+      { 
+           res.json({category:result})
+      }
+    })
+})
 router.get("/getcover",function(req,res)
 {
  con.query("SELECT * FROM products WHERE category='46' ",(err,result,fields)=>{

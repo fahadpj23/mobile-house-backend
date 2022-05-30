@@ -7,7 +7,27 @@ var jsonParser=bodyParser.json();
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 const {check,validationResult}=require('express-validator');
 
-
+router.delete('/CategoryDelete',function(req,res){
+  console.log(req.query)
+  deleteCategory=`delete from category where id="${req.query.categoryId}" `
+  console.log(deleteCategory)
+  con.query(deleteCategory,(err,result)=>{
+    if(err) throw (err)
+    else
+    {
+      deleteCategoryattribute=`delete from categoryattribute where categoryId="${req.query.categoryId}" `
+      console.log(deleteCategory)
+      con.query(deleteCategoryattribute,(err,result)=>{
+        if(err) throw (err)
+        else
+        {
+          res.json({"success":"catgeory deleted successfully"})
+        }
+      })
+    }
+  })
+  
+})
 router.get('/getCategory',validateToken,function(req,res){
  
 
