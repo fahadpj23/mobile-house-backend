@@ -44,7 +44,7 @@ router.get('/getCategory',validateToken,function(req,res){
       
        
        
-        itemmodel.push({id:category.id,categoryName:category.categoryName,status:category.status,values:categoryval})
+        itemmodel.push({id:category.id,categoryName:category.categoryName,image:category.image,status:category.status,values:categoryval})
         if(itemmodel.length==length)
         {
           let tablehead=['SlNo','categoryName','status','values']
@@ -59,24 +59,12 @@ router.get('/getCategory',validateToken,function(req,res){
    
  })
 
-    router.post("/categoryAdd",
-    [
-        check('name').notEmpty(),
-        check('status').notEmpty(),
-        
-      ],
-    parseUrlencoded,(req,res)=>
+    router.post("/categoryAdd", parseUrlencoded,(req,res)=>
     {
       if(req.body.operation=="")
       {
-        const error=validationResult(req);
-        if(error.errors.length!=0)
-        {
-           
-        return res.json({error:error.errors})
-        }
-        else
-        {
+            let file=req.files.image
+            file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
             searchqr=`select Count(*) as  count from category where categoryName='${req.body.categoryName}'`
 
                 con.query(searchqr,(err,result)=>{
@@ -90,22 +78,14 @@ router.get('/getCategory',validateToken,function(req,res){
                     const{name,status}=req.body
                     let attribute=JSON.parse(req.body.categoryvalues)
                    
-                    addcatgeory=`insert into category (categoryName,status) values ('${req.body.categoryName}','${req.body.status}')`
+                    addcatgeory=`insert into category (categoryName,image,status) values ('${req.body.categoryName}','${Math.round(new Date().getTime()/1000)}${file.name}','${req.body.status}')`
                    con.query(addcatgeory,(err,result1)=>{
                            if(err) throw (err);
                             else
                               {
-                              // createtable=`create table ${req.body.categoryName}(id int) `
-                              // con.query(createtable,(err1,result1)=>{
-                              //     if(err) throw (err)
-                              // })
+                              
                                 Object.values(attribute).length>0 &&  Object.values(attribute).map((item,key)=>{
-                                    // columninsert=`Alter table ${req.body.categoryName} add ${item} varchar(255)`
-                                    // con.query(columninsert,(err,result,fields)=>
-                                    // {
-                                    
-                                    // if(err) throw(err);
-                                    // })
+                                  
                                     con.query(`select * from  attribute where attributeName='${item}'`,(err,result,fields)=>
                                     {
                                     
@@ -138,14 +118,21 @@ router.get('/getCategory',validateToken,function(req,res){
             })                                                                           
                                                                                     
 
-        }
+        
       }
       else
       {
-        console.log("dsds")
-        console.log(req.body.operationid)
-        console.log(req.body.categoryvalues)
+        let file=req.files.image
+        file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
+        if( file)
+        {
+          attributeUpdate=`UPDATE category SET categoryName='${req.body.categoryName}',image='${Math.round(new Date().getTime()/1000)}${file.name}' , status= ${req.body.status} WHERE id=${req.body.operationid}`
+
+        }
+        else
+        {
         attributeUpdate=`UPDATE category SET categoryName='${req.body.categoryName}', status= ${req.body.status} WHERE id=${req.body.operationid}`
+        }
         con.query(attributeUpdate,(err,result)=>{
           if(err) throw (err);
           else {
@@ -166,6 +153,7 @@ router.get('/getCategory',validateToken,function(req,res){
                       else
                       {
                         // console.log(item)
+                                 
                                   
                                   addcatgeoryattribute=`insert into categoryattribute (categoryId,attributeId,attributeName) values ('${req.body.operationid}','${ result[0].id}','${ result[0].attributeName}')`
                                   con.query(addcatgeoryattribute,(err,result)=>{

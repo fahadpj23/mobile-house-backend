@@ -28,12 +28,7 @@ parseUrlencoded,function(req,res)
       else
       {
         //add new column to product attribute  table
-        columninsert=`Alter table productattribute add ${req.body.attributeName} varchar(500)`
-        con.query(columninsert,(err,result,fields)=>
-        {
-        
-        if(err) throw(err);
-        })
+       
         //add attribute in to attribute table
         addattribute=`insert into attribute (attributeName,status) values ('${req.body.attributeName}','${req.body.status}')`
   
@@ -81,11 +76,7 @@ parseUrlencoded,function(req,res)
 
   {
               //if operation value not null then it will be edit.query for update  product attribute column name if attribute name change.here always update 
-                updateproductattributecolumnname=`alter table productattribute change ${req.body.oldattributeName} ${req.body.attributeName} varchar(2000)`
-                con.query(updateproductattributecolumnname,(err,result)=>{
-                  if(err) throw (err)
-                  else
-                  {
+               
                     // update catgeoryattribute value table  attributename using attribute id
                     updatecategoryvalueattribute=`UPDATE categoryattribute SET attributeName= '${req.body.attributeName}' WHERE attributeId=${req.body. operationid} `
                     con.query(updatecategoryvalueattribute,(err,result)=>{
@@ -126,27 +117,7 @@ parseUrlencoded,function(req,res)
                                                   }
                                                 })
                                  })
-                                // let insertvalues=""
-                                // JSON.parse(req.body.attributevalues).map((item,key)=>{
-                                //   if(JSON.parse(req.body.attributevalues).length!= key+1)
-                                //   {
-                                //   insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" + ",")
-                                //   }
-                                //   else
-                                //   {
-                                //     insertvalues=insertvalues+("("+ "'"  +req.body.operationid + "'" +  ","   + "'" +item + "'"+ ")" )
-                                //   }
-                                // })
-                              
-                                // valueaddquery=`insert into attributevalue (attributeid,value) values ${insertvalues}`
-                                // console.log(valueaddquery)
-                                // con.query(valueaddquery,(err,result)=>{ 
-                                //   if(err) throw (err)
-                                //   else
-                                //   {
-                                //     res.json({"success":"Attribute updated successfully"})
-                                //   }
-                                // })
+                                
                                }
                              })
                                 
@@ -155,11 +126,7 @@ parseUrlencoded,function(req,res)
                         
                         }) 
                       }
-                    })
-         
-                      }
-                    })
-
+                    })       
                              
   }
 })
