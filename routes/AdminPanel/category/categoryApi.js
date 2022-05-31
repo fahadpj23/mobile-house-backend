@@ -23,7 +23,7 @@ router.delete('/CategoryDelete',function(req,res){
         {
           res.json({"success":"catgeory deleted successfully"})
         }
-      })
+      })  
     }
   })
   
@@ -142,17 +142,22 @@ router.get('/getCategory',validateToken,function(req,res){
       }
       else
       {
-        let file=req.files.image
-        file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
-        if( file)
-        {
-          attributeUpdate=`UPDATE category SET categoryName='${req.body.categoryName}',image='${Math.round(new Date().getTime()/1000)}${file.name}' , status= ${req.body.status} WHERE id=${req.body.operationid}`
+        
+        
+        // let file=req.files.image
+       
+        // if( file)
+        // {
+      
+        //   file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
+        //   attributeUpdate=`UPDATE category SET categoryName='${req.body.categoryName}',image='${Math.round(new Date().getTime()/1000)}${file.name}' , status= ${req.body.status} WHERE id=${req.body.operationid}`
 
-        }
-        else
-        {
+        // }
+        // else
+        // {
+          
         attributeUpdate=`UPDATE category SET categoryName='${req.body.categoryName}', status= ${req.body.status} WHERE id=${req.body.operationid}`
-        }
+        // }
         con.query(attributeUpdate,(err,result)=>{
           if(err) throw (err);
           else {

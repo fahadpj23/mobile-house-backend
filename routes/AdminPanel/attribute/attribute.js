@@ -106,7 +106,7 @@ parseUrlencoded,function(req,res)
                                     }
                                  })
                                  attributevalues.map((item,key)=>{
-                                  insertValueQuery=`insert into attributevalue (attributeid,value) SELECT '${req.body.operationid}', '${item}' WHERE 0 = (SELECT COUNT(*) from attributevalue where value='${item}' )`
+                                  insertValueQuery=`insert into attributevalue (attributeid,value) SELECT '${req.body.operationid}', '${item}' WHERE 0 = (SELECT COUNT(*) from attributevalue where value='${item}' and attributeid=${req.body.operationid} )`
                                   console.log(insertValueQuery)              
                                   con.query(insertValueQuery,(err,result)=>{ 
                                                   if(err) throw (err)
