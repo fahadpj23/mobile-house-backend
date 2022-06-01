@@ -104,7 +104,7 @@ router.get('/getCategory',validateToken,function(req,res){
                             else
                               {
                               
-                                Object.values(attribute).length>0 &&  Object.values(attribute).map((item,key)=>{
+                                Object.values(attribute).length>0 ?  Object.values(attribute).map((item,key)=>{
                                   
                                     con.query(`select * from  attribute where attributeName='${item}'`,(err,result,fields)=>
                                     {
@@ -130,7 +130,9 @@ router.get('/getCategory',validateToken,function(req,res){
                             
                                     })
                                 })
-                            }
+                                :
+                                res.json({success:"success"})
+                             }
                             })
                             
 
@@ -143,21 +145,22 @@ router.get('/getCategory',validateToken,function(req,res){
       else
       {
         
-        
-        // let file=req.files.image
+        let file;
+        if(req.files)
+          file=req.files.image
        
-        // if( file)
-        // {
+        if( file)
+        {
       
-        //   file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
-        //   attributeUpdate=`UPDATE category SET categoryName='${req.body.categoryName}',image='${Math.round(new Date().getTime()/1000)}${file.name}' , status= ${req.body.status} WHERE id=${req.body.operationid}`
+          file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
+          attributeUpdate=`UPDATE category SET categoryName='${req.body.categoryName}',image='${Math.round(new Date().getTime()/1000)}${file.name}' , status= ${req.body.status} WHERE id=${req.body.operationid}`
 
-        // }
-        // else
-        // {
+        }
+        else
+        {
           
         attributeUpdate=`UPDATE category SET categoryName='${req.body.categoryName}', status= ${req.body.status} WHERE id=${req.body.operationid}`
-        // }
+         }
         con.query(attributeUpdate,(err,result)=>{
           if(err) throw (err);
           else {

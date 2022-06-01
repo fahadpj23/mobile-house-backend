@@ -7,66 +7,45 @@ const con=require('../database')
 //get the single product detail
 router.get("/singleview",function(req,res)
 {
-   let attributevalue=[];
-  
-    singleqr=`SELECT * FROM products  where products.id='${req.query.productId}'  `
-    console.log(singleqr)
-    con.query(singleqr,(err,result,fields)=>{
-    if(err)throw (err);
-    else
-    {
-       
-        copy=Object.assign(result[0])
-        singleproductattribute=`SELECT * FROM productattribute where id="${req.query.productId}" `  
-       
-        con.query(singleproductattribute,(err1,result1)=>{
+    let attributesarray=[];
+    getProduct=` SELECT *,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productId = ${req.query.productId}) as image from products where id=${req.query.productId}`
+    con.query(getProduct,(err,result)=>{
+       if(err) throw (err)
+       else
+      {
+        getProduct=`select * from productattribute  where productid=${req.query.productId}`
+        con.query(getProduct,(err1,result1)=>{
            if(err) throw (err)
            else
-           {
-              
+          {
            
-               Object.entries(result1[0]).map((item,key)=>{
-                   if(item[0]!="id" && item[1]!=null)
-                   {
-                   
-                       attributevalue.push(item)
-                      
-                       
-                   }
-                 
-                  
-                   
-               })
-               console.log(attributevalue)
-               attributevalue.map((item,key)=>{
-               
-                con.query(`select value from attributevalue where id=${item[1]}`,(err2,result2)=>{
+           Object.values(result1).map((item,key)=>{
+                    attributedetails=`select attributeName,( select value from attributevalue where id=${item.attributeValueId} ) as attributeval from attribute where id=${item.attributeId}`
+                        
+                    con.query(attributedetails,(err2,result2)=>{
                     if(err2) throw (err2)
                     else
-                    {
-                        console.log(result2)
-                        if(result2[0])
-                        {
-                            val={attributeId:item[1],attributeValue:result2[0].value}
+                    {  
+                        let att={[result2[0].attributeName]:{attributeId:item.attributeId,attributevalueId:item.attributeValueId,attributevalue:result2[0].attributeval}}
+                        attributesarray.push(att)
+                    }
+                    
+                    if(result1.length ==  key+1 )
+                    {   
+                      
                         
-                            result[0][item[0]]=val
-                            if(attributevalue.length== key+1)
-                            {
-                                res.send(result[0])
-                            }
-                        }
+                        result[0].attributes=attributesarray
+                        // console.log(result[0])
+                        res.json({"product":result[0]})
                     }
                })
+           
                })
-             
-               
-               
-           }
+
+          }
         })
-       
-    }
-    
-})
+      }
+    })
 
 })
 router.get("/pincodecheck",function(req,res)

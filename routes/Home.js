@@ -14,9 +14,9 @@ router.get('/HomePageCategory',function(req,res){
       }
     })
 })
-router.get("/getcover",function(req,res)
+router.get("/MobileHouseRecommend",function(req,res)
 {
- con.query("SELECT * FROM products WHERE category='46' ",(err,result,fields)=>{
+ con.query("SELECT *,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productimage.productId = products.id) as image from products ",(err,result,fields)=>{
      if(err) throw(err);
      else
      {
