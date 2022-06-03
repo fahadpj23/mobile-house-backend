@@ -35,7 +35,7 @@ router.get("/singleview",function(req,res)
                       
                         
                         result[0].attributes=attributesarray
-                        // console.log(result[0])
+                        /
                         res.json({"product":result[0]})
                     }
                })
@@ -69,58 +69,68 @@ router.get("/pincodecheck",function(req,res)
 })
 router.get("/variantproduct",function(req,res)
 {
-   
+    let attributesarray=[];
+    let variantproduct=[];
  variant=`select * from products where variantid='${req.query.variantid}'    `
+ console.log(variant)
  
- let variantproduct=[];
  con.query(variant,(err,result)=>{
     if(err) throw (err);
     else
     {
         result && Object.values(result).map((item,key)=>{
-            variantattribute=`select * from productattribute where id='${item.id}' `
-        con.query(variantattribute,(err1,result1)=>{
-            if(err1) throw (err1)
-            else
-            {
+            getProduct=` SELECT group_concat(concat_ws(',', image) separator '; ') as image FROM productimage WHERE productId = ${item.id} `
+            con.query(getProduct,(err,result1)=>{
+               if(err) throw (err)
+               else
+              {
 
-                //  console.log(result1[0])
+                result[key].image=result1[0].image
+                getProduct=`select * from productattribute  where productid=${item.id}`
                 
-           
-                    Object.entries(result1[0]).map((item1,key1)=>{
-                     
-                        attributevalue=`select value from attributevalue where id='${item1[1]}' `
-                        con.query(attributevalue,(err2,result2)=>{
+                con.query(getProduct,(err1,result2)=>{
+                   if(err) throw (err)
+                   else
+                  {
+                   
+                   Object.values(result2).map((item,key1)=>{
+                            attributedetails=`select attributeName,( select value from attributevalue where id=${item.attributeValueId} ) as attributeval from attribute where id=${item.attributeId}`
+                                
+                            con.query(attributedetails,(err2,result2)=>{
                             if(err2) throw (err2)
                             else
-                            {
-                               
-                              if(item1[0]!="id")
-                              {
-                                 result1[0][item1[0]]= {attributeId:item1[1],attributeValue:result2[0] ? result2[0].value :undefined}
-                                if( Object.entries(result1[0]).length== +key1 +1)
-                                {
-                                    
-                                    let val={...item,...result1[0]}
-                                    variantproduct.push(val)
-                                    if(Object.entries(result).length ==key+1)
-                                    {
-                                        res.send(variantproduct)
-                                    }
-                                }
-                               
-                              }
+                            {  
+                                let att={[result2[0].attributeName]:{attributeId:item.attributeId,attributevalueId:item.attributeValueId,attributevalue:result2[0].attributeval}}
+                                attributesarray.push(att)
+                                result[key].attributes=attributesarray
+                                console.log(result)
                             }
-                        })
-                       
-
-                    })
+                            
+                            if(result2.length ==  key1+1 )
+                            {   
+                              
+                                
+                                item.attributes=attributesarray
+                                if(Object.values(result).length==key+1)
+                                {
+                                    res.json({'variants':result})
+                                }
+                              
+                            }
+                       })
                    
-               
-            }
-        })
-        })
+                       })
         
+                  }
+                })
+              }
+             
+            })
+            console.log(Object.values(result).length)
+            console.log(key)
+           
+        })
+       
     
     }
 })
