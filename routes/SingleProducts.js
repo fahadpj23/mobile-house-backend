@@ -13,34 +13,18 @@ router.get("/singleview",function(req,res)
        if(err) throw (err)
        else
       {
-        getProduct=`select * from productattribute  where productid=${req.query.productId}`
-        con.query(getProduct,(err1,result1)=>{
+        productattribute=`select *,(select attributeName from attribute where productattribute.attributeId=attribute.id ) as attributeName ,(select value  from attributevalue where attributevalue.id=productattribute.attributeValueId ) as attributeValue from productattribute where productid=${req.query.productId}`
+        con.query(productattribute,(err1,result1)=>{
            if(err) throw (err)
            else
           {
            
-           Object.values(result1).map((item,key)=>{
-                    attributedetails=`select attributeName,( select value from attributevalue where id=${item.attributeValueId} ) as attributeval from attribute where id=${item.attributeId}`
-                        
-                    con.query(attributedetails,(err2,result2)=>{
-                    if(err2) throw (err2)
-                    else
-                    {  
-                        let att={[result2[0].attributeName]:{attributeId:item.attributeId,attributevalueId:item.attributeValueId,attributevalue:result2[0].attributeval}}
-                        attributesarray.push(att)
-                    }
+       
                     
-                    if(result1.length ==  key+1 )
-                    {   
-                      
-                        
-                        result[0].attributes=attributesarray
-                        
+                        console.log(result1)
+                        result[0].attributes=result1
                         res.json({"product":result[0]})
-                    }
-               })
-           
-               })
+                    
 
           }
         })
@@ -71,14 +55,15 @@ router.get("/variantproduct",function(req,res)
 {
     let attributesarray=[];
     let variantproduct=[];
-    variant=`select *,(SELECT group_concat(concat_ws(',', image) separator '; ') as image FROM productimage WHERE productimage.productId = products.id ) as image from products where variantid='${req.query.variantid}'   `
+    variant=`select id,category,(SELECT  image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products where variantid='${req.query.variantid}'  `
     con.query(variant,(err,result)=>{
     if(err) throw (err);
     else
     {
             Object.values(result).map((item,key)=>{
-                productattribute=`select *,(select attributeName from attribute where productattribute.attributeId=attribute.id ) as attributeName ,(select value  from attributevalue where attributevalue.id=productattribute.attributeValueId ) as attributeValue from productattribute where productid=${item.id}`
-               
+                
+                productattribute=`select *,(select attributeName from attribute where productattribute.attributeId=attribute.id   ) as attributeName ,(select value  from attributevalue where attributevalue.id=productattribute.attributeValueId ) as attributeValue from productattribute where productid=${item.id} and productattribute.attributeId=(select attributeId from categoryattribute where variant=1 and categoryId=${item.category} and categoryattribute.attributeId=productattribute.attributeId)  `
+          
                 con.query(productattribute,(err1,result1)=>{
                     if(err1) throw (err1)
                     else
@@ -87,7 +72,7 @@ router.get("/variantproduct",function(req,res)
                         
                         if( Object.values(result).length == key+1)
                         {
-                            res.send(result)
+                            res.json({variants:result})
                         }
                         
                     }
@@ -99,6 +84,14 @@ router.get("/variantproduct",function(req,res)
 })
 })
 
+router.get("/categoryVariant",function(req,res)
+{
+ categoryVariant=`select attributeId,(select attributeName from attribute where categoryattribute.attributeId=attribute.id ) as attributeName from categoryattribute where categoryId='${req.query.category}' and variant="1"`
+ con.query(categoryVariant,(err,result)=>{
+    if(err) throw (err);
+    else res.json({categoryVariant:result})
+})
+})
 
 router.get("/pincode",function(req,res)
 {

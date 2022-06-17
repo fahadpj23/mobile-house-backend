@@ -50,7 +50,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
               }
               
              
-              if(product.operationid=="")
+              if(product.variantid=="")
               {
                
                 variantupdate=`UPDATE products SET variantid="${result.insertId}" WHERE id="${result.insertId}" ` 
@@ -62,7 +62,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
               }
               else
               {
-                variantupdate=`UPDATE products SET variantid="${product.operationid}" WHERE id="${result.insertId}" ` 
+                variantupdate=`UPDATE products SET variantid="${product.variantid}" WHERE id="${result.insertId}" ` 
                 con.query(variantupdate,(err1,result1)=>
                 {
                   if(err1) throw (err1)
@@ -103,7 +103,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
     let columnvalue=[]
  
       addqr=`UPDATE products SET  name='${product.Name}' , purchasePrice='${product.purchasePrice}',sellingPrice='${product.sellingPrice}',salesPrice='${product.salesPrice}', mrp='${product.MRP}' ,warranty='${product.Warranty}',  Brand='${product.Brand}',qty='${product.qty}',HSN_Code='${product.HSN_Code}' ,Tax='${product.Tax}',category='${product.categoryid}' where id='${product.operationid}'`;
- 
+      console.log(addqr)
     con.query(addqr,(err,result)=>{
 
       if(err) throw (err);
