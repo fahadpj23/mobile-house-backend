@@ -8,15 +8,15 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 const {check,validationResult}=require('express-validator');
 
 router.delete('/CategoryDelete',function(req,res){
-  console.log(req.query)
+
   deleteCategory=`delete from category where id="${req.query.categoryId}" `
-  console.log(deleteCategory)
+
   con.query(deleteCategory,(err,result)=>{
     if(err) throw (err)
     else
     {
       deleteCategoryattribute=`delete from categoryattribute where categoryId="${req.query.categoryId}" `
-      console.log(deleteCategory)
+      
       con.query(deleteCategoryattribute,(err,result)=>{
         if(err) throw (err)
         else
@@ -28,6 +28,21 @@ router.delete('/CategoryDelete',function(req,res){
   })
   
 })
+
+ router.get('/getCategoryVariant',function(req,res){
+
+  categoryVariantfetch=`select attributeName from categoryattribute where categoryId=${req.query.categoryId} and  variant=1`
+  console.log(categoryVariantfetch)
+  con.query(categoryVariantfetch,(err,result)=>{
+    if(err) throw (err)
+    else
+    {
+      console.log(result)
+      res.json({categoryvariant:result})
+    }
+  })
+ })
+
 router.get('/getCategory',validateToken,function(req,res){
  
 
@@ -53,7 +68,7 @@ router.get('/getCategory',validateToken,function(req,res){
  
      function setcategory(category,categoryvalues,length)
      {
-      console.log(categoryvalues)
+    
        let categoryval=[];
       
        categoryvalues.map((item,key)=>{
@@ -97,6 +112,7 @@ router.get('/getCategory',validateToken,function(req,res){
                     let attributes=[];
                     const{name,status}=req.body
                     let attribute=JSON.parse(req.body.categoryvalues)
+                    let variants=JSON.parse(req.body.variantvalues)
                    
                     addcatgeory=`insert into category (categoryName,image,status) values ('${req.body.categoryName}','${Math.round(new Date().getTime()/1000)}${file.name}','${req.body.status}')`
                    con.query(addcatgeory,(err,result1)=>{
@@ -114,7 +130,7 @@ router.get('/getCategory',validateToken,function(req,res){
                                     {
                                 
                                             
-                                            addcatgeoryattribute=`insert into categoryattribute (categoryId,attributeId,attributeName) values ('${result1.insertId}','${ result[0].id}','${ result[0].attributeName}')`
+                                            addcatgeoryattribute=`insert into categoryattribute (categoryId,attributeId,attributeName,variant) values ('${result1.insertId}','${ result[0].id}','${ result[0].attributeName}','${variants.includes(result[0].attributeName)==true ? 1 : 0}')`
                                             con.query(addcatgeoryattribute,(err,result)=>{
                                                 if(err) throw (err);
                                                 else {
@@ -170,7 +186,7 @@ router.get('/getCategory',validateToken,function(req,res){
                if(err) throw (err)
                else
                {
-
+                let variants=JSON.parse(req.body.variantvalues)
 
                 JSON.parse(req.body.categoryvalues).length>0 &&  JSON.parse(req.body.categoryvalues).map((item,key)=>{
                       
@@ -183,7 +199,7 @@ router.get('/getCategory',validateToken,function(req,res){
                         // console.log(item)
                                  
                                   
-                                  addcatgeoryattribute=`insert into categoryattribute (categoryId,attributeId,attributeName) values ('${req.body.operationid}','${ result[0].id}','${ result[0].attributeName}')`
+                                  addcatgeoryattribute=`insert into categoryattribute (categoryId,attributeId,attributeName,variant) values ('${req.body.operationid}','${ result[0].id}','${ result[0].attributeName}','${variants.includes(result[0].attributeName)==true ? 1 : 0}')`
                                   con.query(addcatgeoryattribute,(err,result)=>{
                                       if(err) throw (err);
                                       else {
