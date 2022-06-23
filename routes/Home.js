@@ -26,26 +26,32 @@ router.get("/MobileHouseRecommend",function(req,res)
  }) 
  
 })
-router.get("/getheadset",function(req,res)
-{
- con.query("SELECT * FROM products WHERE category='47' ",(err,result,fields)=>{
-     if(err) throw(err);
-     else
-     {
-    
-       res.send(result)
-     }
- }) 
+
  
-})
-router.get("/getaccessories",function(req,res)
+
+
+router.get("/getProductSliders",function(req,res)
 {
- con.query("SELECT * FROM products WHERE category='48' ",(err,result,fields)=>{
+  let products=[];
+ con.query("SELECT * FROM head ",(err,result)=>{
      if(err) throw(err);
      else
      {
     
-       res.send(result)
+      result &&  result.map((item,key)=>{
+       
+        headproduct=`SELECT *,productid as id ,(SELECT name from products where products.id=headproduct.productid) as name, (SELECT sellingPrice from products where products.id=headproduct.productid) as sellingPrice, (SELECT salesPrice from products where products.id=headproduct.productid) as salesPrice ,(SELECT mrp from products where products.id=headproduct.productid) as mrp ,(SELECT variantid from products where products.id=headproduct.productid) as variantid ,(SELECT image from productimage where productimage.productId=headproduct.productid LIMIT 1) as image from headproduct where HeadId=${item.id};`
+        
+        con.query(headproduct,(err1,result1)=>{
+         
+            result[key].products=result1
+            if(result.length==key+1)
+            {
+              res.json({sliders:result})
+            }
+         
+        })
+       })
      }
  }) 
 })
@@ -58,7 +64,10 @@ router.get("/getphone",function(req,res)
      else
      {
     
-       res.send(result)
+       result[0].map((item,key)=>{
+        console.log("dsd")
+        console.log(item)
+       })
      }
  }) 
 })

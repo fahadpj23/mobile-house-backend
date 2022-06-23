@@ -9,7 +9,7 @@ router.get("/adminlogin",function(req,res)
  {
    
     searchqr=`SELECT * FROM admin  where username='${req.query.username}' `
-    console.log(req.query.password)
+   
     con.query(searchqr,(err,result,fields)=>{
 
       if(err) throw(err);

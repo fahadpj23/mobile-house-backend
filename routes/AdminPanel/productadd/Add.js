@@ -49,14 +49,15 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
                 }
                 else
                 {
-                  console.log("dfdffd")
-                  console.log(productImages[i-1])
-                  // file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${productImages[i-1]}`)
+                 
+                  if(productImages[i-1]!="")
+                  {
                   imageaddqr=`insert into productimage (productId,imagePosition,image) values (${result.insertId},'${i}','${productImages[i-1]}')`
                 
                   con.query(imageaddqr,(err,result)=>{
                     if(err)throw (err)
                   })
+                  }
                 }
                 
               }
@@ -131,7 +132,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
         {
         
           let image=req.files["image"+(i)] 
-          console.log(image)
+         
           image && productimage(image,product.operationid,i )
         }
        
@@ -165,7 +166,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
   const productimage=(file,dbid,imgposition)=>{
   
     imageIsOrNotInDb=`select COUNT(*) as count from productimage where productId='${dbid}' and imageposition='${imgposition}'`
-   
+    console.log(imageIsOrNotInDb)
     con.query(imageIsOrNotInDb,(err,result)=>{
       if(err) throw (err)
       else
@@ -184,7 +185,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
        {
         file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
         updateImage=`UPDATE  productimage set image='${Math.round(new Date().getTime()/1000)}${file.name}' where imagePosition='${imgposition}' and productId=${dbid}`
-       
+        console.log(updateImage)
         con.query(updateImage,(err,result)=>{
           if(err)throw (err)
         })

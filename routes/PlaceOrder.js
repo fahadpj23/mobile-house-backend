@@ -7,10 +7,10 @@ const {check,validationResult}=require('express-validator');
 
 router.get("/customerorderdetails",function(req,res)
  {
-    // console.log(req.query.searchitem)
+     console.log(req.query)
     
     // singleqr=`SELECT * FROM products where id="${req.query.productId}"`
-    singleqr=` SELECT * FROM products INNER JOIN productattribute ON products.id = productattribute.id where productattribute.id=${req.query.productId}  `
+    singleqr=`select *,(SELECT  image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products where id=${req.query.productId}  `
     con.query(singleqr,(err,result,fields)=>{
     if(err)throw (err);
     else
