@@ -33,7 +33,7 @@ router.get("/MobileHouseRecommend",function(req,res)
 router.get("/getProductSliders",function(req,res)
 {
   let products=[];
- con.query("SELECT * FROM head ",(err,result)=>{
+ con.query("SELECT * FROM head where status=1 ",(err,result)=>{
      if(err) throw(err);
      else
      {
@@ -57,17 +57,14 @@ router.get("/getProductSliders",function(req,res)
 })
 
 
-router.get("/getphone",function(req,res)
+router.get("/getBanner",function(req,res)
 {
- con.query("SELECT * FROM products WHERE category='49' ",(err,result,fields)=>{
+ con.query("SELECT * FROM banner  ",(err,result,fields)=>{
      if(err) throw(err);
      else
      {
     
-       result[0].map((item,key)=>{
-        console.log("dsd")
-        console.log(item)
-       })
+       res.json({banner:result})
      }
  }) 
 })

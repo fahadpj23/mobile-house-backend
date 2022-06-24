@@ -61,7 +61,7 @@ router.post('/headingAdd',parseUrlencoded,(req,res)=>{
     if(req.body.operation=="")
     {
         products=JSON.parse(req.body.products)
-        headAdd=`insert into head (Heading,NoProduct) Values ('${req.body.head}','${products.length}')`
+        headAdd=`insert into head (Heading,status,NoProduct) Values ('${req.body.head}','${req.body.status}','${products.length}')`
         console.log(headAdd)
         con.query(headAdd,(err,result)=>{
             if(err)throw (err)
@@ -89,7 +89,7 @@ router.post('/headingAdd',parseUrlencoded,(req,res)=>{
     {
         products=JSON.parse(req.body.products)
         console.log(products)
-        headAdd=`UPDATE head SET Heading='${req.body.head}', NoProduct='${products.length}' where id=${req.body.operationid}`
+        headAdd=`UPDATE head SET Heading='${req.body.head}',status=${req.body.status}, NoProduct='${products.length}' where id=${req.body.operationid}`
         
         con.query(headAdd,(err,result)=>{
             if(err)throw (err)
