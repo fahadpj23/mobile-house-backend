@@ -2,10 +2,13 @@ var express=require("express");
 var app=express();
 var cors=require("cors");
 const upload=require('express-fileupload')
+
 app.use(upload())
 app.use(cors());
+
 app.use(express.static('public')); 
 app.use('products/images', express.static('images'));
+
 const Homerouter=require('./routes/Home')
 const ProductListWebsite=require('./routes/ProductListWebsite')
 const SearchRouter=require('./routes/ProductSearch')
@@ -28,7 +31,7 @@ const Supplier=require('./routes/AdminPanel/Supplier/Supplier')
 const HSN=require('./routes/AdminPanel/HSN/HSN')
 const Heading=require('./routes/AdminPanel/Heading/Heading')
 const Banner=require('./routes/AdminPanel/Banner/Banner')
-app.use(express.static(path.join(__dirname, 'products')))
+ app.use(express.static(path.join(__dirname, 'products')))
 // app.use(ProductList)
 app.use(Homerouter)
 app.use(authentication)

@@ -17,4 +17,22 @@ router.get("/viewCategoryProduct",function(req,res)
   }) 
   
 })
+
+router.get("/viewSliderProduct",function(req,res)
+ {
+  
+
+          headEdit=`SELECT  (SELECT id from products where products.id=headproduct.productid) as id ,(SELECT name from products where products.id=headproduct.productid) as name, (SELECT sellingPrice from products where products.id=headproduct.productid) as sellingPrice, (SELECT salesPrice from products where products.id=headproduct.productid) as salesPrice ,(SELECT mrp from products where products.id=headproduct.productid) as mrp ,(SELECT variantid from products where products.id=headproduct.productid) as variantid ,(SELECT image from productimage where productimage.productId=headproduct.productid LIMIT 1) as image from headproduct where HeadId=${req.query.productCategory};`
+
+          con.query(headEdit,(err1,result1)=>{
+              if(err1)  throw (err1)
+              else
+              {
+                
+                 res.json({ headProduct: result1 })
+              }
+          })
+   
+
+})
 module.exports=router;
