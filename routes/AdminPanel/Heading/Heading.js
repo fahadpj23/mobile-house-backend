@@ -4,6 +4,7 @@ const router = express.Router()
 const con=require('../../../database')
 
 var bodyParser=require("body-parser");
+const validateToken = require('../../../middlewares/authmiddelware');
 var jsonParser=bodyParser.json();
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 
@@ -11,7 +12,7 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 
 
-router.get('/getHead',(req,res)=>{
+router.get('/getHead',validateToken,(req,res)=>{
     let Tablehead=[]
     con.query('select * from head',(err,result)=>{
         if(err)  throw (err)
@@ -24,7 +25,7 @@ router.get('/getHead',(req,res)=>{
         }
     })
 })
-router.get('/editGetHead',(req,res)=>{
+router.get('/editGetHead',validateToken,(req,res)=>{
     headdetails=`select * from head where id=${req.query.HeadingId}`
     con.query(headdetails,(err,result)=>{
         if(err)  throw (err)
@@ -47,7 +48,8 @@ router.get('/editGetHead',(req,res)=>{
    
 })
 
-router.get('/headProduct',(req,res)=>{
+router.get('/headProduct',validateToken,(req,res)=>{
+    console.log(req.query)
     con.query(`select id,name ,sellingprice,(SELECT  image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products where name LIKE '%${req.query.searchitem}%' `,(err,result)=>{
         if(err)throw (err)
         else
@@ -57,7 +59,7 @@ router.get('/headProduct',(req,res)=>{
     })
 })
 
-router.post('/headingAdd',parseUrlencoded,(req,res)=>{
+router.post('/headingAdd',validateToken,parseUrlencoded,(req,res)=>{
     if(req.body.operation=="")
     {
         products=JSON.parse(req.body.products)

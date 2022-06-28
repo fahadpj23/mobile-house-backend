@@ -8,7 +8,7 @@ const { parse } = require('express-form-data');
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 
 
-router.post("/productAdd",parseUrlencoded,function(req,res){
+router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
 
 
   
@@ -196,7 +196,7 @@ router.post("/productAdd",parseUrlencoded,function(req,res){
   }
 })
 
-router.get('/getcategoryAttribute',function(req,res){
+router.get('/getcategoryAttribute',validateToken,function(req,res){
   let attributevaluearray=[]
 
   categoryAttribute=`select * from categoryattribute where categoryId="${req.query.categoryid}"`
@@ -223,7 +223,7 @@ router.get('/getcategoryAttribute',function(req,res){
  
 })
 
-router.get('/getProduct',(req,res)=>{
+router.get('/getProduct',validateToken,(req,res)=>{
 
     getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName from products`
     con.query(getProduct,(err,result)=>{
@@ -236,7 +236,7 @@ router.get('/getProduct',(req,res)=>{
     })
 
 })
-router.get('/productdetails',(req,res)=>{
+router.get('/productdetails',validateToken,(req,res)=>{
 
   // getProduct=`select * from products  where id=${req.query.productId} innerjoin  productimage where id=${req.query.productId} `
   getProduct=` SELECT *,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productId = ${req.query.productId}) as image from products where id=${req.query.productId}`

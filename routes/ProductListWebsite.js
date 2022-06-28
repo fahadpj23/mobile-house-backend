@@ -35,4 +35,20 @@ router.get("/viewSliderProduct",function(req,res)
    
 
 })
+router.get("/viewBrandProduct",function(req,res)
+ { 
+  
+            console.log("fdd")
+          headEdit=`SELECT  *,(SELECT image from productimage where productimage.productId=products.id LIMIT 1) as image  from products where Brand="${req.query.Brand}"`
+          con.query(headEdit,(err1,result1)=>{
+              if(err1)  throw (err1)
+              else
+              {
+                
+                 res.json({ brandProduct: result1 })
+              }
+          })
+   
+
+})
 module.exports=router;
