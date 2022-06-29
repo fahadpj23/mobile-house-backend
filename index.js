@@ -31,6 +31,7 @@ const Supplier=require('./routes/AdminPanel/Supplier/Supplier')
 const HSN=require('./routes/AdminPanel/HSN/HSN')
 const Heading=require('./routes/AdminPanel/Heading/Heading')
 const Banner=require('./routes/AdminPanel/Banner/Banner')
+const Ads=require('./routes/AdminPanel/Ads/Ads')
  app.use(express.static(path.join(__dirname, 'products')))
 // app.use(ProductList)
 app.use(Homerouter)
@@ -53,7 +54,7 @@ app.use(Purchase)
 app.use(Supplier)
 app.use(HSN)
 app.use(Banner)
-
+app.use(Ads)
 app.get("/fake",function(req,res)
  {
     searchqr=`SELECT name,image,mrp,price FROM headset`
