@@ -1,4 +1,5 @@
 const express=require('express')
+const { commit } = require('../database')
 const router = express.Router()
 const con=require('../database')
 
@@ -65,6 +66,33 @@ router.get("/getBanner",function(req,res)
      {
     
        res.json({banner:result})
+     }
+ }) 
+})
+
+router.get("/getAds",function(req,res)
+{
+  getads=`SELECT * FROM ads where status="1" `
+ con.query(getads,(err,result,fields)=>{
+     if(err) throw(err);
+     else
+     {
+    
+        result && result.map((item,key)=>{
+          console.log(item.id)
+            con.query(`select * from adsdetail where adsId='${item.id}'`,(err1,result1)=>{
+              if(err1) throw (err1)
+              else
+              {
+                console.log(result1)
+                result[key].detail=result1
+                if(result.length==key+1)
+                {
+                  res.json({Ads:result})
+                }
+              }
+            })
+        })
      }
  }) 
 })

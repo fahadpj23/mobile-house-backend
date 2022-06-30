@@ -49,24 +49,25 @@ router.post('/AddAds',validateToken,parseUrlencoded,(req,res)=>{
                 if(err) throw (err)
                 else
                 {
-                        console.log(result.insertId)
+                        console.log(AdsImageArray)
                         AdsImageArray && AdsImageArray.map((item,key)=>{
                             if(item.imageBlob!="")
                             {
                                 let file= req.files["image" + (key+1)]
                                 
                                 file && file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
-                                AdsimageAdd=`UPDATE adsdetail (adsId,image,Brand) values ( '${result.insertId}','${Math.round(new Date().getTime()/1000)}${file.name}','${item.Brand}')`
-                                con.query(AdsimageAdd,(err1,result1)=>{
+                                AdsimageUpdate=`UPDATE adsdetail SET image='${Math.round(new Date().getTime()/1000)}${file.name}',Brand='${item.Brand}' where position='${item.position}'`
+                                console.log(AdsimageUpdate)
+                                con.query(AdsimageUpdate,(err1,result1)=>{
                                     if(err1) throw (err1)
-                                    else
-                                        if(AdsImageArray.length==key+1)
+                                    
+                                        
+                                })
+                            }
+                            if(AdsImageArray.length==key+1)
                                         {
                                             res.json({"success":"Ads added successfully"})
                                         }
-                                })
-                            }
-            
                         })
                 }
             })
