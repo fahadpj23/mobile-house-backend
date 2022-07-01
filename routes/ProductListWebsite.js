@@ -3,10 +3,12 @@ const router = express.Router()
 const con=require('../database')
 router.get("/viewCategoryProduct",function(req,res)
  {
-     console.log(req.query.category)
-    
-    selectqr=` SELECT *,(SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products  where category='${req.query.category}  '`
 
+    let sortColumn= (req.query.sort=="newestfirst") ? "id" :  "sellingPrice" 
+    let sort=(req.query.sort=="Price-Low-to-High") ? "ASC" : "DESC"
+    
+    selectqr=` SELECT *,(SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products  where category='${req.query.category}' ORDER BY ${sortColumn} ${sort}  `
+    console.log(selectqr)
     con.query(selectqr,(err,result,fields)=>{
 
       if(err) throw(err);
