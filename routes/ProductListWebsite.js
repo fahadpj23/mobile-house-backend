@@ -22,8 +22,9 @@ router.get("/viewCategoryProduct",function(req,res)
 
 router.get("/viewSliderProduct",function(req,res)
  {
-    console.log(req.query)
+   //select column for sorting
     let sortColumn= (req.query.sort=="newestfirst") ? "id" :  "sellingPrice" 
+
     let sort=(req.query.sort=="Price-Low-to-High") ? "ASC" : "DESC"
 
           headEdit=`SELECT  (SELECT id from products where products.id=headproduct.productid) as id ,(SELECT name from products where products.id=headproduct.productid) as name, (SELECT sellingPrice from products where products.id=headproduct.productid) as sellingPrice, (SELECT salesPrice from products where products.id=headproduct.productid) as salesPrice ,(SELECT mrp from products where products.id=headproduct.productid) as mrp ,(SELECT variantid from products where products.id=headproduct.productid) as variantid ,(SELECT image from productimage where productimage.productId=headproduct.productid LIMIT 1) as image from headproduct where HeadId=${req.query.productCategory}  ORDER BY ${sortColumn} ${sort};`
