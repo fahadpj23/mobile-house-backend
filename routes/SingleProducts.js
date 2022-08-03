@@ -8,7 +8,7 @@ const con=require('../database')
 router.get("/singleview",function(req,res)
 {
     let attributesarray=[];
-    getProduct=` SELECT *,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productId = ${req.query.productId}) as image from products where id=${req.query.productId}`
+    getProduct=` SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty,Brand,HSN_code,Tax,category,Description,variantid,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productId = ${req.query.productId}) as image from products where id=${req.query.productId}`
     con.query(getProduct,(err,result)=>{
        if(err) throw (err)
        else
@@ -62,7 +62,7 @@ router.get("/variantproduct",function(req,res)
     {
             Object.values(result).map((item,key)=>{
                 
-                productattribute=`select *,(select attributeName from attribute where productattribute.attributeId=attribute.id   ) as attributeName ,(select value  from attributevalue where attributevalue.id=productattribute.attributeValueId ) as attributeValue from productattribute where productid=${item.id} and productattribute.attributeId=(select attributeId from categoryattribute where variant=1 and categoryId=${item.category} and categoryattribute.attributeId=productattribute.attributeId)  `
+                productattribute=`select *,(select attributeName from attribute where productattribute.attributeId=attribute.id ) as attributeName ,(select value  from attributevalue where attributevalue.id=productattribute.attributeValueId ) as attributeValue from productattribute where productid=${item.id} and productattribute.attributeId=(select attributeId from categoryattribute where variant=1 and categoryId=${item.category} and categoryattribute.attributeId=productattribute.attributeId)  `
             
                 con.query(productattribute,(err1,result1)=>{
                     if(err1) throw (err1)

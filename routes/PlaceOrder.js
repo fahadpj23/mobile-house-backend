@@ -10,7 +10,7 @@ router.get("/customerorderdetails",function(req,res)
      console.log(req.query)
     
     // singleqr=`SELECT * FROM products where id="${req.query.productId}"`
-    singleqr=`select *,(SELECT  image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products where id=${req.query.productId}  `
+    singleqr=`select id,name,sellingPrice,salesPrice,mrp,warranty,qty,Brand,HSN_code,Tax,category,Description,variantid,,(SELECT  image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products where id=${req.query.productId}  `
     con.query(singleqr,(err,result,fields)=>{
     if(err)throw (err);
     else
