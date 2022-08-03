@@ -145,7 +145,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
     let columnvalue=[]
  
       addqr=`UPDATE products SET  name='${product.Name}' , purchasePrice='${product.purchasePrice}',sellingPrice='${product.sellingPrice}',salesPrice='${product.salesPrice}', mrp='${product.MRP}' ,warranty='${product.Warranty}',  Brand='${product.Brand}',qty='${product.qty}',HSN_Code='${product.HSN_Code}' ,Tax='${product.Tax}',category='${product.categoryid}',Description='${product.Description}' where id='${product.operationid}'`;
-      console.log(addqr)
+    
     con.query(addqr,(err,result)=>{
 
       if(err) throw (err);
@@ -156,19 +156,29 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
       for(let i=1;i<=5;i++)
       {
         
-       
-        if(imageblob[i-1])
+        if(productImages[i-1]=="deleted")
         {
-        
-          let image=req.files["image"+(i)] 
-         
-          image && productimage(image,product.operationid,i )
+            deleteimage=`delete from productimage where productId=${product.operationid} and imagePosition=${i} `
+            con.query(deleteimage,(err,result)=>{
+              if(err) throw (err)
+             
+
+            })
         }
-       
+        else
+        {
+          if(imageblob[i-1])
+          {
+          
+            let image=req.files["image"+(i)] 
+          
+            image && productimage(image,product.operationid,i )
+          }
+        }
         
       }
       categoryattribute=`select *  from categoryattribute where  categoryId="${product.categoryid}"`
-      console.log(categoryattribute)
+   
       con.query(categoryattribute,(err,result1)=>{
         if(err) throw (err)
         else
