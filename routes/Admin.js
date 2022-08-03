@@ -38,7 +38,18 @@ router.post("/adminlogin",parseUrlencoded,function(req,res)
      
     
   }) 
-  
+
+//     const user=req.body
+//   bcrypt.hash(user.password,10).then((hash)=>{
+//     adduser=`insert into admin (username,password) values ('${user.username}','${hash}')`
+//     con.query(adduser,(err,result,fields)=>{
+//         if(err)throw (err);
+//         res.json({username:user.username})
+//     })
+
+// })
 }) 
+
+
 
 module.exports=router;

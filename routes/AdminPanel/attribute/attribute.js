@@ -135,7 +135,7 @@ parseUrlencoded,function(req,res)
  
 
 
-
+//get attribute for showing in page table
 router.get('/getattribute',validateToken,function(req,res){
    var attribute;
   var responsemodel;

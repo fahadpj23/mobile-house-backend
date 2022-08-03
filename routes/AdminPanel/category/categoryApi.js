@@ -188,7 +188,9 @@ router.get('/getCategory',validateToken,function(req,res){
                {
                 let variants=JSON.parse(req.body.variantvalues)
 
-                JSON.parse(req.body.categoryvalues).length>0 &&  JSON.parse(req.body.categoryvalues).map((item,key)=>{
+                if(JSON.parse(req.body.categoryvalues).length>0)
+                {
+                JSON.parse(req.body.categoryvalues).map((item,key)=>{
                       
                       con.query(`select * from  attribute where attributeName='${item}'`,(err,result,fields)=>
                       {
@@ -214,6 +216,14 @@ router.get('/getCategory',validateToken,function(req,res){
                       }
                     })
                   })
+                }
+                else
+                
+                {
+                    res.json({"success":"success"})
+                }
+                  
+                  
 
 
                }

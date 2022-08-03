@@ -18,10 +18,15 @@ router.get('/getHead',validateToken,(req,res)=>{
         if(err)  throw (err)
         else
         {
-            Object.entries(result[0]).map((item,key)=>{
+           
+            result[0] && Object.entries(result[0]).map((item,key)=>{
                 Tablehead.push(item[0])
+                if(Object.entries(result[0]).length==key+1)
+                {
+                           res.json({ "Data":result,"TableHead":Tablehead })  
+                }
             })
-            res.json({ "Data":result,"TableHead":Tablehead })
+     
         }
     })
 })
@@ -97,27 +102,27 @@ router.post('/headingAdd',validateToken,parseUrlencoded,(req,res)=>{
             if(err)throw (err)
             else
             {
-               deleteHeadProduct=`delete from headproduct where HeadId=${req.body.operationid}`
-               con.query(deleteHeadProduct,(err2,result2)=>{
+              deleteHeadProduct=`delete from headproduct where HeadId=${req.body.operationid}`
+              con.query(deleteHeadProduct,(err2,result2)=>{
                 if(err2) throw (err2)
                 else
                 {
                     products && products.map((item,key)=>{
                         productAdd=`insert into headproduct (HeadId,productId) values( '${req.body.operationid }','${item.id}')`
                         con.query(productAdd,(err1,result1)=>{
-                           if(err1) throw (err)
-                           else
-                           {
-                               if(products.length==key+1)
-                               {
-                                   res.json({success:"head addedd successfully"})
-                               }
-                           }
+                          if(err1) throw (err)
+                          else
+                          {
+                              if(products.length==key+1)
+                              {
+                                  res.json({success:"head addedd successfully"})
+                              }
+                          }
                         })
                       })
            
                 }
-               })
+              })
               
               
             }
