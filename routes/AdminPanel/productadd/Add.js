@@ -249,6 +249,8 @@ router.get('/getcategoryAttribute',validateToken,function(req,res){
   con.query(categoryAttribute,(err,result)=>{
     if(err) throw (err)
     else
+     if(result.length)
+     {
       result.map((item,key)=>{
         attributevalueget=`select * from attributevalue  where attributeid="${item.attributeId}" `
       
@@ -265,6 +267,11 @@ router.get('/getcategoryAttribute',validateToken,function(req,res){
           }
         })
       })
+     }
+     else
+     {
+      res.send("NoAttribute")
+     }
   })
  
 })
