@@ -271,12 +271,12 @@ router.get('/getcategoryAttribute',validateToken,function(req,res){
 
 router.get('/getProduct',validateToken,(req,res)=>{
 
-    getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName from products`
+    getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products`
     con.query(getProduct,(err,result)=>{
       if(err) throw (err)
       else
       {
-      let tablehead=['SlNo','name','purchasePrice','sellingPrice','salesPrice','mrp','Brand','categoryName']
+      let tablehead=['SlNo','name','purchasePrice','sellingPrice','salesPrice','mrp','Brand','categoryName','image']
       res.json({ "Data":result,"TableHead":tablehead })
       }
     })
