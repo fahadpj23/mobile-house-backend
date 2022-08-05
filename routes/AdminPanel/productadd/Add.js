@@ -12,7 +12,7 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 
 router.delete("/productDelete",validateToken,function(req,res){
-  console.log(req.query)
+
   productdelete=`delete products, productattribute, productimage from products LEFT join productattribute on products.id = productattribute.productid LEFT join productimage on products.id = productimage.productId WHERE products.id = ${req.query.productId}`
 
   con.query(productdelete,(err,result)=>{
@@ -32,7 +32,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
 
   
   let product=req.body
-  console.log(req.body)
+
   let imageblob=JSON.parse(req.body.productImageblob)
   let productImages=JSON.parse(req.body.productImage)
  
@@ -84,9 +84,9 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
         
               if( product.variantid=="")
               {
-               console.log("fddddddddd")
+           
                 variantupdate=`UPDATE products SET variantid="${result.insertId}" WHERE id="${result.insertId}" ` 
-                console.log(variantupdate)
+               
                 con.query(variantupdate,(err1,result1)=>
                 {
                   if(err1) throw (err1)
@@ -112,7 +112,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
                 if(err) throw (err)
                 else
                 {
-                  // console.log(result1)
+            
                   Object.values(result1).map((item,key)=>{
                     if(product[item.attributeId]!="--select--" && product[item.attributeId]!=undefined)
                     {
@@ -184,9 +184,11 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
         else
         {
           Object.values(result1).map((item,key)=>{
+          
             if(product[item.attributeId]!="--select--" && product[item.attributeId]!=undefined)
             {
             insertproductattributequery=`UPDATE productattribute SET attributeValueId=${product[item.attributeId]} where productid=${product.operationid} and attributeId=${item.attributeId}`
+              console.log(u=insertproductattributequery)
             con.query(insertproductattributequery,(err,result)=>{
               if(err) throw (err)
               else
@@ -212,7 +214,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
   const productimage=(file,dbid,imgposition)=>{
   
     imageIsOrNotInDb=`select COUNT(*) as count from productimage where productId='${dbid}' and imageposition='${imgposition}'`
-    console.log(imageIsOrNotInDb)
+ 
     con.query(imageIsOrNotInDb,(err,result)=>{
       if(err) throw (err)
       else
@@ -231,7 +233,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
       {
         file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
         updateImage=`UPDATE  productimage set image='${Math.round(new Date().getTime()/1000)}${file.name}' where imagePosition='${imgposition}' and productId=${dbid}`
-        console.log(updateImage)
+   
         con.query(updateImage,(err,result)=>{
           if(err)throw (err)
         })
@@ -242,14 +244,18 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
   }
 })
 
+
+//to fetch all attribute value of attribute depends on attribute that connected to category
 router.get('/getcategoryAttribute',validateToken,function(req,res){
+
+
   let attributevaluearray=[]
 
   categoryAttribute=`select * from categoryattribute where categoryId="${req.query.categoryid}"`
   con.query(categoryAttribute,(err,result)=>{
     if(err) throw (err)
     else
-     if(result.length)
+     if(result.length!=0)
      {
       result.map((item,key)=>{
         attributevalueget=`select * from attributevalue  where attributeid="${item.attributeId}" `
@@ -259,14 +265,21 @@ router.get('/getcategoryAttribute',validateToken,function(req,res){
           else
           {
             let value={"attributeid" : item.attributeId,"attributeName":item.attributeName,"value":result1}
+            
             attributevaluearray.push(value)
-            if(key==result.length-1)
+            if(key==result.length-1 )
             {
-              res.send(attributevaluearray)
+              setTimeout(() => {
+                res.send(attributevaluearray)
+              }, 200);
+            
+              
             }
           }
         })
+      
       })
+     
      }
      else
      {
@@ -275,6 +288,11 @@ router.get('/getcategoryAttribute',validateToken,function(req,res){
   })
  
 })
+
+async function categoryvalueset(attributevaluearray,attributeId,attributeName,result1)
+{
+
+}
 
 router.get('/getProduct',validateToken,(req,res)=>{
 
@@ -306,22 +324,23 @@ router.get('/productdetails',validateToken,(req,res)=>{
           else
           {
            
-          Object.values(result1).map((item,key)=>{
-            //  console.log([item[1].attributeId])
-            //  console.log([item[1].attributeValueId])
+           if(result1.length)
+           {
+            Object.values(result1) && Object.values(result1).map((item,key)=>{
            
-          
               result[0][item.attributeId]=item.attributeValueId
-              console.log(result)
-          //   }
-              
-            
+                   
               if(Object.values(result1).length ==  +key+1 )
               {
                 res.send(result[0])
               }
             
               })
+           }
+           else
+           {
+            res.send(result[0])
+           }
              
             
              

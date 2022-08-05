@@ -21,7 +21,7 @@ router.get("/singleview",function(req,res)
            
        
                     
-                        console.log(result1)
+                 
                         result[0].attributes=result1
                         res.json({"product":result[0]})
                     
@@ -55,25 +55,34 @@ router.get("/variantproduct",function(req,res)
 {
     let attributesarray=[];
     let variantproduct=[];
+    //select all varainat related to product using variantid.all product have their own varinatid
     variant=`select id,category,(SELECT  image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products where variantid='${req.query.variantid}'  `
+    
     con.query(variant,(err,result)=>{
     if(err) throw (err);
     else
     {
+         
             Object.values(result).map((item,key)=>{
-                
+                // here select attribute,attribute name,attribute value,attrubute value id, attach to product depends on check attribute id is needed for variant show if varaiant 1 then select else reject selection
                 productattribute=`select *,(select attributeName from attribute where productattribute.attributeId=attribute.id ) as attributeName ,(select value  from attributevalue where attributevalue.id=productattribute.attributeValueId ) as attributeValue from productattribute where productid=${item.id} and productattribute.attributeId=(select attributeId from categoryattribute where variant=1 and categoryId=${item.category} and categoryattribute.attributeId=productattribute.attributeId)  `
-            
+       
                 con.query(productattribute,(err1,result1)=>{
                     if(err1) throw (err1)
                     else
                     {
-                        result[key].attributes=result1
+                        let val={id:item.id, category:item.category, image:item.image, attributes:result1}
+                       
                         
-                        if( Object.values(result).length == key+1)
-                        {
-                            res.json({variants:result})
-                        }
+                        attributesarray.push(val)
+                        setTimeout(() => {
+                            if( Object.values(result).length == key+1)
+                            {
+                                res.json({variants:attributesarray})
+                            }
+                        }, 200);
+                       
+                  
                         
                     }
                 })
