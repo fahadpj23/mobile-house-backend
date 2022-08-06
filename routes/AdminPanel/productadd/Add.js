@@ -35,19 +35,18 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
 
   let imageblob=JSON.parse(req.body.productImageblob)
   let productImages=JSON.parse(req.body.productImage)
- 
+
 
   
   if(req.body.operation=="" || req.body.operation=="variant" )
   { 
- 
+        
 
            
-            addqr=`insert into products (  name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty,  Brand,qty ,HSN_Code,Tax,category,Description,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${product.Brand}','${product.qty}','${product.HSN_Code}','${product.Tax}','${product.categoryid}','${product.Description}','${product.operationid}')`;
+            addqr=`insert into products (name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty,  Brand,qty ,HSN_Code,Tax,category,Description,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${product.Brand}','${product.qty}','${product.HSN_Code}','${product.Tax}','${product.categoryid}','${product.Description}','${product.operationid}')`;
           
-            let columnarray=[]
-            let columnvalue=[]
-
+          
+         
          
 
             con.query(addqr,(err,result)=>{
@@ -59,25 +58,15 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
               
               for(let i=1;i<=5;i++)
               {
-                if(imageblob[i-1])
+                //if image blob is there then add image
+                if(imageblob[i-1] && productImages[i-1]!="deleted" )
                 {
-                
+                   
                   let image=req.files["image"+(i)] 
     
                   image && productimage(image,result.insertId,i )
                 }
-                else
-                {
-                 
-                  if(productImages[i-1]!="")
-                  {
-                  imageaddqr=`insert into productimage (productId,imagePosition,image) values (${result.insertId},'${i}','${productImages[i-1]}')`
                 
-                  con.query(imageaddqr,(err,result)=>{
-                    if(err)throw (err)
-                  })
-                  }
-                }
                 
               }
               
@@ -141,8 +130,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
   else
   {
   
-    let columnarray=[]
-    let columnvalue=[]
+ 
  
       addqr=`UPDATE products SET  name='${product.Name}' , purchasePrice='${product.purchasePrice}',sellingPrice='${product.sellingPrice}',salesPrice='${product.salesPrice}', mrp='${product.MRP}' ,warranty='${product.Warranty}',  Brand='${product.Brand}',qty='${product.qty}',HSN_Code='${product.HSN_Code}' ,Tax='${product.Tax}',category='${product.categoryid}',Description='${product.Description}' where id='${product.operationid}'`;
     
@@ -159,6 +147,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
         if(productImages[i-1]=="deleted")
         {
             deleteimage=`delete from productimage where productId=${product.operationid} and imagePosition=${i} `
+            console.log(deleteimage)
             con.query(deleteimage,(err,result)=>{
               if(err) throw (err)
              
@@ -167,11 +156,13 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
         }
         else
         {
+         
           if(imageblob[i-1])
           {
-          
+           
+            console.log("ddfdfd")
             let image=req.files["image"+(i)] 
-          
+            
             image && productimage(image,product.operationid,i )
           }
         }
@@ -188,7 +179,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
             if(product[item.attributeId]!="--select--" && product[item.attributeId]!=undefined)
             {
             insertproductattributequery=`UPDATE productattribute SET attributeValueId=${product[item.attributeId]} where productid=${product.operationid} and attributeId=${item.attributeId}`
-              console.log(u=insertproductattributequery)
+             
             con.query(insertproductattributequery,(err,result)=>{
               if(err) throw (err)
               else
@@ -211,29 +202,38 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
   })
   }
   // image addign function
-  const productimage=(file,dbid,imgposition)=>{
-  
+  const  productimage=(file,dbid,imgposition)=>{
+   // check image is exist in database using product id and image position
     imageIsOrNotInDb=`select COUNT(*) as count from productimage where productId='${dbid}' and imageposition='${imgposition}'`
- 
+    console.log(imageIsOrNotInDb)
     con.query(imageIsOrNotInDb,(err,result)=>{
       if(err) throw (err)
       else
       {
-       
+       //if image is not exist
       if(result[0].count==0)
       {
         file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
-        imageaddqr=`insert into productimage (productId,imagePosition,image) values (${dbid},'${imgposition}','${Math.round(new Date().getTime()/1000)}${file.name}')`
-       
-        con.query(imageaddqr,(err,result)=>{
+        // numberOfImage=`select COUNT(*) as imageCount from productimage where productId='${dbid}' '`
+        // con.query(numberOfImage,(err1,result1)=>{
+        //   if(err1) throw (err1)
+        //   else
+        //   {
+          imageaddqr=`insert into productimage (productId,imagePosition,image) values (${dbid},'${imgposition}','${Math.round(new Date().getTime()/1000)}${file.name}')`
+          
+        
+          con.query(imageaddqr,(err,result)=>{
           if(err)throw (err)
-        })
+          })
+        //   }
+        // })
+        
       }
       else
       {
         file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
         updateImage=`UPDATE  productimage set image='${Math.round(new Date().getTime()/1000)}${file.name}' where imagePosition='${imgposition}' and productId=${dbid}`
-   
+        // console.log(updateImage)
         con.query(updateImage,(err,result)=>{
           if(err)throw (err)
         })
@@ -296,7 +296,7 @@ async function categoryvalueset(attributevaluearray,attributeId,attributeName,re
 
 router.get('/getProduct',validateToken,(req,res)=>{
 
-    getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products`
+    getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products ORDER BY products.id DESC`
     con.query(getProduct,(err,result)=>{
       if(err) throw (err)
       else
@@ -312,8 +312,9 @@ router.get('/getProduct',validateToken,(req,res)=>{
 router.get('/productdetails',validateToken,(req,res)=>{
 
   
-  getProduct=` SELECT *,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productId = ${req.query.productId}) as image from products where id=${req.query.productId}`
-    con.query(getProduct,(err,result)=>{
+  getProduct=` SELECT *,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productId = ${req.query.productId}) as image,(SELECT group_concat(concat_ws(',', imageposition) separator '; ') from productimage where productId=${req.query.productId}) as imagepositions from products where id=${req.query.productId}`
+  console.log(getProduct)  
+  con.query(getProduct,(err,result)=>{
       if(err) throw (err)
       else
       {
