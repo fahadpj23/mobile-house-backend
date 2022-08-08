@@ -7,7 +7,7 @@ router.get("/viewCategoryProduct",function(req,res)
     let sortColumn= (req.query.sort=="newestfirst") ? "id" :  "sellingPrice" 
     let sort=(req.query.sort=="Price-Low-to-High") ? "ASC" : "DESC"
     
-    selectqr=` SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty,Brand,HSN_code,Tax,category,Description,variantid,(SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products  where category='${req.query.category}' ORDER BY ${sortColumn} ${sort}  `
+    selectqr=` SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty as maxqty,Brand,HSN_code,Tax,category,Description,variantid,(SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products  where category='${req.query.category}' ORDER BY ${sortColumn} ${sort}  `
 
     con.query(selectqr,(err,result,fields)=>{
 
