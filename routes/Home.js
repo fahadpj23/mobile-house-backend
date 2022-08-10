@@ -1,4 +1,5 @@
 const express=require('express')
+const { commit } = require('../database')
 const router = express.Router()
 const con=require('../database')
 
@@ -14,18 +15,18 @@ router.get('/HomePageCategory',function(req,res){
       }
     })
 })
-router.get("/MobileHouseRecommend",function(req,res)
-{
- con.query("SELECT *,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productimage.productId = products.id) as image from products ORDER BY id DESC ",(err,result,fields)=>{
-     if(err) throw(err);
-     else
-     {
+// router.get("/MobileHouseRecommend",function(req,res)
+// {
+//  con.query("SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty,Brand,HSN_code,Tax,category,Description,variantid,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productimage.productId = products.id) as image from products ORDER BY id DESC ",(err,result,fields)=>{
+//      if(err) throw(err);
+//      else
+//      {
     
-       res.send(result)
-     }
- }) 
+//        res.send(result)
+//      }
+//  }) 
  
-})
+// })
 
  
 
@@ -37,18 +38,28 @@ router.get("/getProductSliders",function(req,res)
      if(err) throw(err);
      else
      {
-    
+      console.log(result)
       result &&  result.map((item,key)=>{
        
-        headproduct=`SELECT *,productid as id ,(SELECT name from products where products.id=headproduct.productid) as name, (SELECT sellingPrice from products where products.id=headproduct.productid) as sellingPrice, (SELECT salesPrice from products where products.id=headproduct.productid) as salesPrice ,(SELECT mrp from products where products.id=headproduct.productid) as mrp ,(SELECT variantid from products where products.id=headproduct.productid) as variantid ,(SELECT image from productimage where productimage.productId=headproduct.productid LIMIT 1) as image from headproduct where HeadId=${item.id};`
-        
+        headproduct=`SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty as maxqty,Brand,HSN_code,Tax,category,Description,(SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image,variantid FROM products RIGHT JOIN headproduct ON headproduct.productid = products.id where  HeadId=${item.id};`
+        console.log(headproduct)
         con.query(headproduct,(err1,result1)=>{
-         
-            result[key].products=result1
-            if(result.length==key+1)
+           if(err1) throw (err1)
+           else
+           {
+            if(result1)
             {
-              res.json({sliders:result})
+              result[key].products=result1
+            
+            setTimeout(() => {
+              if(result.length==key+1)
+              {
+                res.json({sliders:result})
+              }
+            }, 200);
             }
+          }
+          
          
         })
        })
@@ -65,6 +76,33 @@ router.get("/getBanner",function(req,res)
      {
     
        res.json({banner:result})
+     }
+ }) 
+})
+
+router.get("/getAds",function(req,res)
+{
+  getads=`SELECT * FROM ads where status="1" `
+ con.query(getads,(err,result,fields)=>{
+     if(err) throw(err);
+     else
+     {
+    
+        result && result.map((item,key)=>{
+          console.log(item.id)
+            con.query(`select * from adsdetail where adsId='${item.id}'`,(err1,result1)=>{
+              if(err1) throw (err1)
+              else
+              {
+                console.log(result1)
+                result[key].detail=result1
+                if(result.length==key+1)
+                {
+                  res.json({Ads:result})
+                }
+              }
+            })
+        })
      }
  }) 
 })

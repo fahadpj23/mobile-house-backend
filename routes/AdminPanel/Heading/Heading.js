@@ -4,6 +4,7 @@ const router = express.Router()
 const con=require('../../../database')
 
 var bodyParser=require("body-parser");
+const validateToken = require('../../../middlewares/authmiddelware');
 var jsonParser=bodyParser.json();
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 
@@ -11,20 +12,25 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 
 
-router.get('/getHead',(req,res)=>{
+router.get('/getHead',validateToken,(req,res)=>{
     let Tablehead=[]
     con.query('select * from head',(err,result)=>{
         if(err)  throw (err)
         else
         {
-            Object.entries(result[0]).map((item,key)=>{
+           
+            result[0] && Object.entries(result[0]).map((item,key)=>{
                 Tablehead.push(item[0])
+                if(Object.entries(result[0]).length==key+1)
+                {
+                           res.json({ "Data":result,"TableHead":Tablehead })  
+                }
             })
-            res.json({ "Data":result,"TableHead":Tablehead })
+     
         }
     })
 })
-router.get('/editGetHead',(req,res)=>{
+router.get('/editGetHead',validateToken,(req,res)=>{
     headdetails=`select * from head where id=${req.query.HeadingId}`
     con.query(headdetails,(err,result)=>{
         if(err)  throw (err)
@@ -47,7 +53,8 @@ router.get('/editGetHead',(req,res)=>{
    
 })
 
-router.get('/headProduct',(req,res)=>{
+router.get('/headProduct',validateToken,(req,res)=>{
+    console.log(req.query)
     con.query(`select id,name ,sellingprice,(SELECT  image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products where name LIKE '%${req.query.searchitem}%' `,(err,result)=>{
         if(err)throw (err)
         else
@@ -57,7 +64,7 @@ router.get('/headProduct',(req,res)=>{
     })
 })
 
-router.post('/headingAdd',parseUrlencoded,(req,res)=>{
+router.post('/headingAdd',validateToken,parseUrlencoded,(req,res)=>{
     if(req.body.operation=="")
     {
         products=JSON.parse(req.body.products)
@@ -95,27 +102,27 @@ router.post('/headingAdd',parseUrlencoded,(req,res)=>{
             if(err)throw (err)
             else
             {
-               deleteHeadProduct=`delete from headproduct where HeadId=${req.body.operationid}`
-               con.query(deleteHeadProduct,(err2,result2)=>{
+              deleteHeadProduct=`delete from headproduct where HeadId=${req.body.operationid}`
+              con.query(deleteHeadProduct,(err2,result2)=>{
                 if(err2) throw (err2)
                 else
                 {
                     products && products.map((item,key)=>{
                         productAdd=`insert into headproduct (HeadId,productId) values( '${req.body.operationid }','${item.id}')`
                         con.query(productAdd,(err1,result1)=>{
-                           if(err1) throw (err)
-                           else
-                           {
-                               if(products.length==key+1)
-                               {
-                                   res.json({success:"head addedd successfully"})
-                               }
-                           }
+                          if(err1) throw (err)
+                          else
+                          {
+                              if(products.length==key+1)
+                              {
+                                  res.json({success:"head addedd successfully"})
+                              }
+                          }
                         })
                       })
            
                 }
-               })
+              })
               
               
             }

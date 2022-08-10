@@ -8,7 +8,7 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 const {check,validationResult}=require('express-validator');
 
-router.post('/attributeAdd',
+router.post('/attributeAdd',validateToken,
 
 parseUrlencoded,function(req,res)
 {
@@ -107,7 +107,7 @@ parseUrlencoded,function(req,res)
                                  })
                                  attributevalues.map((item,key)=>{
                                   insertValueQuery=`insert into attributevalue (attributeid,value) SELECT '${req.body.operationid}', '${item}' WHERE 0 = (SELECT COUNT(*) from attributevalue where value='${item}' and attributeid=${req.body.operationid} )`
-                                  console.log(insertValueQuery)              
+                                           
                                   con.query(insertValueQuery,(err,result)=>{ 
                                                   if(err) throw (err)
                                                   else
@@ -135,8 +135,8 @@ parseUrlencoded,function(req,res)
  
 
 
-
-router.get('/getattribute',function(req,res){
+//get attribute for showing in page table
+router.get('/getattribute',validateToken,function(req,res){
    var attribute;
   var responsemodel;
   let itemmodel=[];

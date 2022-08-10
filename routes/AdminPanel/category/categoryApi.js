@@ -32,12 +32,12 @@ router.delete('/CategoryDelete',function(req,res){
  router.get('/getCategoryVariant',function(req,res){
 
   categoryVariantfetch=`select attributeName from categoryattribute where categoryId=${req.query.categoryId} and  variant=1`
-  console.log(categoryVariantfetch)
+  
   con.query(categoryVariantfetch,(err,result)=>{
     if(err) throw (err)
     else
     {
-      console.log(result)
+
       res.json({categoryvariant:result})
     }
   })
@@ -188,17 +188,20 @@ router.get('/getCategory',validateToken,function(req,res){
                {
                 let variants=JSON.parse(req.body.variantvalues)
 
-                JSON.parse(req.body.categoryvalues).length>0 &&  JSON.parse(req.body.categoryvalues).map((item,key)=>{
-                      
+                if(JSON.parse(req.body.categoryvalues).length>0)
+                {
+                JSON.parse(req.body.categoryvalues).map((item,key)=>{
+                      console.log(`select * from  attribute where attributeName='${item}'`)
                       con.query(`select * from  attribute where attributeName='${item}'`,(err,result,fields)=>
                       {
                       
                       if(err) throw(err);
                       else
                       {
-                        // console.log(item)
+                         console.log(result)
                                  
-                                  
+                                  if(result[0])
+                                  {
                                   addcatgeoryattribute=`insert into categoryattribute (categoryId,attributeId,attributeName,variant) values ('${req.body.operationid}','${ result[0].id}','${ result[0].attributeName}','${variants.includes(result[0].attributeName)==true ? 1 : 0}')`
                                   con.query(addcatgeoryattribute,(err,result)=>{
                                       if(err) throw (err);
@@ -208,12 +211,21 @@ router.get('/getCategory',validateToken,function(req,res){
                                           res.json({"success":"success"})
                                       
                                       }
-                              
-                              })
+                                      
+                                    })
+                                  }
                           
                       }
                     })
                   })
+                }
+                else
+                
+                {
+                    res.json({"success":"success"})
+                }
+                  
+                  
 
 
                }

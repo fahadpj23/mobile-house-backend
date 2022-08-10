@@ -35,10 +35,14 @@ router.get('/getHSN',(req,res)=>{
         if(err)  throw (err)
         else
         {
-            Object.entries(result[0]).map((item,key)=>{
+            result[0] && Object.entries(result[0]).map((item,key)=>{
                 Tablehead.push(item[0])
+                if(Object.entries(result[0]).length==key+1)
+                {
+                  res.json({ "Data":result,"TableHead":Tablehead })
+                }
             })
-            res.json({ "Data":result,"TableHead":Tablehead })
+           
         }
     })
 })

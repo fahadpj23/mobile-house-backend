@@ -5,37 +5,51 @@ var bodyParser=require("body-parser");
 var jsonParser=bodyParser.json();
 const bcrypt=require('bcrypt')
 const {sign}=require('jsonwebtoken')
-router.get("/adminlogin",function(req,res)
+var parseUrlencoded = bodyParser.urlencoded({ extended: true }); 
+router.post("/adminlogin",parseUrlencoded,function(req,res)
  {
    
-    searchqr=`SELECT * FROM admin  where username='${req.query.username}' `
-   
+    searchqr=`SELECT * FROM admin  where username='${req.body.username}' `
+    
     con.query(searchqr,(err,result,fields)=>{
 
       if(err) throw(err);
-      if(result[0].password==undefined)
+      if(result[0])
       {
-        res.send("no user")
-      }
-      else
-      {
+       
+     
       
-        bcrypt.compare(req.query.password,result[0].password).then((match)=>{
+        bcrypt.compare(req.body.password,result[0].password).then((match)=>{
         
           if(!match) res.json({error:"password is incorrect"})
           else
           {
-            const accessToken=sign({username:req.query.username},"importantsecret");
+            const accessToken=sign({username:req.body.username},"importantsecret");
             res.json({"accessToken":accessToken})
          
           }
         })
-       
+      }
+      else
+      {
+        res.json({"error":"No User Found"})
+      }
         
      
-    }
+    
   }) 
-  
+
+//     const user=req.body
+//   bcrypt.hash(user.password,10).then((hash)=>{
+//     adduser=`insert into admin (username,password) values ('${user.username}','${hash}')`
+//     con.query(adduser,(err,result,fields)=>{
+//         if(err)throw (err);
+//         res.json({username:user.username})
+//     })
+
+// })
 }) 
+
+
 
 module.exports=router;
