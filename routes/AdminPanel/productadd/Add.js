@@ -294,9 +294,10 @@ async function categoryvalueset(attributevaluearray,attributeId,attributeName,re
 
 }
 
-router.get('/getProduct',validateToken,(req,res)=>{
+router.get('/product/getData',validateToken,(req,res)=>{
 
-    getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products ORDER BY products.id DESC`
+    getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products  WHERE name LIKE '%${req.query.search}%'  ORDER BY products.id DESC`
+    console.log(getProduct)
     con.query(getProduct,(err,result)=>{
       if(err) throw (err)
       else

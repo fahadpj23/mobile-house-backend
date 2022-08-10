@@ -136,11 +136,11 @@ parseUrlencoded,function(req,res)
 
 
 //get attribute for showing in page table
-router.get('/getattribute',validateToken,function(req,res){
+router.get('/attribute/getData',validateToken,function(req,res){
    var attribute;
   var responsemodel;
   let itemmodel=[];
-    getatt='select * from attribute '
+    getatt=` select * from attribute where attributeName LIKE '%${req.query.search}%' `
     con.query(getatt,(err,result)=>{
       if(err) throw (err)
       else

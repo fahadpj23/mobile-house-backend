@@ -12,9 +12,9 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 
 
-router.get('/getHead',validateToken,(req,res)=>{
+router.get('/head/getData',validateToken,(req,res)=>{
     let Tablehead=[]
-    con.query('select * from head',(err,result)=>{
+    con.query(`select * from head where Heading LIKE '%${req.query.search}%' `,(err,result)=>{
         if(err)  throw (err)
         else
         {
