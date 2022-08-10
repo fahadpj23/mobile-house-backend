@@ -43,11 +43,11 @@ router.delete('/CategoryDelete',function(req,res){
   })
  })
 
-router.get('/category/getData',validateToken,function(req,res){
+router.get('/getCategory',validateToken,function(req,res){
  
 
    let itemmodel=[];
-     getatt=`select * from category where categoryName LIKE '%${req.query.search}%'`
+     getatt='select * from category'
      con.query(getatt,(err,result)=>{
        if(err) throw (err)
        else

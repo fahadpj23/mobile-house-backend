@@ -29,9 +29,9 @@ router.post('/HSNcodePost',parseUrlencoded,(req,res)=>{
     }
 })
 
-router.get('/hsn/getData',(req,res)=>{
+router.get('/getHSN',(req,res)=>{
     let Tablehead=[]
-    con.query(`select * from hsn where HSN_Code LIKE '%${req.query.search}%' or Product LIKE '%${req.query.search}%' `,(err,result)=>{
+    con.query('select * from hsn',(err,result)=>{
         if(err)  throw (err)
         else
         {
