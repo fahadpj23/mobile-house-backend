@@ -8,7 +8,7 @@ const con=require('../database')
 router.get("/singleview",function(req,res)
 {
     let attributesarray=[];
-    getProduct=` SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty,Brand,HSN_code,Tax,category,Description,variantid,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productId = ${req.query.productId}) as image from products where id=${req.query.productId}`
+    getProduct=` SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty as maxqty,Brand,HSN_code,Tax,category,Description,variantid,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productId = ${req.query.productId}) as image from products where id=${req.query.productId}`
     con.query(getProduct,(err,result)=>{
        if(err) throw (err)
        else
