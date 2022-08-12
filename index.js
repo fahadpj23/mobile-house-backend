@@ -25,6 +25,7 @@ const CategoryViewallRouter=require('./routes/CategoryViewAll');
 
  const authentication=require('./routes/authentication/authentication');
 const addProduct=require('./routes/AdminPanel/productadd/Add');
+const order=require('./routes/AdminPanel/order/order');
 
 const category=require('./routes/AdminPanel/category/categoryApi');
 const attribute=require('./routes/AdminPanel/attribute/attribute');
@@ -47,6 +48,7 @@ app.use(CategoryViewallRouter);
 // app.use(OrderProductRouter);
 //app.use(OrderList);
 app.use(addProduct);
+app.use(order);
 
 app.use(category);
 // app.use(express.json());
@@ -60,13 +62,7 @@ app.use(Banner);
 app.use(Ads);
 
 
-app.get("/fake",function(req,res)
- {
-    
-     res.json({"dsd":"dsdsvggcgc"});
 
-  
-});
 
 
     

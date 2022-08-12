@@ -32,7 +32,7 @@ jsonParser,function(req,res)
         const UTCTime = new Date() 
         const time = UTCTime.toLocaleTimeString()
         const date= UTCTime.toDateString()
-        const orderdate=time+date
+        const orderdate=date+","+time
         const error=validationResult(req);
         console.log(error.errors)
         if(error.errors.length!=0)
@@ -45,7 +45,7 @@ jsonParser,function(req,res)
         
             let orderinfo=req.body;
             let products=JSON.parse(orderinfo.product)
-            addqr=`insert into customerOrder ( date, customername, phone, pincode, address,orderCount ) values ('${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}')`;
+            addqr=`insert into customerOrder ( date, customername, phone, pincode, address,ProductCount,status ) values ('${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}',1 )`;
                 con.query(addqr,(err,result)=>{
 
                 if(err) throw (err);
