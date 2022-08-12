@@ -147,7 +147,7 @@ router.get('/getCategory',validateToken,function(req,res){
                                     })
                                 })
                                 :
-                                res.json({success:"success"})
+                                res.json({success:"category added successfully"})
                              }
                             })
                             
@@ -208,7 +208,7 @@ router.get('/getCategory',validateToken,function(req,res){
                                       else {
                                       
                                           if(JSON.parse(req.body.categoryvalues).length== key+1)
-                                          res.json({"success":"success"})
+                                          res.json({"success":"category updated successfully"})
                                       
                                       }
                                       

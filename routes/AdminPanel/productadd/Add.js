@@ -131,7 +131,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
   {
   
  
- 
+  
       addqr=`UPDATE products SET  name='${product.Name}' , purchasePrice='${product.purchasePrice}',sellingPrice='${product.sellingPrice}',salesPrice='${product.salesPrice}', mrp='${product.MRP}' ,warranty='${product.Warranty}',  Brand='${product.Brand}',qty='${product.qty}',HSN_Code='${product.HSN_Code}' ,Tax='${product.Tax}',category='${product.categoryid}',Description='${product.Description}' where id='${product.operationid}'`;
     
     con.query(addqr,(err,result)=>{
@@ -178,14 +178,36 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
           
             if(product[item.attributeId]!="--select--" && product[item.attributeId]!=undefined)
             {
-            insertproductattributequery=`UPDATE productattribute SET attributeValueId=${product[item.attributeId]} where productid=${product.operationid} and attributeId=${item.attributeId}`
+              attributecheck=`select count(*) as count from productattribute where productid=${product.operationid} and attributeId=${item.attributeId} `
+              con.query(attributecheck,(err5,result5)=>{
+                if(err5) throw (err5)
+                else
+                {
+                  if(result5[0].count==0)
+                  {
+                    insertnewproductattributequery=`INSERT INTO productattribute (attributeValueId,productid,attributeId) Values ('${product[item.attributeId]}','${product.operationid}','${item.attributeId}')`
              
-            con.query(insertproductattributequery,(err,result)=>{
-              if(err) throw (err)
-              else
-              if(Object.values(result1).length==key+1)
-                res.json({"success":"success"})
-            })
+                    con.query(insertnewproductattributequery,(err,result)=>{
+                      if(err) throw (err)
+                      else
+                      if(Object.values(result1).length==key+1)
+                        res.json({"success":"success"})
+                      })
+                  } 
+                  else
+                  {
+                    insertproductattributequery=`UPDATE productattribute SET attributeValueId=${product[item.attributeId]} where productid=${product.operationid} and attributeId=${item.attributeId}`
+             
+                    con.query(insertproductattributequery,(err,result)=>{
+                      if(err) throw (err)
+                      else
+                      if(Object.values(result1).length==key+1)
+                        res.json({"success":"success"})
+                      })
+                  }
+                }
+              })
+          
             }
             else
             {
@@ -214,19 +236,14 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
       if(result[0].count==0)
       {
         file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
-        // numberOfImage=`select COUNT(*) as imageCount from productimage where productId='${dbid}' '`
-        // con.query(numberOfImage,(err1,result1)=>{
-        //   if(err1) throw (err1)
-        //   else
-        //   {
+       
           imageaddqr=`insert into productimage (productId,imagePosition,image) values (${dbid},'${imgposition}','${Math.round(new Date().getTime()/1000)}${file.name}')`
           
         
           con.query(imageaddqr,(err,result)=>{
           if(err)throw (err)
           })
-        //   }
-        // })
+      
         
       }
       else
@@ -313,7 +330,7 @@ router.get('/productdetails',validateToken,(req,res)=>{
 
   
   getProduct=` SELECT *,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productId = ${req.query.productId}) as image,(SELECT group_concat(concat_ws(',', imageposition) separator '; ') from productimage where productId=${req.query.productId}) as imagepositions from products where id=${req.query.productId}`
-  console.log(getProduct)  
+
   con.query(getProduct,(err,result)=>{
       if(err) throw (err)
       else
