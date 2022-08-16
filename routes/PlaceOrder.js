@@ -45,7 +45,7 @@ jsonParser,function(req,res)
         
             let orderinfo=req.body;
             let products=JSON.parse(orderinfo.product)
-            addqr=`insert into customerOrder ( date, customername, phone, pincode, address,ProductCount,status ) values ('${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}',1 )`;
+            addqr=`insert into customerOrder ( date, customername, phone, pincode, address,ProductCount,Total,status ) values ('${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}','${orderinfo.total}',1 )`;
                 con.query(addqr,(err,result)=>{
 
                 if(err) throw (err);

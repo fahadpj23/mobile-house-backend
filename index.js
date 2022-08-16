@@ -18,7 +18,7 @@ const SearchRouter=require('./routes/ProductSearch');
 const Adminrouter=require('./routes/Admin');
 const SingleProductrouter=require('./routes/SingleProducts');
 const PlaceorderRouter=require('./routes/PlaceOrder');
-// // const UserLoginRouter=require('./routes/UserLogin');
+const UserLoginRouter=require('./routes/UserLogin');
 const CategoryViewallRouter=require('./routes/CategoryViewAll');
 // const OrderProductRouter=require('./routes/OrderProduct');
 
@@ -35,7 +35,7 @@ const HSN=require('./routes/AdminPanel/HSN/HSN');
 const Heading=require('./routes/AdminPanel/Heading/Heading');
 const Banner=require('./routes/AdminPanel/Banner/Banner');
 const Ads=require('./routes/AdminPanel/Ads/Ads');
-
+const profile=require('./routes/profile')
 app.use(Homerouter);
 app.use(ProductListWebsite);
  app.use(authentication);
@@ -43,13 +43,13 @@ app.use(ProductListWebsite);
 app.use(Adminrouter);
 app.use(SingleProductrouter);
 app.use(PlaceorderRouter);
-// app.use(UserLoginRouter);
+app.use(UserLoginRouter);
 app.use(CategoryViewallRouter);
 // app.use(OrderProductRouter);
 //app.use(OrderList);
 app.use(addProduct);
 app.use(order);
-
+app.use(profile)
 app.use(category);
 // app.use(express.json());
 app.use(attribute);

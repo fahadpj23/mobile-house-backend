@@ -46,25 +46,12 @@ router.get("/userAuthentication",validateToken,function(req,res)
 
 
 //register the user
-router.post("/UserRegister",
-[
-check('username').notEmpty(),
-check('MobileNumber').notEmpty(),
-check('password').notEmpty(),
-check('ConfirmPassword').notEmpty()
-],
-parseUrlencoded,function(req,res)
+router.post("/UserRegister",parseUrlencoded,function(req,res)
 {
-   const{username,MobileNumber,password,ConfirmPassword}=req.body
-   const error=validationResult(req);
-   if(!error.isEmpty()){
-    return res.json({errors:error.array()})
-   }
-   else
-   {
-    
+ console.log(req.body)
+  
+      
     serachuser=`SELECT COUNT(username) as count FROM users where username="${req.body.username}" `
-    count=
     con.query(serachuser,(err,result,fields)=>{
     if(err)throw (err);
     else 
@@ -84,6 +71,7 @@ parseUrlencoded,function(req,res)
             }
             else
             {
+
             const UserToken=sign({usernamejwt},"importantsecret")
             bcrypt.hash(user.password,10).then((hash)=>{
                 adduser=`insert into users (username,phone,password) values ('${user.username}','${user.MobileNumber}','${hash}')`
@@ -99,7 +87,7 @@ parseUrlencoded,function(req,res)
     }
     })
        
-   }
+   
    
  
 
