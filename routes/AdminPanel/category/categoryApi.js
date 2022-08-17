@@ -45,7 +45,8 @@ router.delete('/CategoryDelete',function(req,res){
 
 router.get('/getCategory',validateToken,function(req,res){
  
-
+    const username=req.user
+    console.log(username)
    let itemmodel=[];
      getatt='select * from category'
      con.query(getatt,(err,result)=>{

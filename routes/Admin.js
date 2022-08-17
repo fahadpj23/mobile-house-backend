@@ -24,7 +24,7 @@ router.post("/adminlogin",parseUrlencoded,function(req,res)
           if(!match) res.json({error:"password is incorrect"})
           else
           {
-            const accessToken=sign({username:req.body.username},"importantsecret");
+            const accessToken=sign({username:req.body.username,id:result[0].id},"importantsecret");
             res.json({"accessToken":accessToken})
          
           }

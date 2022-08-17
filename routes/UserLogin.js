@@ -8,7 +8,8 @@ const {sign}=require('jsonwebtoken')
 const {check,validationResult}=require('express-validator')
 const validateToken=require("../middlewares/authmiddelware")
 const bcrypt=require("bcrypt")
-
+const validateUserToken=require("../middlewares/WebsiteMiddleware");
+const { response } = require('express');
 router.get("/login",function(req,res)
 {
     console.log(req.query.username)
@@ -23,8 +24,8 @@ router.get("/login",function(req,res)
                     if(!match) res.json({error:"password is incorrect"})
                     else
                     {
-                      const accessToken=sign({username:req.query.username},"importantsecret");
-                      res.json({"UserToken":accessToken,"username":req.query.username})
+                        const UserToken=sign({username:req.query.username,id:result[0].id},"importantsecret");
+                      res.json({"UserToken":UserToken,"username":req.query.username})
                    
                     }
                   })
@@ -44,6 +45,30 @@ router.get("/userAuthentication",validateToken,function(req,res)
     res.json({"success":"success"})
 })
 
+router.post('/CartAdd',validateUserToken,(req,res)=>{
+        console.log(req.user)
+        
+         product=req.body
+         console.log(product)
+        addtocart=`insert into cart (userId,productId,qty) values('${req.user.id}','${product.productId}','${product.qty}')`
+        con.query(addtocart,(err,result)=>{
+            if(err) throw (err)
+            else 
+            res.json({success:"added to cart"})
+        })
+})
+
+router.get('/getUserCart',validateUserToken,(req,res)=>{
+    // getcart=`select id,name,sellingPrice,salesPrice,mrp,warranty,qty as maxqty,Brand,HSN_code,Tax,category,Description,variantid from products LEFT JOIN cart ON products.id=cart.productId where userId='${req.user.id}'`
+    getcart=`select products.id,products.name,products.sellingPrice,products.salesPrice,products.mrp,products.warranty,products.qty as maxqty,products.Brand,products.HSN_code,products.Tax,products.category,products.Description,products.variantid from products LEFT JOIN cart ON products.id=cart.productId where userId='${req.user.id}'`
+    con.query(getcart,(err,result)=>{
+        if(err) throw (err)
+        else
+        {
+            res.json({cart:result})
+        }
+    })
+})
 
 //register the user
 router.post("/UserRegister",parseUrlencoded,function(req,res)
@@ -72,12 +97,16 @@ router.post("/UserRegister",parseUrlencoded,function(req,res)
             else
             {
 
-            const UserToken=sign({usernamejwt},"importantsecret")
+           
             bcrypt.hash(user.password,10).then((hash)=>{
                 adduser=`insert into users (username,phone,password) values ('${user.username}','${user.MobileNumber}','${hash}')`
                 con.query(adduser,(err,result,fields)=>{
                     if(err)throw (err);
-                    res.json({UserToken: UserToken,username:user.username})
+                    else
+                    {
+                        const UserToken=sign({username:req.body.username,id:result[0].id},"importantsecret");
+                        res.json({UserToken: UserToken,username:user.username})
+                    }
                 })
             
             })
