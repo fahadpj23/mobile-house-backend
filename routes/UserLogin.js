@@ -13,12 +13,15 @@ const { response } = require('express');
 router.post("/login",function(req,res)
 {
     
-  
+  console.log("dsdsd")
     loginqr=`SELECT * FROM users where username="${req.body.username}" `
+    console.log(loginqr)
     con.query(loginqr,(err,result,fields)=>{
             if(err)throw (err);
-            if(result[0].password)
+            console.log(result)
+            if(result.length!=0)
             {
+                
                 bcrypt.compare(req.body.password,result[0].password).then((match)=>{
         
                     if(!match) res.json({error:"password is incorrect"})
@@ -34,7 +37,7 @@ router.post("/login",function(req,res)
             }
             else
             {
-                res.json("invalid username")
+                res.json({error:"invalid username"})
             }
          })
 
@@ -104,7 +107,8 @@ router.post("/UserRegister",parseUrlencoded,function(req,res)
                     if(err)throw (err);
                     else
                     {
-                        const UserToken=sign({username:req.body.username,id:result[0].id},"importantsecret");
+                       
+                        const UserToken=sign({username:req.body.username,id:result.insertId},"importantsecret");
                         res.json({UserToken: UserToken,username:user.username})
                     }
                 })
