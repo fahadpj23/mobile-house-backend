@@ -20,6 +20,7 @@ const SingleProductrouter=require('./routes/SingleProducts');
 const PlaceorderRouter=require('./routes/PlaceOrder');
 const UserLoginRouter=require('./routes/UserLogin');
 const CategoryViewallRouter=require('./routes/CategoryViewAll');
+
 // const OrderProductRouter=require('./routes/OrderProduct');
 
 
@@ -60,6 +61,7 @@ app.use(HSN);
  app.use(Heading);
 app.use(Banner);
 app.use(Ads);
+
 
 
 

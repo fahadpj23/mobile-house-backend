@@ -10,22 +10,22 @@ const validateToken=require("../middlewares/authmiddelware")
 const bcrypt=require("bcrypt")
 const validateUserToken=require("../middlewares/WebsiteMiddleware");
 const { response } = require('express');
-router.get("/login",function(req,res)
+router.post("/login",function(req,res)
 {
-    console.log(req.query.username)
+    
   
-    loginqr=`SELECT * FROM users where username="${req.query.username}" `
+    loginqr=`SELECT * FROM users where username="${req.body.username}" `
     con.query(loginqr,(err,result,fields)=>{
             if(err)throw (err);
             if(result[0].password)
             {
-                bcrypt.compare(req.query.password,result[0].password).then((match)=>{
+                bcrypt.compare(req.body.password,result[0].password).then((match)=>{
         
                     if(!match) res.json({error:"password is incorrect"})
                     else
                     {
-                        const UserToken=sign({username:req.query.username,id:result[0].id},"importantsecret");
-                      res.json({"UserToken":UserToken,"username":req.query.username})
+                        const UserToken=sign({username:req.body.username,id:result[0].id},"importantsecret");
+                      res.json({"UserToken":UserToken,"username":req.body.username})
                    
                     }
                   })
@@ -60,7 +60,7 @@ router.post('/CartAdd',validateUserToken,(req,res)=>{
 
 router.get('/getUserCart',validateUserToken,(req,res)=>{
     // getcart=`select id,name,sellingPrice,salesPrice,mrp,warranty,qty as maxqty,Brand,HSN_code,Tax,category,Description,variantid from products LEFT JOIN cart ON products.id=cart.productId where userId='${req.user.id}'`
-    getcart=`select products.id,products.name,products.sellingPrice,products.salesPrice,products.mrp,products.warranty,products.qty as maxqty,products.Brand,products.HSN_code,products.Tax,products.category,products.Description,products.variantid from products LEFT JOIN cart ON products.id=cart.productId where userId='${req.user.id}'`
+    getcart=`select products.id,products.name,products.sellingPrice,products.salesPrice,products.mrp,products.warranty,products.qty as maxqty,products.Brand,products.HSN_code,products.Tax,products.category,products.Description,(select image from productimage where productimage.productId=products.id LIMIT 1) as image,products.variantid,cart.qty from products LEFT JOIN cart ON products.id=cart.productId where userId='${req.user.id}'`
     con.query(getcart,(err,result)=>{
         if(err) throw (err)
         else

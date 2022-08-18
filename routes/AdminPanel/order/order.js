@@ -9,7 +9,7 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 router.get('/getOrder',validateToken,(req,res)=>{
    let Tablehead=[];
-        customerorderget=`SELECT * FROM customerorder  ORDER BY orderid DESC `
+        customerorderget=`SELECT * FROM customerOrder  ORDER BY orderid DESC `
         con.query(customerorderget,(err,result)=>{
          if(err) throw(err)
          else
