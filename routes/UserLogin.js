@@ -13,7 +13,7 @@ const { response } = require('express');
 router.post("/login",function(req,res)
 {
     
-  console.log("dsdsd")
+ 
     loginqr=`SELECT * FROM users where username="${req.body.username}" `
     console.log(loginqr)
     con.query(loginqr,(err,result,fields)=>{
