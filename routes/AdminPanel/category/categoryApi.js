@@ -72,6 +72,7 @@ router.get('/category/getData',validateToken,function(req,res){
         
          result.map((item,key)=>{
            getcatvalues=`select  * from categoryattribute where categoryId=${item.id}`
+           console.log(getcatvalues)
            con.query(getcatvalues,(err1,result1)=>{
              if(err1) throw (err1)
              else
@@ -87,16 +88,17 @@ router.get('/category/getData',validateToken,function(req,res){
      {
     
        let categoryval=[];
+       let Variantvalue=[];
       
        categoryvalues.map((item,key)=>{
-        let attributeId=item.attributeId
-        let  attributeName=item.attributeName
+       
         categoryval.push(item.attributeName)
+        item.variant==1 && Variantvalue.push(item.attributeName)
        })
       
        
        
-        itemmodel.push({id:category.id,categoryName:category.categoryName,image:category.image,status:category.status,values:categoryval})
+        itemmodel.push({id:category.id,categoryName:category.categoryName,image:category.image,status:category.status,values:categoryval,variants:Variantvalue})
         if(itemmodel.length==length)
         {
           let tablehead=['SlNo','categoryName','status','values']
