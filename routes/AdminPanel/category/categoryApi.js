@@ -43,6 +43,23 @@ router.delete('/CategoryDelete',function(req,res){
   })
  })
 
+
+ //when add a category fetch all attribute for attach with category
+ router.get('/getAvailableAttribute',function(req,res){
+
+  categoryattribute=`SELECT attributeName as name FROM attribute`
+  
+  con.query(categoryattribute,(err,result)=>{
+    if(err) throw (err)
+    else
+    {
+      console.log(result)
+      res.json({attribute:result})
+    }
+  })
+ })
+
+
 router.get('/category/getData',validateToken,function(req,res){
  
 
