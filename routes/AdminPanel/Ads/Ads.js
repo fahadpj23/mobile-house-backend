@@ -85,18 +85,35 @@ router.post('/AddAds',validateToken,parseUrlencoded,(req,res)=>{
 })
 
 
-router.get('/getAdsData',validateToken,(req,res)=>{
+router.get('/Ads/getData',validateToken,(req,res)=>{
    let Tablehead=["SLNO","status"];
     con.query('SELECT id,status FROM ads',(err,result)=>{
         if(err)  throw (err)
         else
         {
-            // result.length!=0 && Object.entries(result[0]).map((item,key)=>{
-            //     Tablehead.push(item[0])
-            // })
+            result && result.map((item,key)=>{
+                con.query(`select image,brand as Brand,position from adsdetail details where adsId='${item.id}'`,(err2,result2)=>{
+                    if(err2) throw (err2)
+                    else
+                    {
+                        result[key].details=result2
+                        if(key+1 == result.length)
+                        {
+                            result.length!=0 && Object.entries(result[0]).map((item,key1)=>{
+                                Tablehead.push(item[0])
+                                if(key1+1==result.length)
+                                {
+                                    res.json({ "Data":result,"TableHead":Tablehead })
+                                    console.log(result.length)
+                                }
+                            })
+                        }
+                    }
+                })
+            })
+            
            
-            res.json({ "Data":result,"TableHead":Tablehead })
-            console.log(result.length)
+          
         }
     })
 })
