@@ -64,15 +64,16 @@ router.get('/category/getData',validateToken,function(req,res){
  
 
    let itemmodel=[];
-     getatt=`select * from category where categoryName LIKE '%${req.query.search}%'`
+     getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY id DESC`
+ 
      con.query(getatt,(err,result)=>{
        if(err) throw (err)
        else
        {
-        
+          console.log(result)
          result.map((item,key)=>{
            getcatvalues=`select  * from categoryattribute where categoryId=${item.id}`
-           console.log(getcatvalues)
+         
            con.query(getcatvalues,(err1,result1)=>{
              if(err1) throw (err1)
              else
