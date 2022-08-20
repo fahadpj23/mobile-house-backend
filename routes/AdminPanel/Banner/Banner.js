@@ -45,10 +45,10 @@ router.post('/AddBanner',parseUrlencoded,(req,res)=>{
 
 
 //Table data in Banner page
-router.get('/getBannerData',(req,res)=>{
+router.get('/banner/getData',validateToken,(req,res)=>{
     console.log("fdfd")
     let Tablehead=[]
-    con.query('select * from banner',(err,result)=>{
+    con.query(`select * from banner where id LIKE '%${req.query.search}%'`,(err,result)=>{
         if(err)  throw (err)
         else
         {
