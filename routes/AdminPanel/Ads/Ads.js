@@ -12,7 +12,7 @@ const {check,validationResult}=require('express-validator');
 
 router.post('/AddAds',validateToken,parseUrlencoded,(req,res)=>{
     
-        console.log(req.body.operation)
+      
         if(req.body.operation=="")
         {
             AdsImageArray=JSON.parse(req.body.AdsImageArray)
@@ -21,7 +21,7 @@ router.post('/AddAds',validateToken,parseUrlencoded,(req,res)=>{
                 if(err) throw (err)
                 else
                 {
-                        console.log(result.insertId)
+                      
                         AdsImageArray && AdsImageArray.map((item,key)=>{
                             
                             let file= req.files["image" + (key+1)]
@@ -58,7 +58,7 @@ router.post('/AddAds',validateToken,parseUrlencoded,(req,res)=>{
                                 
                                     
                             })
-                            if(item.imageBlob!="")
+                            if(item.imageBlob)
                             {
                                 let file= req.files["image" + (key+1)]
                                 
