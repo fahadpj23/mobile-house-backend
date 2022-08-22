@@ -20,6 +20,10 @@ router.get('/Heading/getData',validateToken,(req,res)=>{
         {
             result[0] && Object.entries(result[0]).map((item,key)=>{
                 Tablehead.push(item[0])
+                // if(Object.entries(result[0]).length==key+1)
+                // {
+                //            res.json({ "Data":result,"TableHead":Tablehead })  
+                // }
             })
             result && result.map((item,key)=>{
                 headproductselect=`select *,(SELECT image from productimage where productimage.productId=products.id LIMIT 1) as image  from products LEFT JOIN headproduct ON products.id=headproduct.productid where  HeadId='${item.id}' `

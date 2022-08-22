@@ -77,13 +77,20 @@ router.get('/banner/getData',validateToken,(req,res)=>{
         if(err)  throw (err)
         else
         {
-            result[0] && Object.entries(result[0]).map((item,key)=>{
-                Tablehead.push(item[0])
-            if(Object.entries(result[0]).length==key+1)
+            if(result.length!=0)
             {
-              res.json({ "Data":result,"TableHead":Tablehead })
+                result[0] && Object.entries(result[0]).map((item,key)=>{
+                    Tablehead.push(item[0])
+                if(Object.entries(result[0]).length==key+1)
+                {
+                res.json({ "Data":result,"TableHead":Tablehead })
+                }
+                })
+                }
+            else
+            {
+                res.json({ "Error":"No Data Found" })
             }
-            })
           
         }
     })

@@ -55,48 +55,11 @@ app.use(Supplier)
 app.use(HSN)
 app.use(Banner)
 app.use(Ads)
-app.get("/fake",function(req,res)
- {
-    searchqr=`SELECT name,image,mrp,price FROM headset`
-    con.query(searchqr,(err,result,fields)=>{
-
-      if(err) throw(err);
-      res.json( [result] )
-      
-  }) 
-  
-})
-// app.post("/products",jsonParser,function(req,res)
-// {
-//     let id=req.params.id
-//     // console.log(req.body.id)
-//     let iddel=req.body.id;
-//     delqr=`delete from product where id=${iddel}`
-//     con.query(delqr,(err,result)=>{
-//         if(err) throw (err);
-//         else res.send("success")
-//     })
-//     })
-    
-    // app.post('/upload',function(req,res)
-    // {
-    //     console.log("sd")
-    //     if(req.files===null)
-    //     {
-    //         return res.status(400)
-    //     }
-    //     else
-    //     {
-    //         console.log(req.files.file)
-    //     const file=req.files.file
-    //     file.mv(`../MobileHouse/mobilehouse/public/image/${file.name}`)
-    //     }
-    //     })
 
     
 
-app.listen(process.env.PORT || 9000,function(){
-    console.log("server started")
-})
+app.listen(9000, () => {
+  console.log(`Example app listening `);
+});
 
 

@@ -62,7 +62,8 @@ router.delete('/CategoryDelete',function(req,res){
 
 router.get('/category/getData',validateToken,function(req,res){
  
-
+    const username=req.user
+    console.log(username)
    let itemmodel=[];
      getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY id DESC`
  
@@ -167,7 +168,7 @@ router.get('/category/getData',validateToken,function(req,res){
                                     })
                                 })
                                 :
-                                res.json({success:"success"})
+                                res.json({success:"category added successfully"})
                              }
                             })
                             
@@ -211,7 +212,8 @@ router.get('/category/getData',validateToken,function(req,res){
                 if(JSON.parse(req.body.categoryvalues).length>0)
                 {
                 JSON.parse(req.body.categoryvalues).map((item,key)=>{
-                      console.log(`select * from  attribute where attributeName='${item}'`)
+                    
+                     
                       con.query(`select * from  attribute where attributeName='${item}'`,(err,result,fields)=>
                       {
                       
@@ -228,7 +230,7 @@ router.get('/category/getData',validateToken,function(req,res){
                                       else {
                                       
                                           if(JSON.parse(req.body.categoryvalues).length== key+1)
-                                          res.json({"success":"success"})
+                                          res.json({"success":"category updated successfully"})
                                       
                                       }
                                       
