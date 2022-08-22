@@ -73,7 +73,7 @@ router.post('/AddAds',validateToken,parseUrlencoded,(req,res)=>{
                             }
                             if(AdsImageArray.length==key+1)
                                         {
-                                            res.json({"success":"Ads added successfully"})
+                                            res.json({"success":"Ads UPDATED successfully"})
                                         }
                         })
                 }
