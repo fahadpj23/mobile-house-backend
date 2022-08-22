@@ -43,45 +43,18 @@ router.delete('/CategoryDelete',function(req,res){
   })
  })
 
-<<<<<<< HEAD
-
- //when add a category fetch all attribute for attach with category
- router.get('/getAvailableAttribute',function(req,res){
-
-  categoryattribute=`SELECT attributeName as name FROM attribute`
-  
-  con.query(categoryattribute,(err,result)=>{
-    if(err) throw (err)
-    else
-    {
-      console.log(result)
-      res.json({attribute:result})
-    }
-  })
- })
-
-
-router.get('/category/getData',validateToken,function(req,res){
- 
-
-   let itemmodel=[];
-     getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY id DESC`
- 
-=======
 router.get('/getCategory',validateToken,function(req,res){
  
 
    let itemmodel=[];
      getatt='select * from category'
->>>>>>> main
      con.query(getatt,(err,result)=>{
        if(err) throw (err)
        else
        {
-          console.log(result)
+        
          result.map((item,key)=>{
            getcatvalues=`select  * from categoryattribute where categoryId=${item.id}`
-         
            con.query(getcatvalues,(err1,result1)=>{
              if(err1) throw (err1)
              else
@@ -97,17 +70,16 @@ router.get('/getCategory',validateToken,function(req,res){
      {
     
        let categoryval=[];
-       let Variantvalue=[];
       
        categoryvalues.map((item,key)=>{
-       
+        let attributeId=item.attributeId
+        let  attributeName=item.attributeName
         categoryval.push(item.attributeName)
-        item.variant==1 && Variantvalue.push(item.attributeName)
        })
       
        
        
-        itemmodel.push({id:category.id,categoryName:category.categoryName,image:category.image,status:category.status,values:categoryval,variants:Variantvalue})
+        itemmodel.push({id:category.id,categoryName:category.categoryName,image:category.image,status:category.status,values:categoryval})
         if(itemmodel.length==length)
         {
           let tablehead=['SlNo','categoryName','status','values']

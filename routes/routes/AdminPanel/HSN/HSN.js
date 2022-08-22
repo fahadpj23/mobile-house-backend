@@ -14,14 +14,7 @@ router.post('/HSNcodePost',parseUrlencoded,(req,res)=>{
   const{HSN_Code,Product,CGST,SGST,IGST,status,operation,operationid}=req.body
     if(operation)
     {
-        UpdateHSN=`UPDATE hsn SET HSN_Code='${HSN_Code}',product='${Product}',cgst='${CGST}',sgst='${SGST}',igst='${IGST}',status='${status}' where id='${operationid}' `
-        con.query(UpdateHSN,(err,result)=>{
-            if(err) throw(err)
-            else
-            {
-                res.json({"success":"HSN Updated successfully"})
-            }
-           })
+
     }
     else
     {
@@ -38,7 +31,7 @@ router.post('/HSNcodePost',parseUrlencoded,(req,res)=>{
 
 router.get('/getHSN',(req,res)=>{
     let Tablehead=[]
-    con.query(`select * from hsn where HSN_Code LIKE '%${req.query.search}%' or Product LIKE '%${req.query.search}%' ORDER BY id DESC `,(err,result)=>{
+    con.query('select * from hsn',(err,result)=>{
         if(err)  throw (err)
         else
         {
