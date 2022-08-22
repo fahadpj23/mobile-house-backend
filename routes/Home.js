@@ -41,7 +41,7 @@ router.get("/getProductSliders",function(req,res)
       console.log(result)
       result &&  result.map((item,key)=>{
        
-        headproduct=`SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty as maxqty,Brand,HSN_code,Tax,category,Description,(SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image,variantid FROM products RIGHT JOIN headproduct ON headproduct.productid = products.id where  HeadId=${item.id};`
+        headproduct=`SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty as maxqty,Brand,HSN_code,Tax,category,Description,(SELECT IF ((SELECT EXISTS(SELECT * FROM productimage WHERE imagePosition = 1 and productimage.productId = products.id) as result) = 1 , (SELECT image FROM productimage WHERE imagePosition = 1 AND productimage.productId = products.id) , (SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) )  ) as image,variantid FROM products RIGHT JOIN headproduct ON headproduct.productid = products.id where  HeadId=${item.id};`
         console.log(headproduct)
         con.query(headproduct,(err1,result1)=>{
            if(err1) throw (err1)
