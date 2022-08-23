@@ -140,7 +140,11 @@ router.get('/getattribute',validateToken,function(req,res){
    var attribute;
   var responsemodel;
   let itemmodel=[];
+<<<<<<< HEAD
     getatt='select * from attribute '
+=======
+    getatt=` select * from attribute where attributeName LIKE '%${req.query.search}%' ORDER BY id DESC `
+>>>>>>> check
     con.query(getatt,(err,result)=>{
       if(err) throw (err)
       else

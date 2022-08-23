@@ -24,21 +24,15 @@ router.get("/customerorderdetails",function(req,res)
 })
 
 router.post("/customerOrders",
-[
-    check('name').notEmpty(),
-    check('phone').notEmpty(),
-    check('pincode').notEmpty(),
-    check('address').notEmpty(),
-    
-  ],
+
 jsonParser,function(req,res)
     {
-        const{name,phone,pincode,address}=req.body
+       
         
         const UTCTime = new Date() 
         const time = UTCTime.toLocaleTimeString()
         const date= UTCTime.toDateString()
-        const orderdate=time+date
+        const orderdate=date+","+time
         const error=validationResult(req);
         console.log(error.errors)
         if(error.errors.length!=0)
@@ -51,7 +45,7 @@ jsonParser,function(req,res)
         
             let orderinfo=req.body;
             let products=JSON.parse(orderinfo.product)
-            addqr=`insert into customerOrder ( date, customername, phone, pincode, address,orderCount ) values ('${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}')`;
+            addqr=`insert into customerOrder ( date, customername, phone, pincode, address,ProductCount,Total,status ) values ('${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}','${orderinfo.total}',1 )`;
                 con.query(addqr,(err,result)=>{
 
                 if(err) throw (err);

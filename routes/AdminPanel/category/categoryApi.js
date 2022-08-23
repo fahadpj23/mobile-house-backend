@@ -43,18 +43,46 @@ router.delete('/CategoryDelete',function(req,res){
   })
  })
 
+<<<<<<< HEAD
 router.get('/getCategory',validateToken,function(req,res){
- 
+=======
 
+ //when add a category fetch all attribute for attach with category
+ router.get('/getAvailableAttribute',function(req,res){
+
+  categoryattribute=`SELECT attributeName as name FROM attribute`
+  
+  con.query(categoryattribute,(err,result)=>{
+    if(err) throw (err)
+    else
+    {
+      console.log(result)
+      res.json({attribute:result})
+    }
+  })
+ })
+
+
+router.get('/category/getData',validateToken,function(req,res){
+>>>>>>> check
+ 
+    const username=req.user
+    console.log(username)
    let itemmodel=[];
+<<<<<<< HEAD
      getatt='select * from category'
+=======
+     getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY id DESC`
+ 
+>>>>>>> check
      con.query(getatt,(err,result)=>{
        if(err) throw (err)
        else
        {
-        
+          console.log(result)
          result.map((item,key)=>{
            getcatvalues=`select  * from categoryattribute where categoryId=${item.id}`
+         
            con.query(getcatvalues,(err1,result1)=>{
              if(err1) throw (err1)
              else
@@ -70,16 +98,17 @@ router.get('/getCategory',validateToken,function(req,res){
      {
     
        let categoryval=[];
+       let Variantvalue=[];
       
        categoryvalues.map((item,key)=>{
-        let attributeId=item.attributeId
-        let  attributeName=item.attributeName
+       
         categoryval.push(item.attributeName)
+        item.variant==1 && Variantvalue.push(item.attributeName)
        })
       
        
        
-        itemmodel.push({id:category.id,categoryName:category.categoryName,image:category.image,status:category.status,values:categoryval})
+        itemmodel.push({id:category.id,categoryName:category.categoryName,image:category.image,status:category.status,values:categoryval,variants:Variantvalue})
         if(itemmodel.length==length)
         {
           let tablehead=['SlNo','categoryName','status','values']
@@ -147,7 +176,7 @@ router.get('/getCategory',validateToken,function(req,res){
                                     })
                                 })
                                 :
-                                res.json({success:"success"})
+                                res.json({success:"category added successfully"})
                              }
                             })
                             
@@ -191,7 +220,8 @@ router.get('/getCategory',validateToken,function(req,res){
                 if(JSON.parse(req.body.categoryvalues).length>0)
                 {
                 JSON.parse(req.body.categoryvalues).map((item,key)=>{
-                      console.log(`select * from  attribute where attributeName='${item}'`)
+                    
+                     
                       con.query(`select * from  attribute where attributeName='${item}'`,(err,result,fields)=>
                       {
                       
@@ -208,7 +238,7 @@ router.get('/getCategory',validateToken,function(req,res){
                                       else {
                                       
                                           if(JSON.parse(req.body.categoryvalues).length== key+1)
-                                          res.json({"success":"success"})
+                                          res.json({"success":"category updated successfully"})
                                       
                                       }
                                       
