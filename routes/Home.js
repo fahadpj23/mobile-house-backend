@@ -90,7 +90,7 @@ router.get("/getAds",function(req,res)
     
         result && result.map((item,key)=>{
           console.log(item.id)
-            con.query(`select * from adsdetail where adsId='${item.id}'`,(err1,result1)=>{
+            con.query(`select * from adsdetail where adsId='${item.id}' ORDER BY position ASC`,(err1,result1)=>{
               if(err1) throw (err1)
               else
               {
