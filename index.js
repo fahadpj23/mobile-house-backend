@@ -18,6 +18,7 @@ const PlaceorderRouter=require('./routes/PlaceOrder')
 const UserLoginRouter=require('./routes/UserLogin')
 const CategoryViewallRouter=require('./routes/CategoryViewAll')
 const OrderProductRouter=require('./routes/OrderProduct')
+const cart=require('./routes/cart')
 // const OrderList=require('./routes/AdminPanel/OrderList')
 // const ProductList=require('./routes/AdminPanel/productlist')
 const authentication=require('./routes/authentication/authentication')
@@ -55,7 +56,7 @@ app.use(Supplier)
 app.use(HSN)
 app.use(Banner)
 app.use(Ads)
-
+app.use(cart)
     
 
 app.listen(9000, () => {

@@ -86,16 +86,21 @@ router.post('/AddAds',validateToken,parseUrlencoded,(req,res)=>{
 
 
 router.get('/Ads/getData',validateToken,(req,res)=>{
+    
    let Tablehead=["SLNO","status"];
     con.query('SELECT id,status FROM ads',(err,result)=>{
         if(err)  throw (err)
         else
-        {
+        {   
+            
+            if(result.length)
+            {
             result && result.map((item,key)=>{
                 con.query(`select image,brand as Brand,position from adsdetail details where adsId='${item.id}'`,(err2,result2)=>{
                     if(err2) throw (err2)
                     else
                     {
+                        
                         result[key].details=result2
                         if(key+1 == result.length)
                         {
@@ -111,7 +116,12 @@ router.get('/Ads/getData',validateToken,(req,res)=>{
                     }
                 })
             })
-            
+            }
+            else
+            {
+               
+                res.json({ "Data":result,"TableHead":Tablehead })  
+            }
            
           
         }
