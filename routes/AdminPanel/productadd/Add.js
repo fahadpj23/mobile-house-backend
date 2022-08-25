@@ -351,6 +351,23 @@ router.get('/productdetails',validateToken,(req,res)=>{
       }
     })
 })
+router.get('/getHSN',(req,res)=>{
+  let Tablehead=[]
+  con.query(`select * from hsn where HSN_Code  ORDER BY id DESC `,(err,result)=>{
+      if(err)  throw (err)
+      else
+      {
+          result[0] && Object.entries(result[0]).map((item,key)=>{
+              Tablehead.push(item[0])
+              if(Object.entries(result[0]).length==key+1)
+              {
+                res.json({ "Data":result,"TableHead":Tablehead })
+              }
+          })
+         
+      }
+  })
+})
 
 
 module.exports=router;  

@@ -1,9 +1,9 @@
 var express=require("express");
 var app=express();
 var cors=require("cors");
-const upload=require('express-fileupload');
-const port = 9000;
-app.use(upload());
+const upload=require('express-fileupload')
+const port=9000
+app.use(upload())
 app.use(cors());
 
 app.use(express.static('public')); 
@@ -62,5 +62,6 @@ app.use(cart)
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+
 
 

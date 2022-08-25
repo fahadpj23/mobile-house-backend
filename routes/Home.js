@@ -15,18 +15,7 @@ router.get('/HomePageCategory',function(req,res){
       }
     })
 })
-// router.get("/MobileHouseRecommend",function(req,res)
-// {
-//  con.query("SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty,Brand,HSN_code,Tax,category,Description,variantid,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productimage.productId = products.id) as image from products ORDER BY id DESC ",(err,result,fields)=>{
-//      if(err) throw(err);
-//      else
-//      {
-    
-//        res.send(result)
-//      }
-//  }) 
- 
-// })
+
 
  
 
@@ -109,28 +98,5 @@ router.get("/getAds",function(req,res)
 
 
 
-// router.get("/headset",function(req,res)
-// {
-//  con.query("SELECT * FROM headset",(err,result,fields)=>{
-//      if(err) throw(err);
-     
-//      res.send(result)
-//  }) 
- 
-// })
-// router.get("/cover",function(req,res)
-// {
-//  con.query("SELECT * FROM cover",(err,result,fields)=>{
-//      if(err) throw(err);
-//      res.send(result)
-//  })   
-// })
-// router.get("/access",function(req,res)
-// {
-//  con.query("SELECT * FROM access",(err,result,fields)=>{
-//      if(err) throw(err);
-    
-//      res.send(result)
-//  })   
-// })
+
 module.exports=router;

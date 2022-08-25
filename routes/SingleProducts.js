@@ -16,7 +16,7 @@ router.get("/singleview",function(req,res)
        if(err) throw (err)
        else
       {
-        productattribute=`select *,(select attributeName from attribute where productattribute.attributeId=attribute.id ) as attributeName ,(select value  from attributevalue where attributevalue.id=productattribute.attributeValueId ) as attributeValue from productattribute where productid=${req.query.productId}`
+        productattribute=`select *,(select attributeName from attribute where productattribute.attributeId=attribute.id ) as attributeName ,(select value  from attributevalue where attributevalue.id=productattribute.attributeValueId ) as attributeValue from productattribute where productid=${req.query.productId} ORDER BY attributeName ASC`
         con.query(productattribute,(err1,result1)=>{
            if(err) throw (err)
            else
