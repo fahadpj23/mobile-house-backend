@@ -296,16 +296,25 @@ async function categoryvalueset(attributevaluearray,attributeId,attributeName,re
 
 router.get('/product/getData',validateToken,(req,res)=>{
 
-    getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products  WHERE name LIKE '%${req.query.search}%'  ORDER BY products.id DESC`
-    console.log(getProduct)
-    con.query(getProduct,(err,result)=>{
-      if(err) throw (err)
-      else
-      {
-      let tablehead=['SlNo','name','purchasePrice','sellingPrice','salesPrice','mrp','Brand','categoryName','image']
-      res.json({ "Data":result,"TableHead":tablehead })
-      }
-    })
+  TotalCount="select COUNT(*) as count from products"
+  con.query(TotalCount,(err1,result1)=>{
+    if(err1) throw (err1)
+    else
+    {
+      
+      getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products  WHERE name LIKE '%${req.query.search}%'    ORDER BY products.id DESC  LIMIT ${(+req.query.PageNo-1) * 10}, 20`
+  
+      con.query(getProduct,(err,result)=>{
+        if(err) throw (err)
+        else
+        {
+        let tablehead=['SlNo','name','purchasePrice','sellingPrice','salesPrice','mrp','Brand','categoryName','image']
+        res.json({ "Data":result,"TableHead":tablehead,Count:result1[0].count})
+        }
+      })
+    }
+  })
+  
 
 })
 
