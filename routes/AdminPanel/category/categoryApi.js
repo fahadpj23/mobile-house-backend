@@ -65,7 +65,7 @@ router.get('/category/getData',validateToken,function(req,res){
     const username=req.user
     console.log(username)
    let itemmodel=[];
-     getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY id DESC`
+     getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY id DESC LIMIT ${(+req.query.PageNo-1) * 10}, 20`
  
      con.query(getatt,(err,result)=>{
        if(err) throw (err)
@@ -103,8 +103,16 @@ router.get('/category/getData',validateToken,function(req,res){
         itemmodel.push({id:category.id,categoryName:category.categoryName,image:category.image,status:category.status,values:categoryval,variants:Variantvalue})
         if(itemmodel.length==length)
         {
-          let tablehead=['SlNo','categoryName','status','values']
-           res.json({ "Data":itemmodel,"TableHead":tablehead })
+          getcount=`select COUNT(*) as count from category `
+          con.query(getcount,(err1,result1)=>{
+            if(err1) throw (err1)
+            else
+            {
+              let tablehead=['SlNo','categoryName','status','values']
+              res.json({ "Data":itemmodel,"TableHead":tablehead ,Count:result1[0].count})
+            }
+          })
+         
         }
        
        
