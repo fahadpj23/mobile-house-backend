@@ -136,11 +136,11 @@ parseUrlencoded,function(req,res)
 
 
 //get attribute for showing in page table
-router.get('/attribute/getData',validateToken,function(req,res){
-   var attribute;
-  var responsemodel;
+router.get('/getattribute',validateToken,function(req,res){
+ 
   let itemmodel=[];
     getatt=` select * from attribute where attributeName LIKE '%${req.query.search}%' ORDER BY id DESC `
+    console.log(getatt)
     con.query(getatt,(err,result)=>{
       if(err) throw (err)
       else
