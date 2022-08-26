@@ -7,9 +7,9 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 
 
-router.get('/getOrder',validateToken,(req,res)=>{
+router.get('/getOrder/getData',validateToken,(req,res)=>{
    let Tablehead=[];
-        customerorderget=`SELECT * FROM customerOrder  ORDER BY orderid DESC `
+        customerorderget=`SELECT * FROM customerOrder  ORDER BY orderid DESC LIMIT ${ req.query.search ? 0 :(+req.query.PageNo-1) * 10}, 13 `
         con.query(customerorderget,(err,result)=>{
          if(err) throw(err)
          else
@@ -20,7 +20,13 @@ router.get('/getOrder',validateToken,(req,res)=>{
                 if(Object.entries(result[0]).length==key+1)
                 {
                     
-                    res.json({ "Data":result,"TableHead":Tablehead })
+                    con.query(`select COUNT(*) as count from customerOrder  `,(err1,result1)=>{
+                        if(err1)  throw (err1)
+                        else
+                        {
+                         res.json({ "Data":result,"TableHead":Tablehead ,Count:result1[0].count})
+                        }
+                    })
                 }
             })
          }

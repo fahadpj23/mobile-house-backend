@@ -92,7 +92,7 @@ router.post('/AddAds',validateToken,parseUrlencoded,(req,res)=>{
 router.get('/Ads/getData',validateToken,(req,res)=>{
     
    let Tablehead=["SLNO","status"];
-    con.query('SELECT id,status FROM ads',(err,result)=>{
+    con.query('SELECT id,COUNT(*)as count,status FROM ads',(err,result)=>{
         if(err)  throw (err)
         else
         {   
@@ -113,7 +113,7 @@ router.get('/Ads/getData',validateToken,(req,res)=>{
                                 // if(key1+1==result.length)
                                 // {
                                     setTimeout(() => {
-                                        res.json({ "Data":result,"TableHead":Tablehead })
+                                        res.json({ "Data":result,"TableHead":Tablehead,Count:result[0].count })
                                         console.log(result.length)
                                     }, 200);
                                   

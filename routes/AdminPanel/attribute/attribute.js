@@ -136,28 +136,28 @@ parseUrlencoded,function(req,res)
 
 
 //get attribute for showing in page table
-router.get('/getattribute',validateToken,function(req,res){
- 
-  let itemmodel=[];
-    getatt=` select * from attribute where attributeName LIKE '%${req.query.search}%' ORDER BY id DESC `
-    console.log(getatt)
-    con.query(getatt,(err,result)=>{
-      if(err) throw (err)
-      else
-      {
-       
-        result.map((item,key)=>{
-          getattvalues=`select value from attributevalue where attributeid=${item.id}`
-          con.query(getattvalues,(err1,result1)=>{
-            if(err1) throw (err1)
-            else
-              setattribute(item,result1,result.length)
-          })
-        })
-      }
-    })
+router.get('/attribute/getData',validateToken,function(req,res){
 
-    function setattribute(attribute,attributevalues,length)
+ let itemmodel=[];
+   getatt=` select * from attribute where attributeName LIKE '%${req.query.search}%' ORDER BY id DESC LIMIT ${ req.query.search ? 0 :(+req.query.PageNo-1) * 10}, 13`
+   con.query(getatt,(err,result)=>{
+     if(err) throw (err)
+     else
+     {
+      
+       result.map((item,key)=>{
+         getattvalues=`select value from attributevalue where attributeid=${item.id}`
+         con.query(getattvalues,(err1,result1)=>{
+           if(err1) throw (err1)
+           else
+             setattribute(item,result1,result.length,req.query.search)
+         })
+       })
+     }
+   })
+
+
+    function setattribute(attribute,attributevalues,length,searchVal)
     {
      
       let attirbuteval=[];
@@ -171,8 +171,16 @@ router.get('/getattribute',validateToken,function(req,res){
        itemmodel.push({id:attribute.id,attributeName:attribute.attributeName,status:attribute.status ,values:attirbuteval})
        if(itemmodel.length==length)
        {
-        let tablehead=['SlNo','attributeName','status','values']
-        res.json({ "Data":itemmodel,"TableHead":tablehead })
+        TotalCount=`select COUNT(*) as count from attribute WHERE attributeName LIKE '%${searchVal}%'`
+        con.query(TotalCount,(err1,result1)=>{
+          if(err1) throw (err1)
+          else
+          {
+            let tablehead=['SlNo','attributeName','status','values']
+            res.json({ "Data":itemmodel,"TableHead":tablehead ,Count:result1[0].count})
+          }
+        })
+       
        
        }
       

@@ -14,7 +14,7 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 router.get('/Heading/getData',validateToken,(req,res)=>{
     let Tablehead=[]
-    con.query(`select * from head where Heading LIKE '%${req.query.search}%' `,(err,result)=>{
+    con.query('select * from head',(err,result)=>{
         if(err)  throw (err)
         else
         {
@@ -38,7 +38,13 @@ router.get('/Heading/getData',validateToken,(req,res)=>{
                         {
                             
                                         setTimeout(() => {
-                                            res.json({ "Data":result,"TableHead":Tablehead })  
+                                            con.query(`select COUNT(*) as count from head  `,(err1,result1)=>{
+                                                if(err1)  throw (err1)
+                                                else
+                                                {
+                                                    res.json({ "Data":result,"TableHead":Tablehead,Count:result1[0].count })
+                                                }
+                                            })
                                         }, 200);
                 
                                          

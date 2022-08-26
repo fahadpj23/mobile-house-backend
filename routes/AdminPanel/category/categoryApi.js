@@ -63,22 +63,22 @@ router.delete('/CategoryDelete',function(req,res){
 router.get('/category/getData',validateToken,function(req,res){
  
     const username=req.user
-    console.log(username)
+    
    let itemmodel=[];
-     getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY id DESC LIMIT ${ req.query.search ? 0 :(+req.query.PageNo-1) * 10}, 20 `
- 
+     getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY id DESC LIMIT ${ req.query.search ? 0 :(+req.query.PageNo-1) * 10}, 13 `
+    console.log(getatt)
      con.query(getatt,(err,result)=>{
        if(err) throw (err)
        else
        {
-          console.log(result)
+          
          result.map((item,key)=>{
            getcatvalues=`select  * from categoryattribute where categoryId=${item.id}`
          
            con.query(getcatvalues,(err1,result1)=>{
              if(err1) throw (err1)
              else
-             setcategory(item,result1,result.length)
+             setcategory(item,result1,result.length,req.query.search)
 
            })
          })
@@ -86,7 +86,7 @@ router.get('/category/getData',validateToken,function(req,res){
        }
      })
  
-     function setcategory(category,categoryvalues,length)
+     function setcategory(category,categoryvalues,length,searchVal)
      {
     
        let categoryval=[];
@@ -103,8 +103,15 @@ router.get('/category/getData',validateToken,function(req,res){
         itemmodel.push({id:category.id,categoryName:category.categoryName,image:category.image,status:category.status,values:categoryval,variants:Variantvalue})
         if(itemmodel.length==length)
         {
-          let tablehead=['SlNo','categoryName','status','values']
-           res.json({ "Data":itemmodel,"TableHead":tablehead })
+          TotalCount=`select COUNT(*) as count from category WHERE categoryName LIKE '%${searchVal}%'`
+          con.query(TotalCount,(err1,result1)=>{
+            if(err1) throw (err1)
+            else
+            {
+            let tablehead=['SlNo','categoryName','status','values']
+            res.json({ "Data":itemmodel,"TableHead":tablehead ,Count:result1[0].count})
+            }
+          })
         }
        
        
