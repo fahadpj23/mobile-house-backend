@@ -73,8 +73,8 @@ router.get("/variantproduct",function(req,res)
          
             Object.values(result).map((item,key)=>{
                 // here select attribute,attribute name,attribute value,attrubute value id, attach to product depends on check attribute id is needed for variant show if varaiant 1 then select else reject selection
-                productattribute=`select *,(select attributeName from attribute where productattribute.attributeId=attribute.id ) as attributeName ,(select value  from attributevalue where attributevalue.id=productattribute.attributeValueId ) as attributeValue from productattribute where productid=${item.id} and productattribute.attributeId=(select attributeId from categoryattribute where variant=1 and categoryId=${item.category} and categoryattribute.attributeId=productattribute.attributeId) ORDER BY productattribute.attributeId  `
-       
+                productattribute=`select DISTINCT *,(select attributeName from attribute where productattribute.attributeId=attribute.id ) as attributeName ,(select value  from attributevalue where attributevalue.id=productattribute.attributeValueId ) as attributeValue from productattribute where productid=${item.id} and productattribute.attributeId=(select attributeId from categoryattribute where variant=1 and categoryId=${item.category} and categoryattribute.attributeId=productattribute.attributeId) ORDER BY productattribute.attributeId  `
+                console.log(productattribute)
                 con.query(productattribute,(err1,result1)=>{
                     if(err1) throw (err1)
                     else

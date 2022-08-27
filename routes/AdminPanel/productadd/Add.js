@@ -94,7 +94,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
                 
               }
             
-              //select catgeory attribute and add priduct attribute to that catgeory attribute
+      //select catgeory attribute from categoryattribute table and add product attribute to that catgeory attribute from received value through post
               categoryattribute=`select *  from categoryattribute where  categoryId="${product.categoryid}"`
              
               con.query(categoryattribute,(err,result1)=>{
@@ -160,7 +160,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
           if(imageblob[i-1])
           {
            
-            console.log("ddfdfd")
+           
             let image=req.files["image"+(i)] 
             
             image && productimage(image,product.operationid,i )
@@ -168,35 +168,45 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
         }
         
       }
-      categoryattribute=`select *  from categoryattribute where  categoryId="${product.categoryid}"`
-   
-      con.query(categoryattribute,(err,result1)=>{
-        if(err) throw (err)
+      deleteProductAttribute=`delete from  productattribute where productid='${product.operationid}'`
+      con.query(deleteProductAttribute,(err3,result3)=>{
+      
+        if(err3) throw (err3)
         else
         {
-          Object.values(result1).map((item,key)=>{
-          
-            if(product[item.attributeId]!="--select--" && product[item.attributeId]!=undefined)
-            {
-            insertproductattributequery=`UPDATE productattribute SET attributeValueId=${product[item.attributeId]} where productid=${product.operationid} and attributeId=${item.attributeId}`
-             
-            con.query(insertproductattributequery,(err,result)=>{
-              if(err) throw (err)
-              else
-              if(Object.values(result1).length==key+1)
-                res.json({"success":"success"})
-            })
-            }
+          con.query(categoryattribute,(err,result1)=>{
+            if(err) throw (err)
             else
             {
-              if(Object.values(result1).length==key+1)
-              res.json({"success":"success"})
+        
+              Object.values(result1).map((item,key)=>{
+                if(product[item.attributeId]!="--select--" && product[item.attributeId]!=undefined)
+                {
+                insertproductattributequery=`insert into productattribute (productid,attributeId,attributeValueId) values (${product.operationid},${item.attributeId},${product[item.attributeId]})  `
+                
+                con.query(insertproductattributequery,(err,result)=>{
+                  if(err) throw (err)
+                  else
+                  if(Object.values(result1).length==key+1)
+                    res.json({"success":"success"})
+                })
+                }
+                else
+                {
+                  if(Object.values(result1).length==key+1)
+                    res.json({"success":"success"})
+                }
+              })
+              
             }
-          })
           
+          })
         }
-      
       })
+      //select catgeory attribute from categoryattribute table and add product attribute to that catgeory attribute from received value through post
+      categoryattribute=`select *  from categoryattribute where  categoryId="${product.categoryid}"`
+   
+    
       
     }
   })
