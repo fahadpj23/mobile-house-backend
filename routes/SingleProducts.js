@@ -120,7 +120,7 @@ router.get("/pincode",function(req,res)
 })
 router.get("/related",function(req,res)
 {
-   console.log(req.query)
+
  related=`SELECT *,(SELECT  image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image  FROM products where category="${req.query.category}" and variantid != '${req.query.variantid}'`  
  
  con.query(related,(err,result,fields)=>{

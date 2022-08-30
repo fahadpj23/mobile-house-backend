@@ -34,6 +34,7 @@ const Heading=require('./routes/AdminPanel/Heading/Heading')
 const Banner=require('./routes/AdminPanel/Banner/Banner')
 const Ads=require('./routes/AdminPanel/Ads/Ads')
 const order=require('./routes/AdminPanel/order/order')
+const profile=require('./routes/profile')
  app.use(express.static(path.join(__dirname, 'products')))
 // app.use(ProductList)
 app.use(Homerouter)
@@ -59,7 +60,7 @@ app.use(Banner)
 app.use(Ads)
 app.use(cart)
 app.use(order)
-
+app.use(profile)
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

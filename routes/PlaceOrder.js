@@ -4,13 +4,14 @@ var bodyParser=require("body-parser");
 var jsonParser=bodyParser.json();
 const con=require('../database')
 const {check,validationResult}=require('express-validator');
+const validateUserToken = require('../middlewares/WebsiteMiddleware');
 
 router.get("/customerorderdetails",function(req,res)
  {
      console.log(req.query)
     
     // singleqr=`SELECT * FROM products where id="${req.query.productId}"`
-    singleqr=`select id,name,sellingPrice,salesPrice,mrp,warranty,qty,Brand,HSN_code,Tax,category,Description,variantid,,(SELECT  image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products where id=${req.query.productId}  `
+    singleqr=`select id,name,sellingPrice,salesPrice,mrp,warranty,qty,Brand,HSN_code,Tax,category,Description,variantid,(SELECT  image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products where id=${req.query.productId}  `
     con.query(singleqr,(err,result,fields)=>{
     if(err)throw (err);
     else
@@ -23,7 +24,7 @@ router.get("/customerorderdetails",function(req,res)
   
 })
 
-router.post("/customerOrders",
+router.post("/customerOrders",validateUserToken,
 
 jsonParser,function(req,res)
     {
@@ -45,7 +46,7 @@ jsonParser,function(req,res)
         
             let orderinfo=req.body;
             let products=JSON.parse(orderinfo.product)
-            addqr=`insert into customerOrder ( date, customername, phone, pincode, address,ProductCount,Total,status ) values ('${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}','${orderinfo.total}',1 )`;
+            addqr=`insert into customerOrder ( customerId,date, customername, phone, pincode, address,ProductCount,Total,status ) values ( '${req.user.id}','${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}','${orderinfo.total}',1 )`;
                 con.query(addqr,(err,result)=>{
 
                 if(err) throw (err);

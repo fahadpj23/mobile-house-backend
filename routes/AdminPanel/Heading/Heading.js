@@ -26,7 +26,7 @@ router.get('/Heading/getData',validateToken,(req,res)=>{
                 // }
             })
             result && result.map((item,key)=>{
-                headproductselect=`select *,(SELECT image from productimage where productimage.productId=products.id LIMIT 1) as image  from products LEFT JOIN headproduct ON products.id=headproduct.productid where  HeadId='${item.id}' `
+                headproductselect=`select *,(SELECT image from productimage where productimage.productId=products.id LIMIT 1) as image  from products LEFT JOIN headproduct ON products.id=headproduct.productid where  HeadId='${item.id}'  ORDER BY id DESC LIMIT ${(+req.query.PageNo-1) * 10}, 13  `
                 
                 con.query(headproductselect,(err1,result1)=>{
                     if(err1)throw (err1)

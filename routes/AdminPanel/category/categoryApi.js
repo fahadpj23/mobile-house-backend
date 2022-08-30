@@ -65,7 +65,7 @@ router.get('/category/getData',validateToken,function(req,res){
     const username=req.user
     
    let itemmodel=[];
-     getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY id DESC LIMIT ${ req.query.search ? 0 :(+req.query.PageNo-1) * 10}, 13 `
+     getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY id DESC LIMIT ${(+req.query.PageNo-1) * 10}, 13 `
     console.log(getatt)
      con.query(getatt,(err,result)=>{
        if(err) throw (err)

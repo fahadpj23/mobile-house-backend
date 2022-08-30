@@ -100,7 +100,7 @@ router.get('/Ads/getData',validateToken,(req,res)=>{
             if(result.length)
             {
             result && result.map((item,key)=>{
-                con.query(`select image,brand as Brand,position from adsdetail details where adsId='${item.id}' ORDER BY position ASC`,(err2,result2)=>{
+                con.query(`select image,brand as Brand,position from adsdetail details where adsId='${item.id}' ORDER BY position ASC  LIMIT ${ (+req.query.PageNo-1) * 10}, 13`,(err2,result2)=>{
                     if(err2) throw (err2)
                     else
                     {

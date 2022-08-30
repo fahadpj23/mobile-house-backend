@@ -139,7 +139,7 @@ parseUrlencoded,function(req,res)
 router.get('/attribute/getData',validateToken,function(req,res){
 
  let itemmodel=[];
-   getatt=` select * from attribute where attributeName LIKE '%${req.query.search}%' ORDER BY id DESC LIMIT ${ req.query.search ? 0 :(+req.query.PageNo-1) * 10}, 13`
+   getatt=` select * from attribute where attributeName LIKE '%${req.query.search}%' ORDER BY id DESC LIMIT ${ (+req.query.PageNo-1) * 10}, 13`
    con.query(getatt,(err,result)=>{
      if(err) throw (err)
      else

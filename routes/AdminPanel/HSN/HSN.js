@@ -38,7 +38,7 @@ router.post('/HSNcodePost',parseUrlencoded,(req,res)=>{
 
 router.get('/hsn/getData',(req,res)=>{
     let Tablehead=[]
-    con.query(`select * from hsn where HSN_Code LIKE '%${req.query.search}%' or Product LIKE '%${req.query.search}%' ORDER BY id DESC LIMIT ${ req.query.search ? 0 :(+req.query.PageNo-1) * 10}, 13 `,(err,result)=>{
+    con.query(`select * from hsn where HSN_Code LIKE '%${req.query.search}%' or Product LIKE '%${req.query.search}%' ORDER BY id DESC LIMIT ${(+req.query.PageNo-1) * 10}, 13 `,(err,result)=>{
         if(err)  throw (err)
         else
         {
