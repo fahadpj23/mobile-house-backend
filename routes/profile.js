@@ -19,6 +19,34 @@ router.get("/MyOrderDetails",validateUserToken,function(req,res)
 
 })
 
+router.post('/UserAddressAdd',validateUserToken,function(req,res)
+{
+    const userDetails=req.body
+    addAddress=`insert into useraddress(UserId,Name,Phone,Pincode,Locality,Address,city,state,Landmark,alternativePhone) values ('${req.user.id}','${userDetails.name}','${userDetails.phone}','${userDetails.pincode}','${userDetails.locality}','${userDetails.address}','${userDetails.city}','${userDetails.state}','${userDetails.landmark}','${userDetails.alternativePhone}')` 
+    con.query(addAddress,(err,result)=>{
+        if(err) throw (err)
+        else
+        {
+            res.json({success:"Address Added successfully"})
+        }
+    })
+})
+
+
+router.get("/getUserAddress",validateUserToken,function(req,res)
+{
+    getAddress=`SELECT * from useraddress where UserId='${req.user.id}'`
+
+   con.query(getAddress,(err,result)=>{
+    if(err) throw (err)
+    else
+    {
+        res.json({"Address":result})
+    }
+   })
+
+})
+
 
 
 module.exports=router;
