@@ -101,7 +101,12 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
                 if(err) throw (err)
                 else
                 {
-            
+                  if(result1.length==0)
+                  {
+                    res.json({"success":"success"})
+                  }
+                  else
+                  {
                   Object.values(result1).map((item,key)=>{
                     if(product[item.attributeId]!="--select--" && product[item.attributeId]!=undefined)
                     {
@@ -121,6 +126,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
                   })
                   
                 }
+                }
               
               })
               
@@ -130,7 +136,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
   else
   {
   
- 
+    
  
       addqr=`UPDATE products SET  name='${product.Name}' , purchasePrice='${product.purchasePrice}',sellingPrice='${product.sellingPrice}',salesPrice='${product.salesPrice}', mrp='${product.MRP}' ,warranty='${product.Warranty}',  Brand='${product.Brand}',qty='${product.qty}',HSN_Code='${product.HSN_Code}' ,Tax='${product.Tax}',category='${product.categoryid}',Description='${product.Description}' where id='${product.operationid}'`;
     
@@ -169,21 +175,31 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
         
       }
       deleteProductAttribute=`delete from  productattribute where productid='${product.operationid}'`
+      console.log(deleteProductAttribute)
       con.query(deleteProductAttribute,(err3,result3)=>{
       
         if(err3) throw (err3)
         else
         {
+                 
+      //select catgeory attribute from categoryattribute table and add product attribute to that catgeory attribute from received value through post
+      categoryattribute=`select *  from categoryattribute where  categoryId="${product.categoryid}"`
+      
           con.query(categoryattribute,(err,result1)=>{
             if(err) throw (err)
             else
             {
-        
+              if(result1.length==0)
+              {
+                res.json({"success":"success"})
+              }
+              else
+              {
               Object.values(result1).map((item,key)=>{
                 if(product[item.attributeId]!="--select--" && product[item.attributeId]!=undefined)
                 {
                 insertproductattributequery=`insert into productattribute (productid,attributeId,attributeValueId) values (${product.operationid},${item.attributeId},${product[item.attributeId]})  `
-                
+                console.log(insertproductattributequery)
                 con.query(insertproductattributequery,(err,result)=>{
                   if(err) throw (err)
                   else
@@ -199,6 +215,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
               })
               
             }
+          }
           
           })
         }
@@ -304,19 +321,6 @@ async function categoryvalueset(attributevaluearray,attributeId,attributeName,re
 
 }
 
-<<<<<<< HEAD
-router.get('/getProduct',validateToken,(req,res)=>{
-
-    getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products ORDER BY products.id DESC`
-    con.query(getProduct,(err,result)=>{
-      if(err) throw (err)
-      else
-      {
-      let tablehead=['SlNo','name','purchasePrice','sellingPrice','salesPrice','mrp','Brand','categoryName','image']
-      res.json({ "Data":result,"TableHead":tablehead })
-      }
-    })
-=======
 router.get('/product/getData',validateToken,(req,res)=>{
   console.log("sdd")
   TotalCount=`select COUNT(*) as count from products WHERE name LIKE '%${req.query.search}%'`
@@ -338,7 +342,6 @@ router.get('/product/getData',validateToken,(req,res)=>{
     }
   })
   
->>>>>>> Pagination
 
 })
 

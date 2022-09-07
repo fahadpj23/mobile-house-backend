@@ -12,11 +12,7 @@ var parseUrlencoded = bodyParser.urlencoded({ extended: true });
 
 
 
-<<<<<<< HEAD
-router.get('/getHead',validateToken,(req,res)=>{
-=======
 router.get('/Heading/getData',validateToken,(req,res)=>{
->>>>>>> check
     let Tablehead=[]
     con.query('select * from head',(err,result)=>{
         if(err)  throw (err)
