@@ -57,4 +57,22 @@ router.get("/viewBrandProduct",function(req,res)
    
 
 })
+
+router.get("/viewSerachValueProduct",function(req,res)
+ { 
+    let sortColumn= (req.query.sort=="newestfirst") ? "id" :  "sellingPrice" 
+    let sort=(req.query.sort=="Price-Low-to-High") ? "ASC" : "DESC"
+    viewSearchProduct=`SELECT   id , name,  sellingPrice, salesPrice , mrp ,variantid ,(SELECT IF ((SELECT EXISTS(SELECT * FROM productimage WHERE imagePosition = 1 and productimage.productId = products.id) as result) = 1 , (SELECT image FROM productimage WHERE imagePosition = 1 AND productimage.productId = products.id) , (SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) )  ) as image  from products  where  name LIKE N'%${req.query.searchValue}%'  ORDER BY id DESC`
+          con.query(viewSearchProduct,(err1,result1)=>{
+              if(err1)  throw (err1)
+              else
+              {
+                
+                 res.json({ viewSearchProduct: result1 })
+              }
+          })
+   
+
+})
+
 module.exports=router;

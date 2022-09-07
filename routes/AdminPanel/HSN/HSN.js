@@ -38,7 +38,7 @@ router.post('/HSNcodePost',parseUrlencoded,(req,res)=>{
 
 router.get('/getHSN',(req,res)=>{
     let Tablehead=[]
-    con.query(`select * from hsn where HSN_Code LIKE '%${req.query.search}%' or Product LIKE '%${req.query.search}%' ORDER BY id DESC `,(err,result)=>{
+    con.query(`select * from hsn where HSN_Code LIKE '%${req.query.search}%' or Product LIKE '%${req.query.search}%' ORDER BY id DESC LIMIT ${(+req.query.PageNo-1) * 10}, 13 `,(err,result)=>{
         if(err)  throw (err)
         else
         {
@@ -46,7 +46,14 @@ router.get('/getHSN',(req,res)=>{
                 Tablehead.push(item[0])
                 if(Object.entries(result[0]).length==key+1)
                 {
-                  res.json({ "Data":result,"TableHead":Tablehead })
+
+                    con.query(`select COUNT(*) as count from hsn  `,(err1,result1)=>{
+                        if(err1)  throw (err1)
+                        else
+                        {
+                         res.json({ "Data":result,"TableHead":Tablehead ,Count:result1[0].count})
+                        }
+                    })
                 }
             })
            

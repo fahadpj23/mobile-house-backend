@@ -94,7 +94,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
                 
               }
             
-              //select catgeory attribute and add priduct attribute to that catgeory attribute
+      //select catgeory attribute from categoryattribute table and add product attribute to that catgeory attribute from received value through post
               categoryattribute=`select *  from categoryattribute where  categoryId="${product.categoryid}"`
              
               con.query(categoryattribute,(err,result1)=>{
@@ -160,7 +160,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
           if(imageblob[i-1])
           {
            
-            console.log("ddfdfd")
+           
             let image=req.files["image"+(i)] 
             
             image && productimage(image,product.operationid,i )
@@ -168,35 +168,45 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
         }
         
       }
-      categoryattribute=`select *  from categoryattribute where  categoryId="${product.categoryid}"`
-   
-      con.query(categoryattribute,(err,result1)=>{
-        if(err) throw (err)
+      deleteProductAttribute=`delete from  productattribute where productid='${product.operationid}'`
+      con.query(deleteProductAttribute,(err3,result3)=>{
+      
+        if(err3) throw (err3)
         else
         {
-          Object.values(result1).map((item,key)=>{
-          
-            if(product[item.attributeId]!="--select--" && product[item.attributeId]!=undefined)
-            {
-            insertproductattributequery=`UPDATE productattribute SET attributeValueId=${product[item.attributeId]} where productid=${product.operationid} and attributeId=${item.attributeId}`
-             
-            con.query(insertproductattributequery,(err,result)=>{
-              if(err) throw (err)
-              else
-              if(Object.values(result1).length==key+1)
-                res.json({"success":"success"})
-            })
-            }
+          con.query(categoryattribute,(err,result1)=>{
+            if(err) throw (err)
             else
             {
-              if(Object.values(result1).length==key+1)
-              res.json({"success":"success"})
+        
+              Object.values(result1).map((item,key)=>{
+                if(product[item.attributeId]!="--select--" && product[item.attributeId]!=undefined)
+                {
+                insertproductattributequery=`insert into productattribute (productid,attributeId,attributeValueId) values (${product.operationid},${item.attributeId},${product[item.attributeId]})  `
+                
+                con.query(insertproductattributequery,(err,result)=>{
+                  if(err) throw (err)
+                  else
+                  if(Object.values(result1).length==key+1)
+                    res.json({"success":"success"})
+                })
+                }
+                else
+                {
+                  if(Object.values(result1).length==key+1)
+                    res.json({"success":"success"})
+                }
+              })
+              
             }
-          })
           
+          })
         }
-      
       })
+      //select catgeory attribute from categoryattribute table and add product attribute to that catgeory attribute from received value through post
+      categoryattribute=`select *  from categoryattribute where  categoryId="${product.categoryid}"`
+   
+    
       
     }
   })
@@ -294,6 +304,7 @@ async function categoryvalueset(attributevaluearray,attributeId,attributeName,re
 
 }
 
+<<<<<<< HEAD
 router.get('/getProduct',validateToken,(req,res)=>{
 
     getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products ORDER BY products.id DESC`
@@ -305,9 +316,105 @@ router.get('/getProduct',validateToken,(req,res)=>{
       res.json({ "Data":result,"TableHead":tablehead })
       }
     })
+=======
+router.get('/product/getData',validateToken,(req,res)=>{
+  console.log("sdd")
+  TotalCount=`select COUNT(*) as count from products WHERE name LIKE '%${req.query.search}%'`
+  con.query(TotalCount,(err1,result1)=>{
+    if(err1) throw (err1)
+    else
+    {
+      
+      getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products  WHERE name LIKE '%${req.query.search}%' ORDER BY products.id DESC  LIMIT ${ (+req.query.PageNo-1) * 10}, 20`
+      console.log(getProduct)
+      con.query(getProduct,(err,result)=>{
+        if(err) throw (err)
+        else
+        {
+        let tablehead=['SlNo','name','purchasePrice','sellingPrice','salesPrice','mrp','Brand','categoryName','image']
+        res.json({ "Data":result,"TableHead":tablehead,Count:result1[0].count})
+        }
+      })
+    }
+  })
+  
+>>>>>>> Pagination
 
 })
 
+router.get('/getHSN',(req,res)=>{
+  let Tablehead=[]
+  con.query(`select * from hsn where HSN_Code  ORDER BY id DESC `,(err,result)=>{
+      if(err)  throw (err)
+      else
+      {
+          result[0] && Object.entries(result[0]).map((item,key)=>{
+              Tablehead.push(item[0])
+              if(Object.entries(result[0]).length==key+1)
+              {
+                res.json({ "Data":result,"TableHead":Tablehead })
+              }
+          })
+         
+      }
+  })
+})
+
+
+router.get('/getcategory',validateToken,function(req,res){
+ 
+  const username=req.user
+  console.log(username)
+ let itemmodel=[];
+   getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY id DESC`
+
+   con.query(getatt,(err,result)=>{
+     if(err) throw (err)
+     else
+     {
+        console.log(result)
+       result.map((item,key)=>{
+         getcatvalues=`select  * from categoryattribute where categoryId=${item.id}`
+       
+         con.query(getcatvalues,(err1,result1)=>{
+           if(err1) throw (err1)
+           else
+           setcategory(item,result1,result.length)
+
+         })
+       })
+     
+     }
+   })
+
+   function setcategory(category,categoryvalues,length)
+   {
+  
+     let categoryval=[];
+     let Variantvalue=[];
+    
+     categoryvalues.map((item,key)=>{
+     
+      categoryval.push(item.attributeName)
+      item.variant==1 && Variantvalue.push(item.attributeName)
+     })
+    
+     
+     
+      itemmodel.push({id:category.id,categoryName:category.categoryName,image:category.image,status:category.status,values:categoryval,variants:Variantvalue})
+      if(itemmodel.length==length)
+      {
+        let tablehead=['SlNo','categoryName','status','values']
+         res.json({ "Data":itemmodel,"TableHead":tablehead })
+      }
+     
+     
+   }
+
+
+
+ 
+})
 
 router.get('/productdetails',validateToken,(req,res)=>{
 
