@@ -3,11 +3,15 @@ const validateUserToken=require('../middlewares/WebsiteMiddleware')
 const router = express.Router()
 const con=require('../database')
 
+var bodyParser=require("body-parser");
 
+var jsonParser=bodyParser.json();
+var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 //get the single product detail
 router.get("/MyOrderDetails",validateUserToken,function(req,res)
 {
-   getMyorder=`SELECT customerorderdetails.orderId,customername,phone,pincode,address,date,customerorderdetails.productid,productimage.image,products.name FROM customerOrder LEFT JOIN customerorderdetails ON customerOrder.orderid = customerorderdetails.orderId LEFT JOIN productimage ON productimage.productId=customerorderdetails.productid LEFT JOIN products ON products.id=customerorderdetails.productid where customerId='${req.user.id}'`
+   getMyorder= `SELECT customerOrder.orderid,customerOrder.status,Total,customername,phone,pincode,address,date,customerorderdetails.productid,products.name,(SELECT image from productimage where productimage.productId=customerorderdetails.productid LIMIT 1 )as image FROM customerOrder LEFT JOIN customerorderdetails ON customerOrder.orderid = customerorderdetails.orderId LEFT JOIN products ON products.id=customerorderdetails.productid where customerId='${req.user.id}'`
+
    console.log(getMyorder)
    con.query(getMyorder,(err,result)=>{
     if(err) throw (err)
@@ -17,6 +21,40 @@ router.get("/MyOrderDetails",validateUserToken,function(req,res)
     }
    })
 
+})
+
+//personal address of customer
+router.post("/AddpersonalDetails",validateUserToken,parseUrlencoded,function(req,res)
+{
+    deletePersonalDetails=`Delete from userPersonalDetails where UserId='${req.user.id}'`
+   
+    con.query(deletePersonalDetails,(err1,result1)=>{
+        if(err1) throw (err1)
+        else
+        {
+            AddPersonalDetails= `insert into userPersonalDetails(UserId, FirstName,LastName, Gender, Email,MobileNumber ) Values('${req.user.id}','${req.body.FirstName}','${req.body.lastName}','${req.body.Gender}','${req.body.email}','${req.body.mobileNumber}')`
+
+           
+            con.query(AddPersonalDetails,(err,result)=>{
+             if(err) throw (err)
+             else
+             {
+                 res.json({"success":"Personal Details Added"})
+             }
+            })
+            
+        }
+    })
+  
+})
+
+router.get('/PersonalDetails',validateUserToken,(req,res)=>{
+    getPersonalDetails=`select * from userpersonaldetails where USerId='${req.user.id}'`
+    con.query(getPersonalDetails,(err,result)=>{
+        if(err) throw (err)
+        else
+        res.json({PersonalDetails:result[0]})
+    })
 })
 
 router.post('/UserAddressAdd',validateUserToken,function(req,res)

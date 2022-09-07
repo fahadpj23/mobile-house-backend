@@ -53,7 +53,7 @@ router.get('/CustomerOrder/getData',validateToken,(req,res)=>{
 router.post('/DeliveryStatusUpdate',validateToken,(req,res)=>{
    
     UpdateDeliveryStatus=`UPDATE customerorder SET status=${req.body.status} where orderid=${req.body.orderid}` 
-    console.log(UpdateDeliveryStatus)
+  
     con.query(UpdateDeliveryStatus,(err,result)=>{
         if(err) throw (err)
         else
