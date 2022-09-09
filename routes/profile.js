@@ -53,7 +53,7 @@ router.get('/PersonalDetails',validateUserToken,(req,res)=>{
     con.query(getPersonalDetails,(err,result)=>{
         if(err) throw (err)
         else
-        res.json({PersonalDetails:result[0]})
+        res.json({PersonalDetails:result[0] ??"No data"})
     })
 })
 
