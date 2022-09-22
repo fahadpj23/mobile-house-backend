@@ -101,6 +101,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
                 if(err) throw (err)
                 else
                 {
+                  console.log(result1)
                   if(result1.length==0)
                   {
                     res.json({"success":"success"})
@@ -328,8 +329,8 @@ router.get('/product/getData',validateToken,(req,res)=>{
     if(err1) throw (err1)
     else
     {
-      
-      getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products  WHERE name LIKE '%${req.query.search}%' ORDER BY products.id DESC  LIMIT ${ (req.query.PageNo ? +req.query.PageNo-1:1) * 10}, 20`
+      console.log(req.query)
+      getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products  WHERE name LIKE '%${req.query.search}%' ORDER BY products.id DESC  LIMIT ${(req.query.PageNo ? +req.query.PageNo-1 : 1) * 10}, 20`
       console.log(getProduct)
       con.query(getProduct,(err,result)=>{
         if(err) throw (err)

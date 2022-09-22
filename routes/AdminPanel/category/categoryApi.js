@@ -69,7 +69,7 @@ router.get('/category/getData',validateToken,function(req,res){
 
  
 
-     getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY id DESC LIMIT ${(+req.query.PageNo-1) * 10}, 13 `
+     getatt=`select * from category where categoryName LIKE '%${req.query.search}%' ORDER BY category.id DESC LIMIT ${(+req.query.PageNo-1) * 10}, 13 `
 
      con.query(getatt,(err,result)=>{
        if(err) throw (err)
