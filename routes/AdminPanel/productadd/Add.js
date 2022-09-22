@@ -61,12 +61,20 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
                 //if image blob is there then add image
                 if(imageblob[i-1] && productImages[i-1]!="deleted" )
                 {
-                   
+                  console.log("noimage")
                   let image=req.files["image"+(i)] 
     
                   image && productimage(image,result.insertId,i )
                 }
-                
+                else(productImages[i-1]!="deleted" && productImages[i-1])
+                {
+                  imageaddqr=`insert into productimage (productId,imagePosition,image) values (${result.insertId},'${i}','${productImages[i-1]}')`
+                  console.log("imagealready")
+                  con.query(imageaddqr,(err6,result6)=>
+                  {
+                    if(err6) throw (err6)
+                  })
+                }
                 
               }
               
@@ -149,7 +157,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
     
       for(let i=1;i<=5;i++)
       {
-        
+        //if image deleted from the position then delete from mysql.image array posiiton deleted means delete the product
         if(productImages[i-1]=="deleted")
         {
             deleteimage=`delete from productimage where productId=${product.operationid} and imagePosition=${i} `
