@@ -61,12 +61,15 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
                 //if image blob is there then add image
                 if(imageblob[i-1] && productImages[i-1]!="deleted" )
                 {
-                 
+                 console.log("df")
                   let image=req.files["image"+(i)] 
     
                   image && productimage(image,result.insertId,i )
+                  break;
                 }
-                else(productImages[i-1]!="deleted" && productImages[i-1])
+                else
+                {
+                if(!imageblob[i-1] && productImages[i-1]!="deleted" && productImages[i-1])
                 {
                   imageaddqr=`insert into productimage (productId,imagePosition,image) values (${result.insertId},'${i}','${productImages[i-1]}')`
                  
@@ -75,7 +78,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
                     if(err6) throw (err6)
                   })
                 }
-                
+              }
               }
               
         
@@ -280,7 +283,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
 })
 
 router.get('/productImageDetails',validateToken,function(req,res){
-  productImage=`select imagePosition,image from productImage where productId='${req.query.productid}' `
+  productImage=`select imagePosition,image from productimage where productId='${req.query.productid}' `
   console.log(productImage)
   con.query(productImage,(err,result)=>{
     if(err)throw (err)
