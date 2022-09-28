@@ -210,7 +210,7 @@ router.get("/productList/searchitem",function(req,res)
  { 
     let sortColumn= (req.query.sort=="newestfirst") ? "id" :  "sellingPrice" 
     let sort=(req.query.sort=="Price-Low-to-High") ? "ASC" : "DESC"
-    viewSearchProduct=`SELECT   id , name,(SELECT MAX(sellingPrice) from products where   name LIKE N'%${req.query.searchitem}%' )as MaxsellingPrice,(SELECT MAX(salesPrice) from products where where  name LIKE N'%${req.query.searchitem}%' )as MaxsalesPrice,  sellingPrice, salesPrice , mrp ,variantid ,(SELECT IF ((SELECT EXISTS(SELECT * FROM productimage WHERE imagePosition = 1 and productimage.productId = products.id) as result) = 1 , (SELECT image FROM productimage WHERE imagePosition = 1 AND productimage.productId = products.id) , (SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) )  ) as image  from products  where  name LIKE N'%${req.query.searchitem}%'  ORDER BY id DESC`
+    viewSearchProduct=`SELECT   id , name,(SELECT MAX(sellingPrice) from products where   name LIKE N'%${req.query.searchitem}%' )as MaxsellingPrice,(SELECT MAX(salesPrice) from products where   name LIKE N'%${req.query.searchitem}%' )as MaxsalesPrice,  sellingPrice, salesPrice , mrp ,variantid ,(SELECT IF ((SELECT EXISTS(SELECT * FROM productimage WHERE imagePosition = 1 and productimage.productId = products.id) as result) = 1 , (SELECT image FROM productimage WHERE imagePosition = 1 AND productimage.productId = products.id) , (SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) )  ) as image  from products  where  name LIKE N'%${req.query.searchitem}%'  ORDER BY id DESC`
          console.log(viewSearchProduct)  
     con.query(viewSearchProduct,(err1,result1)=>{
               if(err1)  throw (err1)

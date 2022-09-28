@@ -43,7 +43,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
         
 
            
-            addqr=`insert into products (name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty,  Brand,qty ,HSN_Code,Tax,category,Description,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${product.Brand}','${product.qty}','${product.HSN_Code}','${product.Tax}','${product.categoryid}',${product.Description},'${product.operationid}')`;
+            addqr=`insert into products (name,  purchasePrice,sellingPrice,salesPrice, mrp ,warranty,  Brand,qty ,HSN_Code,Tax,category,Description,variantid) values ('${product.Name}','${product.purchasePrice}','${product.sellingPrice}','${product.salesPrice}','${product.MRP}','${product.Warranty}','${product.Brand}','${product.qty}','${product.HSN_Code}','${product.Tax}','${product.categoryid}',"${product.Description}",'${product.operationid}')`;
           
           
          
@@ -59,29 +59,33 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
               for(let i=1;i<=5;i++)
               {
                 //if image blob is there then add image
+              
+              
+                // console.log(productImages[i-1]!="deleted")
                 if(imageblob[i-1] && productImages[i-1]!="deleted" )
                 {
-                 console.log("df")
+              
                   let image=req.files["image"+(i)] 
     
                   image && productimage(image,result.insertId,i )
-                  break;
+                 
                 }
                 else
                 {
-                if(!imageblob[i-1] && productImages[i-1]!="deleted" && productImages[i-1])
-                {
-                  imageaddqr=`insert into productimage (productId,imagePosition,image) values (${result.insertId},'${i}','${productImages[i-1]}')`
-                 
-                  con.query(imageaddqr,(err6,result6)=>
+                 //in the case of variant add there is image of it's  parent. so there is no blob.so if there is a image value then insert
+                  if(!imageblob[i-1] && productImages[i-1]!="deleted" && productImages[i-1])
                   {
-                    if(err6) throw (err6)
-                  })
-                }
-              }
+                    imageaddqr=`insert into productimage (productId,imagePosition,image) values (${result.insertId},'${i}','${productImages[i-1]}')`
+                  
+                    con.query(imageaddqr,(err6,result6)=>
+                    {
+                      if(err6) throw (err6)
+                    })
+                  }
+               }
               }
               
-        
+              //if variantid is not there  then set variant id as insertid(database id)
               if( product.variantid=="")
               {
            
@@ -93,6 +97,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
                 })
 
               }
+              //if there is a variant id then set variant as passed variant from frontend 
               else
               {
 
@@ -112,7 +117,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
                 if(err) throw (err)
                 else
                 {
-                  console.log(result1)
+                
                   if(result1.length==0)
                   {
                     res.json({"success":"success"})
@@ -150,7 +155,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
   
     
  
-      addqr=`UPDATE products SET  name='${product.Name}' , purchasePrice='${product.purchasePrice}',sellingPrice='${product.sellingPrice}',salesPrice='${product.salesPrice}', mrp='${product.MRP}' ,warranty='${product.Warranty}',  Brand='${product.Brand}',qty='${product.qty}',HSN_Code='${product.HSN_Code}' ,Tax='${product.Tax}',category='${product.categoryid}',Description=${product.Description} where id='${product.operationid}'`;
+      addqr=`UPDATE products SET  name='${product.Name}' , purchasePrice='${product.purchasePrice}',sellingPrice='${product.sellingPrice}',salesPrice='${product.salesPrice}', mrp='${product.MRP}' ,warranty='${product.Warranty}',  Brand='${product.Brand}',qty='${product.qty}',HSN_Code='${product.HSN_Code}' ,Tax='${product.Tax}',category='${product.categoryid}',Description="${product.Description}" where id='${product.operationid}'`;
     
     con.query(addqr,(err,result)=>{
 
@@ -272,7 +277,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
       {
         file.mv(`products/images/${Math.round(new Date().getTime()/1000)}${file.name}`)
         updateImage=`UPDATE  productimage set image='${Math.round(new Date().getTime()/1000)}${file.name}' where imagePosition='${imgposition}' and productId=${dbid}`
-        // console.log(updateImage)
+    
         con.query(updateImage,(err,result)=>{
           if(err)throw (err)
         })
@@ -285,7 +290,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
 
 router.get('/productImageDetails',validateToken,function(req,res){
   productImage=`select imagePosition,image from productimage where productId='${req.query.productid}' `
-  console.log(productImage)
+
   con.query(productImage,(err,result)=>{
     if(err)throw (err)
     else
@@ -352,9 +357,9 @@ router.get('/product/getData',validateToken,(req,res)=>{
     if(err1) throw (err1)
     else
     {
-      console.log(req.query)
+
       getProduct=`select id,name,purchasePrice,sellingPrice,salesPrice,mrp,Brand,category,(SELECT categoryName FROM category WHERE category.id=products.category ) As categoryName,(SELECT image from productimage where productimage.productId=products.id LIMIT 1)as image from products  WHERE name LIKE '%${req.query.search}%' ORDER BY products.id DESC  LIMIT ${(req.query.PageNo ? +req.query.PageNo-1 : 1) * 10}, 20`
-      console.log(getProduct)
+
       con.query(getProduct,(err,result)=>{
         if(err) throw (err)
         else
