@@ -165,14 +165,24 @@ router.get("/productList/productCategory",function(req,res)
 
     let sort=(req.query.sort=="Price-Low-to-High") ? "ASC" : "DESC"
 
-          headEdit=`SELECT  (SELECT id from products where products.id=headproduct.productid) as id ,(SELECT name from products where products.id=headproduct.productid) as name, (SELECT sellingPrice from products where products.id=headproduct.productid) as sellingPrice, (SELECT salesPrice from products where products.id=headproduct.productid) as salesPrice ,(SELECT mrp from products where products.id=headproduct.productid) as mrp ,(SELECT variantid from products where products.id=headproduct.productid) as variantid ,(SELECT image from productimage where productimage.productId=headproduct.productid LIMIT 1) as image from headproduct where HeadId=${req.query.productCategory}  ORDER BY ${sortColumn} ${sort};`
-
-          con.query(headEdit,(err1,result1)=>{
-              if(err1)  throw (err1)
+          headProduct=`SELECT  (SELECT id from products where products.id=headproduct.productid) as id ,(SELECT name from products where products.id=headproduct.productid) as name,(SELECT MAX(sellingPrice) from products where products.id=headproduct.productid )as MaxsellingPrice,(SELECT MAX(salesPrice) from products where products.id=headproduct.productid )as MaxsalesPrice, (SELECT sellingPrice from products where products.id=headproduct.productid) as sellingPrice, (SELECT salesPrice from products where products.id=headproduct.productid) as salesPrice ,(SELECT mrp from products where products.id=headproduct.productid) as mrp ,(SELECT variantid from products where products.id=headproduct.productid) as variantid ,(SELECT image from productimage where productimage.productId=headproduct.productid LIMIT 1) as image from headproduct where HeadId=${req.query.productCategory}  ORDER BY ${sortColumn} ${sort};`
+         console.log(headProduct)
+          con.query(headProduct,(err,result)=>{
+              if(err)  throw (err)
               else
               {
-                
-                 res.json({ products: result1 })
+              
+               Brandqr=` SELECT  (SELECT Brand from products where products.id=headproduct.productid) from headproduct where HeadId=${req.query.productCategory}   `
+               console.log(Brandqr)
+               con.query(Brandqr,(err1,resul1t,fields1)=>{
+                   
+                 if(err1) throw(err1);
+                 else
+                 {
+                 res.json({products:result,ProductBrand:resul1t})
+                 }
+               })
+               //   res.json({ products: result1 })
               }
           })
    
@@ -182,7 +192,7 @@ router.get("/productList/Brand",function(req,res)
  { 
     let sortColumn= (req.query.sort=="newestfirst") ? "id" :  "sellingPrice" 
     let sort=(req.query.sort=="Price-Low-to-High") ? "ASC" : "DESC"
-    viewBrandProduct=`SELECT   id , name,  sellingPrice, salesPrice , mrp ,variantid ,(SELECT IF ((SELECT EXISTS(SELECT * FROM productimage WHERE imagePosition = 1 and productimage.productId = products.id) as result) = 1 , (SELECT image FROM productimage WHERE imagePosition = 1 AND productimage.productId = products.id) , (SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) )  ) as image  from products  where products.Brand="${req.query.Brand}"  ORDER BY id DESC`
+    viewBrandProduct=`SELECT   id , name,(SELECT MAX(sellingPrice) from products products.Brand="${req.query.Brand}" )as MaxsellingPrice,(SELECT MAX(salesPrice) from products where products.Brand="${req.query.Brand}" )as MaxsalesPrice,  sellingPrice, salesPrice , mrp ,variantid ,(SELECT IF ((SELECT EXISTS(SELECT * FROM productimage WHERE imagePosition = 1 and productimage.productId = products.id) as result) = 1 , (SELECT image FROM productimage WHERE imagePosition = 1 AND productimage.productId = products.id) , (SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) )  ) as image  from products  where products.Brand="${req.query.Brand}"  ORDER BY id DESC`
         //   headEdit=`SELECT  (SELECT id from products where products.id=headproduct.productid) as id ,(SELECT name from products where products.id=headproduct.productid) as name, (SELECT sellingPrice from products where products.id=headproduct.productid) as sellingPrice, (SELECT salesPrice from products where products.id=headproduct.productid) as salesPrice ,(SELECT mrp from products where products.id=headproduct.productid) as mrp ,(SELECT variantid from products where products.id=headproduct.productid) as variantid ,(SELECT image from productimage where productimage.productId=headproduct.productid LIMIT 1) as image from headproduct  where products.Brand="${req.query.Brand}"  ORDER BY ${sortColumn} ${sort}`
           con.query(viewBrandProduct,(err1,result1)=>{
               if(err1)  throw (err1)
@@ -200,13 +210,14 @@ router.get("/productList/searchitem",function(req,res)
  { 
     let sortColumn= (req.query.sort=="newestfirst") ? "id" :  "sellingPrice" 
     let sort=(req.query.sort=="Price-Low-to-High") ? "ASC" : "DESC"
-    viewSearchProduct=`SELECT   id , name,  sellingPrice, salesPrice , mrp ,variantid ,(SELECT IF ((SELECT EXISTS(SELECT * FROM productimage WHERE imagePosition = 1 and productimage.productId = products.id) as result) = 1 , (SELECT image FROM productimage WHERE imagePosition = 1 AND productimage.productId = products.id) , (SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) )  ) as image  from products  where  name LIKE N'%${req.query.searchValue}%'  ORDER BY id DESC`
-          con.query(viewSearchProduct,(err1,result1)=>{
+    viewSearchProduct=`SELECT   id , name,(SELECT MAX(sellingPrice) from products where   name LIKE N'%${req.query.searchitem}%' )as MaxsellingPrice,(SELECT MAX(salesPrice) from products where where  name LIKE N'%${req.query.searchitem}%' )as MaxsalesPrice,  sellingPrice, salesPrice , mrp ,variantid ,(SELECT IF ((SELECT EXISTS(SELECT * FROM productimage WHERE imagePosition = 1 and productimage.productId = products.id) as result) = 1 , (SELECT image FROM productimage WHERE imagePosition = 1 AND productimage.productId = products.id) , (SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) )  ) as image  from products  where  name LIKE N'%${req.query.searchitem}%'  ORDER BY id DESC`
+         console.log(viewSearchProduct)  
+    con.query(viewSearchProduct,(err1,result1)=>{
               if(err1)  throw (err1)
               else
               {
                 
-                 res.json({ viewSearchProduct: result1 })
+                 res.json({ products: result1 })
               }
           })
    
