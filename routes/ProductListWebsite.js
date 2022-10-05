@@ -26,7 +26,7 @@ router.get("/productList/category",function(req,res)
           if(err1) throw(err1);
           else
           {
-          res.json({products:result,Brand:result1,TotalProduct:result[0]?.count??0})
+          res.json({products:result,Brand:result1,TotalProduct:result[0] && result[0].count})
           }
         })
       }
