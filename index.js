@@ -8,7 +8,7 @@ app.use(cors());
 
 app.use(express.static('public')); 
 app.use('products/images', express.static('images'));
-
+const payment=require('./routes/Payment/Payment')
 const Homerouter=require('./routes/Home')
 const ProductListWebsite=require('./routes/ProductListWebsite')
 const SearchRouter=require('./routes/ProductSearch')
@@ -61,6 +61,7 @@ app.use(Ads)
 app.use(cart)
 app.use(order)
 app.use(profile)
+app.use(payment)
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
