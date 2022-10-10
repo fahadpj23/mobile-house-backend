@@ -8,31 +8,29 @@ var jsonParser=bodyParser.json();
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 const stripe=require('stripe')(process.env.STRIPE_PRIVATE_KEY)
 
-const storeItems= new Map([
-    [1,{price:4552,name:"screen Guard"}],
-    [2,{price:788 ,name:"back cover"}]
-])
+
 
 
 
 router.post('/create-checkout-session',parseUrlencoded,async (req,res)=>{
     try {
-        console.log(stripe)
+        
         let productsdetails=JSON.parse(req.body.items)
+        console.log(productsdetails)
         const session=await stripe.checkout.sessions.create({
             payment_method_types:['card'],
             mode:'payment',
             line_items:productsdetails.map(item=>{
-                const storeItem=storeItems.get(item.id)
+                const storeItem=item.id
                 return{
                     price_data:{
                         currency:'INR',
                         product_data:{
-                            name:storeItem.name
+                            name:item.name
                         },
-                        unit_amount:storeItem.price
+                        unit_amount:(item.salesPrice??item.sellingPrice)*100
                     },
-                    quantity:item.quantity
+                    quantity:item.qty??1
                 }
             }),
             success_url:'http://localhost:3000/',

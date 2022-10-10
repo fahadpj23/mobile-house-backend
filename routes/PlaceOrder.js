@@ -24,6 +24,17 @@ router.get("/customerorderdetails",function(req,res)
   
 })
 
+router.get("/getSingleProductDetailsCheckout",(req,res)=>{
+
+        getProductDetails=`select id,name,sellingPrice,salesPrice,mrp,warranty,(SELECT IF ((SELECT EXISTS(SELECT * FROM productimage WHERE imagePosition = 1 and productimage.productId = products.id) as result) = 1 , (SELECT image FROM productimage WHERE imagePosition = 1 AND productimage.productId = products.id) , (SELECT image FROM productimage WHERE productimage.productId = products.id LIMIT 1) )  ) as image,qty as maxqty,Brand from products where id=${req.query.productId}` 
+        con.query(getProductDetails,(err,result)=>{
+           if(err) throw (err)
+           else
+            res.json({product:result})
+
+        })
+})
+
 router.post("/customerOrders",validateUserToken,
 
 jsonParser,function(req,res)
