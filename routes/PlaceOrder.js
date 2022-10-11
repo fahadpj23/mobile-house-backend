@@ -40,7 +40,7 @@ router.post("/customerOrders",validateUserToken,
 jsonParser,function(req,res)
     {
        
-        
+        console.log(req.body.Address.name)
         const UTCTime = new Date() 
         const time = UTCTime.toLocaleTimeString()
         const date= UTCTime.toDateString()
@@ -56,8 +56,10 @@ jsonParser,function(req,res)
         {
         
             let orderinfo=req.body;
+            let Address= JSON.parse(req.body.Address)
             let products=JSON.parse(orderinfo.product)
-            addqr=`insert into customerOrder ( customerId,date, customername, phone, pincode, address,ProductCount,Total,status ) values ( '${req.user.id}','${orderdate}','${orderinfo.name}','${orderinfo.phone}','${orderinfo.pincode}','${orderinfo.address}','${Object.values( products).length}','${orderinfo.total}',1 )`;
+            console.log(Address.name)
+            addqr=`insert into customerOrder ( customerId,date, customername, phone, pincode, address,ProductCount,Total,status ) values ( '${req.user.id}','${orderdate}','${Address.name}','${Address.phone}','${Address.pincode}','${Address.address}','${Object.values( products).length}','${orderinfo.total}',1 )`;
                 con.query(addqr,(err,result)=>{
 
                 if(err) throw (err);

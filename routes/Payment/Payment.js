@@ -33,8 +33,8 @@ router.post('/create-checkout-session',parseUrlencoded,async (req,res)=>{
                     quantity:item.qty??1
                 }
             }),
-            success_url:'http://localhost:3000/',
-            cancel_url:'http://localhost:3000/AboutUs'
+            success_url:`http://localhost:3000/orderSuccess?orderId=${req.body.orderId}`,
+            cancel_url:'http://localhost:3000/Cart'
         })
     
     res.json({url:session.url})
