@@ -59,7 +59,7 @@ jsonParser,function(req,res)
             let Address= JSON.parse(req.body.Address)
             let products=JSON.parse(orderinfo.product)
             console.log(Address.name)
-            addqr=`insert into customerOrder ( customerId,date, customername, phone, pincode, address,ProductCount,Total,status ) values ( '${req.user.id}','${orderdate}','${Address.name}','${Address.phone}','${Address.pincode}','${Address.address}','${Object.values( products).length}','${orderinfo.total}',1 )`;
+            addqr=`insert into customerOrder ( customerId,date, customername, phone, pincode, address,ProductCount,Total,PaymentType,status ) values ( '${req.user.id}','${orderdate}','${Address.name}','${Address.phone}','${Address.pincode}','${Address.address}','${Object.values( products).length}','${orderinfo.total}','${orderinfo.PaymentType}',1 )`;
                 con.query(addqr,(err,result)=>{
 
                 if(err) throw (err);
@@ -68,7 +68,7 @@ jsonParser,function(req,res)
                 
                     Object.values( products).map((item,key)=>{
                     
-                    productDetail=`insert into customerorderdetails (orderId,productid,qty) values('${result.insertId}','${item.id}','${item.qty}')`
+                    productDetail=`insert into customerorderdetails (orderId,productid,qty) values('${result.insertId}','${item.id}','${item.qty??1}')`
                     con.query(productDetail,(err1,result1)=>{
                         if(err1) throw (err1)
                         else
@@ -78,7 +78,7 @@ jsonParser,function(req,res)
                                 if(err2) throw (err2)
                                 else
                                 {
-                                    let qty=result2[0].qty - item.qty
+                                    let qty=result2[0].qty - (item.qty??1)
                                     qtyupdate=`UPDATE  products SET qty="${qty}" WHERE id="${item.id}" ` 
                                     con.query(qtyupdate,(err3,result3)=>{
                                         if(err2) throw (err2)
