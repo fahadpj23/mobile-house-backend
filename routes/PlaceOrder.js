@@ -68,7 +68,7 @@ jsonParser,function(req,res)
                 
                     Object.values( products).map((item,key)=>{
                     
-                    productDetail=`insert into customerorderdetails (orderId,productid,qty) values('${result.insertId}','${item.id}','${item.qty??1}')`
+                    productDetail=`insert into customerorderdetails (orderId,productid,qty) values('${result.insertId}','${item.id}','${item.qty?item.qty :1}')`
                     con.query(productDetail,(err1,result1)=>{
                         if(err1) throw (err1)
                         else
@@ -78,7 +78,7 @@ jsonParser,function(req,res)
                                 if(err2) throw (err2)
                                 else
                                 {
-                                    let qty=result2[0].qty - (item.qty??1)
+                                    let qty=result2[0].qty - (item.qty?item.qty :1)
                                     qtyupdate=`UPDATE  products SET qty="${qty}" WHERE id="${item.id}" ` 
                                     con.query(qtyupdate,(err3,result3)=>{
                                         if(err2) throw (err2)
