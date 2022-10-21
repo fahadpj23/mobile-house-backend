@@ -38,7 +38,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
 
 
   
-  if(req.body.operation=="" || req.body.operation=="variant" )
+  if(req.body.operation=="" || req.body.operation=="variant" || req.body.operation=="Copy" )
   { 
         
 
@@ -86,7 +86,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
               }
               
               //if variantid is not there  then set variant id as insertid(database id)
-              if( product.variantid=="")
+              if( req.body.operation=="Copy" || product.variantid=="")
               {
            
                 variantupdate=`UPDATE products SET variantid="${result.insertId}" WHERE id="${result.insertId}" ` 
