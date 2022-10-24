@@ -289,7 +289,7 @@ router.post("/productAdd",validateToken,parseUrlencoded,function(req,res){
 })
 
 router.get('/productImageDetails',validateToken,function(req,res){
-  productImage=`select imagePosition,image from productimage where productId='${req.query.productid}' `
+  productImage=`select imagePosition,image from productimage where productId='${req.query.productid}' ORDER BY imagePosition ASC `
 
   con.query(productImage,(err,result)=>{
     if(err)throw (err)

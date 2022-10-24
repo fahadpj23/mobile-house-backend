@@ -10,9 +10,10 @@ var jsonParser=bodyParser.json();
 // const {check,validationResult}=require('express-validator');
 
 router.get('/purchaseProductSearch',(req,res)=>{
+    console.log(req.query.searchval)
     let product=[];
-    searchquery=`select * from products  where name LIKE '%${req.query.searchelement}%'`
-
+    searchquery=`select * from products  where name LIKE '%${req.query.searchval}%' limit 20`
+    console.log(searchquery)
     con.query(searchquery,(err,result)=>{
         if(err) throw (err)
         else
@@ -47,13 +48,22 @@ router.get('/purchaseProductSearch',(req,res)=>{
     })
 })
 
-router.get('/getPurchase',(req,res)=>{
+router.get('/Purchase/getData',(req,res)=>{
     let Tablehead=[];
     getpurchase=`select * from purchase`
     con.query(getpurchase,(err,result)=>{
         if(err) throw (err)
         else
         {
+            if(result.length==0)
+           {
+            let Tablehead=["id","invoiceNo","supplier","NoProduct","grandTotal"];
+            
+                 res.json({ "Data":result,"TableHead":Tablehead ,Count:0})
+               
+           }
+           else
+           {
             Object.entries(result[0]).map((item,key)=>{
                 if(item[0]!="TaxAmount" && item[0]!="otherExpense")
                 Tablehead.push(item[0])
@@ -62,15 +72,16 @@ router.get('/getPurchase',(req,res)=>{
             })
 
             getsupplier=`select * from purchase where id='${result[0].id}'`
-                     console.log(getsupplier)
+                     
                      con.query(getsupplier,(err1,result1)=>{
                          if(err1) throw (err1)
                          else
-                         result[0].supplier=result1[0].supplierName
-                         res.json({ "Data":result1,"TableHead":Tablehead })
+                         if(result1.length)
+                            result[0].supplier=result1[0].supplierName
+                        res.json({ "Data":result,"TableHead":Tablehead ,Count:0})
                      })
            
-           
+            }
         }
     })
 })

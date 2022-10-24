@@ -3,6 +3,9 @@ var app=express();
 var cors=require("cors");
 const upload=require('express-fileupload')
 const port=9000
+
+const con=require('./database')
+const path = require('path')
 app.use(upload())
 app.use(cors());
 
@@ -23,8 +26,7 @@ const cart=require('./routes/cart')
 // const ProductList=require('./routes/AdminPanel/productlist')
 const authentication=require('./routes/authentication/authentication')
 const addProduct=require('./routes/AdminPanel/productadd/Add')
-const con=require('./database')
-const path = require('path')
+
 const category=require('./routes/AdminPanel/category/categoryApi')
 const attribute=require('./routes/AdminPanel/attribute/attribute')
 const Purchase=require('./routes/AdminPanel/purchase/Purchase')
