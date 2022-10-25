@@ -23,7 +23,7 @@ router.get('/purchaseProductSearch',(req,res)=>{
             {
                 res.json({noProduct:"No Product Found"})
             }
-            else
+            else 
             {
              Object.values( result).map((item,key)=>{
                 variant=`select * from productattribute  where id=${item.id}`
@@ -45,6 +45,15 @@ router.get('/purchaseProductSearch',(req,res)=>{
             })
             }
         }
+    })
+})
+
+router.get('/getsupplier',(req,res)=>{
+    fetchsupplier=`select id,supplierName from supplier`
+    con.query(fetchsupplier,(err,result)=>{
+        if(err) throw (err)
+        else
+        res.json({supplier:result})
     })
 })
 
@@ -89,6 +98,7 @@ router.get('/Purchase/getData',(req,res)=>{
 router.post("/purchaseupload",
 [
     check('invoiceno').notEmpty(),
+    check('invoiceDate').notEmpty(),
     check('paymentMethod').notEmpty(),
     check('supplier').notEmpty(),
 ],
@@ -102,7 +112,9 @@ parseUrlencoded,(req,res)=>{
     else
     {
     purchase=req.body
-    purchaseinsertquery=`insert into purchase (invoiceNo,paymentMethod,supplier,NoProduct,TaxAmount,otherExpense,grandTotal) values ( '${purchase.invoiceno}','${purchase.paymentMethod}','${purchase.supplier}','${ JSON.parse( purchase.products).length}','${purchase.TaxAmount}','${purchase.otherexpense}','${purchase.GrandTotal}')`
+
+    //insert into purchase details then add purchase product details
+    purchaseinsertquery=`insert into purchase (invoiceNo,invoiceDate,paymentMethod,supplier,NoProduct,GSTAmount,otherExpense,grandTotal) values ( '${purchase.invoiceno}','${purchase.invoiceDate}','${purchase.paymentMethod}','${purchase.supplier}','${ JSON.parse( purchase.products).length}','${purchase.TaxAmount}','${purchase.otherexpense}','${purchase.GrandTotal}')`
     con.query(purchaseinsertquery,(err,result)=>{
         if(err)throw(err)
         else
@@ -110,30 +122,33 @@ parseUrlencoded,(req,res)=>{
             console.log(result.insertId)
             JSON.parse( purchase.products).map((item,key)=>{
                 //update qty of product
-               productselect=`select * from products where id=${item.id} `
-               con.query(productselect,(err3,result3)=>{
-                   if(err3) throw (err3)
-                   else
-                   {
-                   updateQtyQuery=`UPDATE products SET qty=${result3[0].qty + item.productqty} where id=${result3[0].id}`
-                   con.query(updateQtyQuery,(err4,result4)=>{
-                       if(err4) throw (err4)
-
-                   })
-                   }
-               })
+                purchaseproductquery=`insert into purchaseproduct (purchaseid,productid,price,mrp,qty,gst,subtotal,gstAmt,netAmt) values ( '${result.insertId}','${item.id}','${item.purchasePrice}','${item.mrp}','${item.productqty}','${item.Tax}','${+item.purchasePrice * item.productqty}','${item.taxAmount}','${item.netAmount}')`
+                con.query(purchaseproductquery,(err1,result1)=>{
+                    if(err1) throw (err1)
+                    else
+                    {
+                        productselect=`select * from products where id=${item.id} `
+                        con.query(productselect,(err3,result3)=>{
+                            if(err3) throw (err3)
+                            else
+                            {
+                            updateQtyQuery=`UPDATE products SET qty=${result3[0].qty + item.productqty} where id=${result3[0].id}`
+                            con.query(updateQtyQuery,(err4,result4)=>{
+                                if(err4) throw (err4)
+         
+         
+                            })
+                            }
+                        })  
+                       if(JSON.parse( purchase.products).length==key+1)
+                       {
+                           res.json({success:"purchase added successfully"})
+                       }
+                    }
+                })
+              
                //purchased items add to table
-               purchaseproductquery=`insert into purchaseproduct (purchaseId,product) values ( '${result.insertId}','${item}')`
-               con.query(purchaseproductquery,(err1,result1)=>{
-                   if(err1) throw (err1)
-                   else
-                   {
-                      if(JSON.parse( purchase.products).length==key+1)
-                      {
-                          res.json({success:"purchase added successfully"})
-                      }
-                   }
-               })
+              
             })
         }
     })

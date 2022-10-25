@@ -42,20 +42,29 @@ parseUrlencoded,(req,res)=>{
 
 })
 
-router.get('/getSupplier',(req,res)=>{
+router.get('/Supplier/getData',(req,res)=>{
     let Tablehead=[];
     getsupplierquery=`select * from supplier `
     con.query(getsupplierquery,(err,result)=>{
         if(err) throw (err)
         else
         {
-           result[0] && Object.entries(result[0]).map((item,key)=>{
-                Tablehead.push(item[0])
-                if(Object.entries(result[0]).length==key+1)
-                {
-                  res.json({ "Data":result,"TableHead":Tablehead })
-                }
-            })
+            if(result==0)
+            {
+                let Tablehead=["SupplierName","phone","Address","pincode","status"];
+            
+                res.json({ "Data":result,"TableHead":Tablehead ,Count:0})
+            }
+            else
+            {
+                result[0] && Object.entries(result[0]).map((item,key)=>{
+                    Tablehead.push(item[0])
+                    if(Object.entries(result[0]).length==key+1)
+                    {
+                    res.json({ "Data":result,"TableHead":Tablehead })
+                    }
+                })
+            }
            
        
 
