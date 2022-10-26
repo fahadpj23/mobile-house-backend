@@ -74,7 +74,7 @@ router.get('/getPurchaseProduct',validateToken,(req,res)=>{
 
 router.get('/Purchase/getData',(req,res)=>{
     let Tablehead=[];
-    getpurchase=`select * from purchase`
+    getpurchase=` select invoiceNo,InvoiceDate,paymentMethod,supplier,(select supplierName from supplier where id=purchase.supplier) as supplierName,NoProduct,GSTAmount,otherExpense,grandTotal,ApprovalStatus from purchase where invoiceNo LIKE '%${req.query.search}%' ORDER BY purchase.id DESC LIMIT ${(+req.query.PageNo-1) * 10}, 13 `
     con.query(getpurchase,(err,result)=>{
         if(err) throw (err)
         else
@@ -89,28 +89,47 @@ router.get('/Purchase/getData',(req,res)=>{
            else
            {
             Object.entries(result[0]).map((item,key)=>{
-                if(item[0]!="TaxAmount" && item[0]!="otherExpense")
-                Tablehead.push(item[0])
-              
+                if(item[0]!="TaxAmount" && item[0]!="otherExpense" && item[0]!="ApprovalStatus")
+                    item[0]=="supplier" ? Tablehead.push("supplierName")   : Tablehead.push(item[0])
+                
+                if(Object.entries(result[0]).length==key+1)
+                {
+                    TotalCount=`select COUNT(*) as count from purchase WHERE invoiceNo LIKE '%${req.query.search}%'`
+                    con.query(TotalCount,(err1,result1)=>{
+                        if(err1) throw (err1)
+                        else
+                        {
+                            res.json({ "Data":result,"TableHead":Tablehead ,Count:result1[0].count})
+                        }
+                    })
+                }
+                    
+                   
                 
             })
 
-            getsupplier=`select * from purchase where id='${result[0].id}'`
-                     
-                     con.query(getsupplier,(err1,result1)=>{
-                         if(err1) throw (err1)
-                         else
-                         if(result1.length)
-                            result[0].supplier=result1[0].supplierName
-                        res.json({ "Data":result,"TableHead":Tablehead ,Count:result.length})
-                     })
            
             }
         }
     })
 })
 
-router.post("/purchaseupload",
+
+//update purchase approval status.inventory stock update when purchase approve
+router.post('/UpdatePurchaseApprovalStatus',validateToken,(req,res)=>{
+    
+    console.log(req.body)
+    updateApprovalStatus=`Update purchase set ApprovalStatus='${req.body.approvalStatus}' where id='${req.body.purchaseId}'`
+    con.query(updateApprovalStatus,(err,result)=>{
+        if(err) throw (err)
+        else
+        res.json({success:"updated successfully"})
+    })
+})
+
+
+//purchase upload
+router.post("/purchaseupload",validateToken,
 [
     check('invoiceno').notEmpty(),
     check('invoiceDate').notEmpty(),
@@ -127,48 +146,90 @@ parseUrlencoded,(req,res)=>{
     else
     {
     purchase=req.body
-
-    //insert into purchase details then add purchase product details
-    purchaseinsertquery=`insert into purchase (invoiceNo,invoiceDate,paymentMethod,supplier,NoProduct,GSTAmount,otherExpense,grandTotal) values ( '${purchase.invoiceno}','${purchase.invoiceDate}','${purchase.paymentMethod}','${purchase.supplier}','${ JSON.parse( purchase.products).length}','${purchase.TaxAmount}','${purchase.otherexpense}','${purchase.GrandTotal}')`
-    console.log(purchaseinsertquery)
-    con.query(purchaseinsertquery,(err,result)=>{
-        if(err)throw(err)
-        else
-        {
-            console.log(result.insertId)
-            JSON.parse( purchase.products).map((item,key)=>{
-                //update qty of product
-                purchaseproductquery=`insert into purchaseproduct (purchaseid,productid,price,mrp,qty,Tax,subtotal,taxAmount,netAmount) values ( '${result.insertId}','${item.productId}','${item.price}','${item.mrp}','${item.qty}','${item.Tax}','${+item.subTotal}','${item.taxAmount}','${item.netAmount}')`
-                con.query(purchaseproductquery,(err1,result1)=>{
-                    if(err1) throw (err1)
+    console.log(req.body)
+    if(purchase.operation)
+    {
+        purchaseupdatequery=`UPDATE  purchase SET invoiceNo='${purchase.invoiceno}',invoiceDate='${purchase.invoiceDate}',paymentMethod='${purchase.paymentMethod}',supplier='${purchase.supplier}',NoProduct='${ JSON.parse( purchase.products).length}',GSTAmount='${purchase.TaxAmount}',otherExpense='${purchase.otherexpense}',grandTotal='${purchase.GrandTotal}',ApprovalStatus='${1}' where id='${purchase.operationId}'`
+        console.log(purchaseupdatequery)
+        con.query(purchaseupdatequery,(err,result)=>{
+            if(err)throw(err)
+            else
+            {
+                //when edit delete all product and insert again
+                deleteproduct=`delete from purchaseproduct where purchaseId='${purchase.operationId}'`
+                con.query(deleteproduct,(err2,result2)=>{
+                    if(err2)  throw (err2)
                     else
                     {
-                        productselect=`select * from products where id=${item.productId} `
-                        con.query(productselect,(err3,result3)=>{
-                            if(err3) throw (err3)
-                            else
-                            {
-                            updateQtyQuery=`UPDATE products SET qty=${result3[0].qty + item.qty} where id=${result3[0].id}`
-                            con.query(updateQtyQuery,(err4,result4)=>{
-                                if(err4) throw (err4)
-         
-         
+                         //purchased items add to table
+                        JSON.parse( purchase.products).map((item,key)=>{
+                           
+                            purchaseproductquery=`insert into purchaseproduct (purchaseid,productid,name,price,mrp,qty,Tax,subtotal,taxAmount,netAmount) values ( '${purchase.operationId}','${item.productId}','${item.name}','${item.price}','${item.mrp}','${item.qty}','${item.Tax}','${+item.subTotal}','${item.taxAmount}','${item.netAmount}')`
+                            console.log(purchaseproductquery)
+                            con.query(purchaseproductquery,(err1,result1)=>{
+                                if(err1) throw (err1)
+                                else
+                                {
+                              
+                                if(JSON.parse( purchase.products).length==key+1)
+                                    {
+                                    res.json({success:"purchase added successfully"})
+                                }
+                                }
                             })
-                            }
-                        })  
-                       if(JSON.parse( purchase.products).length==key+1)
-                       {
-                           res.json({success:"purchase added successfully"})
-                       }
+                        
+                       
+                        
+                        })
+                       
                     }
                 })
-              
-               //purchased items add to table
-              
-            })
-        }
-    })
+                }
+            })  
     }
+    else
+    {
+        purchaseinsertquery=`insert into purchase (invoiceNo,invoiceDate,paymentMethod,supplier,NoProduct,GSTAmount,otherExpense,grandTotal,ApprovalStatus) values ( '${purchase.invoiceno}','${purchase.invoiceDate}','${purchase.paymentMethod}','${purchase.supplier}','${ JSON.parse( purchase.products).length}','${purchase.TaxAmount}','${purchase.otherexpense}','${purchase.GrandTotal}','${1}')`
+        console.log(purchaseinsertquery)
+        con.query(purchaseinsertquery,(err,result)=>{
+            if(err)throw(err)
+            else
+            {
+                console.log(result.insertId)
+                JSON.parse( purchase.products).map((item,key)=>{
+                    //update qty of product
+                    purchaseproductquery=`insert into purchaseproduct (purchaseid,productid,name,price,mrp,qty,Tax,subtotal,taxAmount,netAmount) values ( '${result.insertId}','${item.productId}','${item.name}','${item.price}','${item.mrp}','${item.qty}','${item.Tax}','${+item.subTotal}','${item.taxAmount}','${item.netAmount}')`
+                    con.query(purchaseproductquery,(err1,result1)=>{
+                        if(err1) throw (err1)
+                        else
+                        {
+                        //     productselect=`select * from products where id=${item.productId} `
+                        //     con.query(productselect,(err3,result3)=>{
+                        //         if(err3) throw (err3)
+                        //         else
+                        //         {
+                        //         updateQtyQuery=`UPDATE products SET qty=${result3[0].qty + item.qty} where id=${result3[0].id}`
+                        //         con.query(updateQtyQuery,(err4,result4)=>{
+                        //             if(err4) throw (err4)
+            
+            
+                        //         })
+                        //         }
+                        //     })  
+                        if(JSON.parse( purchase.products).length==key+1)
+                            {
+                            res.json({success:"purchase added successfully"})
+                        }
+                        }
+                    })
+                
+                //purchased items add to table
+                
+                })
+            }
+            })
+    }
+  }
 })
 
 
