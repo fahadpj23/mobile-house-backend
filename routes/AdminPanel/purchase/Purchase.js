@@ -12,7 +12,7 @@ var jsonParser=bodyParser.json();
 router.get('/purchaseProductSearch',(req,res)=>{
     console.log(req.query.searchval)
     let product=[];
-    searchquery=`select * from products  where name LIKE '%${req.query.searchval}%' limit 20`
+    searchquery=`select id as productId,name,purchasePrice as price,mrp,Tax from products  where name LIKE '%${req.query.searchval}%' limit 20`
     console.log(searchquery)
     con.query(searchquery,(err,result)=>{
         if(err) throw (err)
@@ -25,35 +25,50 @@ router.get('/purchaseProductSearch',(req,res)=>{
             }
             else 
             {
-             Object.values( result).map((item,key)=>{
-                variant=`select * from productattribute  where id=${item.id}`
-                con.query(variant,(err1,result1)=>{
-                    if(err1) throw (err1)
-                    else
-                    {
-                    let pro={...item,...result1[0]}
-                    product.push(pro)
+            //  Object.values( result).map((item,key)=>{
+            //     variant=`select * from productattribute  where id=${item.id}`
+            //     con.query(variant,(err1,result1)=>{
+            //         if(err1) throw (err1)
+            //         else
+            //         {
+            //         let pro={...item,...result1[0]}
+            //         product.push(pro)
                    
-                        if(Object.values( result).length==key+1)
-                        {
-                            res.json({products:product})
-                        }
-                    }
+            //             if(Object.values( result).length==key+1)
+            //             {
+                            res.json({products:result})
+            //             }
+            //         }
                 
-                })
+            //     })
                
-            })
+            // })
             }
         }
     })
 })
 
+
+//api used for fetch suppliers from supplier table 
 router.get('/getsupplier',(req,res)=>{
     fetchsupplier=`select id,supplierName from supplier`
     con.query(fetchsupplier,(err,result)=>{
         if(err) throw (err)
         else
         res.json({supplier:result})
+    })
+})
+
+//api call when edit or view call in purchase.used for load products
+router.get('/getPurchaseProduct',validateToken,(req,res)=>{
+    fetchpurchaseProduct=`select * from purchaseproduct where purchaseId=${req.query.purchaseId}`
+    con.query(fetchpurchaseProduct,(err,result)=>{
+        if(err)  throw (err)
+        else
+        {
+            res.json({products:result})
+        }
+
     })
 })
 
@@ -87,7 +102,7 @@ router.get('/Purchase/getData',(req,res)=>{
                          else
                          if(result1.length)
                             result[0].supplier=result1[0].supplierName
-                        res.json({ "Data":result,"TableHead":Tablehead ,Count:0})
+                        res.json({ "Data":result,"TableHead":Tablehead ,Count:result.length})
                      })
            
             }
@@ -115,6 +130,7 @@ parseUrlencoded,(req,res)=>{
 
     //insert into purchase details then add purchase product details
     purchaseinsertquery=`insert into purchase (invoiceNo,invoiceDate,paymentMethod,supplier,NoProduct,GSTAmount,otherExpense,grandTotal) values ( '${purchase.invoiceno}','${purchase.invoiceDate}','${purchase.paymentMethod}','${purchase.supplier}','${ JSON.parse( purchase.products).length}','${purchase.TaxAmount}','${purchase.otherexpense}','${purchase.GrandTotal}')`
+    console.log(purchaseinsertquery)
     con.query(purchaseinsertquery,(err,result)=>{
         if(err)throw(err)
         else
@@ -122,17 +138,17 @@ parseUrlencoded,(req,res)=>{
             console.log(result.insertId)
             JSON.parse( purchase.products).map((item,key)=>{
                 //update qty of product
-                purchaseproductquery=`insert into purchaseproduct (purchaseid,productid,price,mrp,qty,gst,subtotal,gstAmt,netAmt) values ( '${result.insertId}','${item.id}','${item.purchasePrice}','${item.mrp}','${item.productqty}','${item.Tax}','${+item.purchasePrice * item.productqty}','${item.taxAmount}','${item.netAmount}')`
+                purchaseproductquery=`insert into purchaseproduct (purchaseid,productid,price,mrp,qty,Tax,subtotal,taxAmount,netAmount) values ( '${result.insertId}','${item.productId}','${item.price}','${item.mrp}','${item.qty}','${item.Tax}','${+item.subTotal}','${item.taxAmount}','${item.netAmount}')`
                 con.query(purchaseproductquery,(err1,result1)=>{
                     if(err1) throw (err1)
                     else
                     {
-                        productselect=`select * from products where id=${item.id} `
+                        productselect=`select * from products where id=${item.productId} `
                         con.query(productselect,(err3,result3)=>{
                             if(err3) throw (err3)
                             else
                             {
-                            updateQtyQuery=`UPDATE products SET qty=${result3[0].qty + item.productqty} where id=${result3[0].id}`
+                            updateQtyQuery=`UPDATE products SET qty=${result3[0].qty + item.qty} where id=${result3[0].id}`
                             con.query(updateQtyQuery,(err4,result4)=>{
                                 if(err4) throw (err4)
          
