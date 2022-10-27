@@ -25,6 +25,7 @@ router.post("/adminlogin",parseUrlencoded,function(req,res)
           else
           {
             const accessToken=sign({username:req.body.username,id:result[0].id},"importantsecret");
+            res.cookie('accessToken', accessToken, { expires: new Date(Date.now() + 900000), httpOnly: true })
             res.json({"accessToken":accessToken})
          
           }

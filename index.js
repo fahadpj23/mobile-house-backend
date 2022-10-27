@@ -2,6 +2,8 @@ var express=require("express");
 var app=express();
 var cors=require("cors");
 const upload=require('express-fileupload')
+const cookieParser = require('cookie-parser');
+
 const port=9000
 
 const con=require('./database')
@@ -11,6 +13,7 @@ app.use(cors());
 
 app.use(express.static('public')); 
 app.use('products/images', express.static('images'));
+app.use(cookieParser());
 const payment=require('./routes/Payment/Payment')
 const Homerouter=require('./routes/Home')
 const ProductListWebsite=require('./routes/ProductListWebsite')
