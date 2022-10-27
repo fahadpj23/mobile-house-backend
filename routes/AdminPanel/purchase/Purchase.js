@@ -132,7 +132,7 @@ router.post('/UpdatePurchaseApprovalStatus',validateToken,(req,res)=>{
                         if(err2) throw (err2)
                         else
                         {
-                            result2?.map((item,key)=>{
+                            result2 && result2.map((item,key)=>{
                                 updateproductqty=`UPDATE products SET qty=+products.qty + ${item.qty} where id='${item.productId}'`
                                
                                 con.query(updateproductqty,(err3,result3)=>{ 

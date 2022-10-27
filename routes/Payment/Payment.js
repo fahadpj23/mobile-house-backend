@@ -28,9 +28,9 @@ router.post('/create-checkout-session',parseUrlencoded,async (req,res)=>{
                         product_data:{
                             name:item.name
                         },
-                        unit_amount:(item.salesPrice??item.sellingPrice)*100
+                        unit_amount:(item.salesPrice?item.salesPrice:item.sellingPrice)*100
                     },
-                    quantity:item.qty??1
+                    quantity:item.qty?item.qty:1
                 }
             }),
             success_url:`http://localhost:3000/orderSuccess?orderId=${req.body.orderId}`,
