@@ -74,7 +74,7 @@ router.get('/getPurchaseProduct',validateToken,(req,res)=>{
 
 router.get('/Purchase/getData',(req,res)=>{
     let Tablehead=[];
-    getpurchase=` select invoiceNo,InvoiceDate,paymentMethod,supplier,(select supplierName from supplier where id=purchase.supplier) as supplierName,NoProduct,GSTAmount,otherExpense,grandTotal,ApprovalStatus from purchase where invoiceNo LIKE '%${req.query.search}%' ORDER BY purchase.id DESC LIMIT ${(+req.query.PageNo-1) * 10}, 13 `
+    getpurchase=` select id,invoiceNo,InvoiceDate,paymentMethod,supplier,(select supplierName from supplier where id=purchase.supplier) as supplierName,NoProduct,GSTAmount,otherExpense,grandTotal,ApprovalStatus from purchase where invoiceNo LIKE '%${req.query.search}%' ORDER BY purchase.id DESC LIMIT ${(+req.query.PageNo-1) * 10}, 13 `
     con.query(getpurchase,(err,result)=>{
         if(err) throw (err)
         else
@@ -123,7 +123,33 @@ router.post('/UpdatePurchaseApprovalStatus',validateToken,(req,res)=>{
     con.query(updateApprovalStatus,(err,result)=>{
         if(err) throw (err)
         else
-        res.json({success:"updated successfully"})
+        {
+            //purchase is approved then chnage product qty based on purchase product (approval status 3 means purchase approved)
+            if(req.body.approvalStatus=3)
+            {
+                selectprodutfrompurchase=`select * from purchaseproduct where purchaseId='${req.body.purchaseId}'`
+                con.query(selectprodutfrompurchase,(err2,result2)=>{
+                        if(err2) throw (err2)
+                        else
+                        {
+                            result2?.map((item,key)=>{
+                                updateproductqty=`UPDATE products SET qty=+products.qty + ${item.qty} where id='${item.productId}'`
+                               
+                                con.query(updateproductqty,(err3,result3)=>{ 
+                                    if(err3) throw (err3)
+                                    else
+                                    {
+                                        if(result2.length==key+1 )
+                                          res.json({success:"updated successfully"})
+                                    }
+                                })
+                            })
+                        }
+                })
+            }
+            else
+                res.json({success:"updated successfully"})
+        }
     })
 })
 
