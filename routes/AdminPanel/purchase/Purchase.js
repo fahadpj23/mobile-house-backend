@@ -73,6 +73,7 @@ router.get('/getPurchaseProduct',validateToken,(req,res)=>{
 })
 
 router.get('/Purchase/getData',(req,res)=>{
+    console.log(req.cookies)
     let Tablehead=[];
     getpurchase=` select id,invoiceNo,InvoiceDate,paymentMethod,supplier,(select supplierName from supplier where id=purchase.supplier) as supplierName,NoProduct,GSTAmount,otherExpense,grandTotal,ApprovalStatus from purchase where invoiceNo LIKE '%${req.query.search}%' ORDER BY purchase.id DESC LIMIT ${(+req.query.PageNo-1) * 10}, 13 `
     con.query(getpurchase,(err,result)=>{

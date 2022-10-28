@@ -1,13 +1,7 @@
 const express=require('express')
 const router = express.Router()
 const con=require('../database')
-const { verify } = require("jsonwebtoken");
-var bodyParser=require("body-parser");
-var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
-const {sign}=require('jsonwebtoken')
-const {check,validationResult}=require('express-validator')
-const validateToken=require("../middlewares/authmiddelware")
-const bcrypt=require("bcrypt")
+
 const validateUserToken=require("../middlewares/WebsiteMiddleware");
 
 router.post('/CartAdd',validateUserToken,(req,res)=>{

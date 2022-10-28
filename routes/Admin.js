@@ -6,9 +6,14 @@ var jsonParser=bodyParser.json();
 const bcrypt=require('bcrypt')
 const {sign}=require('jsonwebtoken')
 var parseUrlencoded = bodyParser.urlencoded({ extended: true }); 
+
+router.get('/cookieset',(req,res)=>{
+  res.cookie('ssa', "dsd")
+  res.json({"ds":"sdsd"})
+})
 router.post("/adminlogin",parseUrlencoded,function(req,res)
  {
-   
+     
     searchqr=`SELECT * FROM admin  where username='${req.body.username}' `
     
     con.query(searchqr,(err,result,fields)=>{
@@ -25,7 +30,8 @@ router.post("/adminlogin",parseUrlencoded,function(req,res)
           else
           {
             const accessToken=sign({username:req.body.username,id:result[0].id},"importantsecret");
-            res.cookie('accessToken', accessToken, { expires: new Date(Date.now() + 900000), httpOnly: true })
+            res.cookie('accessToken', accessToken)
+           
             res.json({"accessToken":accessToken})
          
           }
