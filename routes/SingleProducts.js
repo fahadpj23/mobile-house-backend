@@ -11,7 +11,8 @@ router.get("/singleview",function(req,res)
     if(req.query.productId)
     {
     // getProduct=` SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty,Brand,HSN_code,Tax,category,Description,variantid,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productId = ${req.query.productId}) as image from products where id=${req.query.productId}`
-    getProduct=` SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty as maxqty,Brand,HSN_code,Tax,category,Description,variantid,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productId = ${req.query.productId} ORDER BY imagePosition ASC) as image from products where id=${req.query.productId}`
+    getProduct=` SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty as maxqty,Brand,HSN_code,Tax,category,Description,variantid,(SELECT group_concat(image ORDER BY imagePosition ASC separator '; ') FROM productimage WHERE productId = ${req.query.productId} ) as image from products where id=${req.query.productId}`
+    console.log(getProduct)
     con.query(getProduct,(err,result)=>{
        if(err) throw (err)
        else
@@ -64,7 +65,7 @@ router.get("/variantproduct",function(req,res)
     let attributesarray=[];
     let variantproduct=[];
     //select all varainat related to product using variantid.all product have their own varinatid
-    variant=`select id,category,(SELECT  image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image from products where variantid='${req.query.variantid}'  `
+    variant=`select id,category,(SELECT  image FROM productimage WHERE productimage.productId = products.id ORDER BY imagePosition ASC LIMIT 1 ) as image from products where variantid='${req.query.variantid}'  `
     
     con.query(variant,(err,result)=>{
     if(err) throw (err);
@@ -121,7 +122,7 @@ router.get("/pincode",function(req,res)
 router.get("/related",function(req,res)
 {
 
- related=`SELECT *,(SELECT  image FROM productimage WHERE productimage.productId = products.id LIMIT 1) as image  FROM products where category="${req.query.category}" and variantid != '${req.query.variantid}' LIMIT 12`  
+ related=`SELECT *,(SELECT  image FROM productimage WHERE productimage.productId = products.id ORDER BY imagePosition ASC LIMIT 1) as image  FROM products where category="${req.query.category}" and variantid != '${req.query.variantid}' LIMIT 12`  
  
  con.query(related,(err,result,fields)=>{
     if(err) throw(err);

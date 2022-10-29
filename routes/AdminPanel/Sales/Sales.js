@@ -20,7 +20,7 @@ router.get('/Sales/getData',(req,res)=>{
            else
            {
             Object.entries(result[0]).map((item,key)=>{
-                if(item[0]!="TaxAmount" && item[0]!="CustomerPhone" )
+                if(item[0]!="TaxAmount" && item[0]!="CustomerPhone" && item[0]!="subTotal" )
                      Tablehead.push(item[0])
                 
                 if(Object.entries(result[0]).length==key+1)
@@ -68,6 +68,19 @@ router.get('/salesProductSearch',(req,res)=>{
             
             }
         }
+    })
+})
+
+//api call when edit or view call in sales.used for load products
+router.get('/getSalesProduct',validateToken,(req,res)=>{
+    fetchpurchaseProduct=`select * from salesproduct where salesId=${req.query.salesId}`
+    con.query(fetchpurchaseProduct,(err,result)=>{
+        if(err)  throw (err)
+        else
+        {
+            res.json({products:result})
+        }
+
     })
 })
 
@@ -123,7 +136,7 @@ router.post("/salesUpload",validateToken,
         const time = UTCTime.toLocaleTimeString()
         const date= UTCTime.toDateString()
         const salesdate=date+","+time
-        salesinsertquery=`insert into sales (CustomerName,CustomerPhone,NoProduct,subTotal,TaxAmount,GrandTotal,PaymentMethod,status) values ( '${sales.customerName ? sales.customerName :"unknown" }','${sales.customerPhone ? sales.customerPhone :"0"}','${ JSON.parse( sales.products).length}','${sales.subTotal}','${sales.TaxAmount}','${sales.GrandTotal}','${sales.paymentMethod}','${1}')`
+        salesinsertquery=`insert into sales (CustomerName,CustomerPhone,NoProduct,subTotal,TaxAmount,GrandTotal,PaymentMethod,status) values ( '${sales.customerName ? sales.customerName :"unknown" }','${sales.customerPhone ? sales.customerPhone :"0"}','${ JSON.parse( sales.products).length}','${sales.subTotal}','${sales.TaxAmount}','${sales.GrandTotal}','${sales.PaymentMethod}','${1}')`
         console.log(salesinsertquery)
         con.query(salesinsertquery,(err,result)=>{
             if(err)throw(err)
