@@ -88,26 +88,31 @@ parseUrlencoded,function(req,res)
                         con.query(attributeUpdate,(err,result)=>{
                           if(err) throw (err);
                           else {
+                           
                             if(JSON.parse(req.body.attributevalues).length!=0)
                             {
                             let attributevalues=JSON.parse(req.body.attributevalues)
+                            //select all attribute values using attribute id
                              getattribute=`select * from attributevalue WHERE attributeId=${req.body.operationid}`
                              con.query(getattribute,(err,result3)=>{
                                if(err) throw (err)
                                else
                                {
+                                console.log("fdd")
+                                // map the database attribute value and check frontend posted attribute value conatin or not.if not contain false then delete else insert
                                  Object.values(result3).map((item,key)=>{
                                     if(attributevalues.includes(item.value)==false)
                                     {
-                                      deletequery=`delete from attributevalue where id='${item.id}' `
-                                      con.query(deletequery,(err,result)=>{
-                                        if(err ) throw (err)
-                                      })
+                                      /*delete if value not contain .now diable beacuse if it is delete it effect products.waiting for getting alternative solution*/
+                                      // deletequery=`delete from attributevalue where id='${item.id}' `
+                                      // con.query(deletequery,(err,result)=>{
+                                      //   if(err ) throw (err)
+                                      // })
                                     }
                                  })
                                  attributevalues.map((item,key)=>{
                                   insertValueQuery=`insert into attributevalue (attributeid,value) SELECT '${req.body.operationid}', '${item}' WHERE 0 = (SELECT COUNT(*) from attributevalue where value='${item}' and attributeid=${req.body.operationid} )`
-                                           
+                                   console.log(insertValueQuery)        
                                   con.query(insertValueQuery,(err,result)=>{ 
                                                   if(err) throw (err)
                                                   else
@@ -121,6 +126,10 @@ parseUrlencoded,function(req,res)
                                }
                              })
                                 
+                            }
+                            else
+                            {
+                              res.json({"success":"Attribute updated successfully"})
                             }
                           }
                         

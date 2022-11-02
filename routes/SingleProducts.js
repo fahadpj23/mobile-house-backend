@@ -7,7 +7,7 @@ const con=require('../database')
 //get the single product detail
 router.get("/singleview",function(req,res)
 {
-    let attributesarray=[];
+   
     if(req.query.productId)
     {
     // getProduct=` SELECT id,name,sellingPrice,salesPrice,mrp,warranty,qty,Brand,HSN_code,Tax,category,Description,variantid,(SELECT group_concat(concat_ws(',', image) separator '; ') FROM productimage WHERE productId = ${req.query.productId}) as image from products where id=${req.query.productId}`
@@ -16,21 +16,26 @@ router.get("/singleview",function(req,res)
     con.query(getProduct,(err,result)=>{
        if(err) throw (err)
        else
-      {
+        {
+       
         productattribute=`select *,(select attributeName from attribute where productattribute.attributeId=attribute.id ) as attributeName ,(select value  from attributevalue where attributevalue.id=productattribute.attributeValueId ) as attributeValue from productattribute where productid=${req.query.productId} ORDER BY attributeName ASC`
+        console.log(productattribute)
         con.query(productattribute,(err1,result1)=>{
            if(err) throw (err)
            else
-          {
-           
-       
-                    
-                 
-                        result[0].attributes=result1
-                        res.json({"product":result[0]})
-                    
+            {
+                    if(result[0])
+                            {
+                            result[0].attributes=result1 ? result1 : []
+                            res.json({"product":result[0]})
+                            }
+                    else
+                    {
+                        res.json({"error":"no Product"})
+                    }
 
-          }
+                
+            }
         })
       }
     })
