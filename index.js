@@ -5,21 +5,21 @@ const upload=require('express-fileupload')
 var session = require('express-session');
 const cookieParser = require('cookie-parser');
 
-const port=9000
+const port=process.env.PORT || 9000
 
 const con=require('./database')
 const path = require('path')
 app.use(upload())
 
 app.use(cors());
-app.use(session({
-  secret: 'yoursecret',
-  cookie: {
-      path: '/',
-      domain: process.env.COOKIE_URL,
-      maxAge: 1000 * 60 * 24 // 24 hours
-  }
-}));
+// app.use(session({
+//   secret: 'yoursecret',
+//   cookie: {
+//       path: '/',
+//       domain: process.env.COOKIE_URL,
+//       maxAge: 1000 * 60 * 24 // 24 hours
+//   }
+// }));
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -30,6 +30,7 @@ app.use(function(req, res, next) {
 app.use(express.static('public')); 
 app.use('products/images', express.static('images'));
 app.use(cookieParser());
+
 const payment=require('./routes/Payment/Payment')
 const Homerouter=require('./routes/Home')
 const ProductListWebsite=require('./routes/ProductListWebsite')

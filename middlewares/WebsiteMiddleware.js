@@ -1,7 +1,7 @@
 const { verify } = require("jsonwebtoken");
 
 const validateUserToken = (req, res, next) => {
-  const UserToken = req.header("UserToken");
+  const {UserToken}=(req.cookies)
 
   if (!UserToken) return res.json({ error: "User not logged in" });
   else{

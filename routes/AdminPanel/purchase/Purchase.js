@@ -25,24 +25,9 @@ router.get('/purchaseProductSearch',(req,res)=>{
             }
             else 
             {
-            //  Object.values( result).map((item,key)=>{
-            //     variant=`select * from productattribute  where id=${item.id}`
-            //     con.query(variant,(err1,result1)=>{
-            //         if(err1) throw (err1)
-            //         else
-            //         {
-            //         let pro={...item,...result1[0]}
-            //         product.push(pro)
-                   
-            //             if(Object.values( result).length==key+1)
-            //             {
+            
                             res.json({products:result})
-            //             }
-            //         }
-                
-            //     })
-               
-            // })
+            
             }
         }
     })

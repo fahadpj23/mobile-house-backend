@@ -1,24 +1,19 @@
 const express=require('express')
 const router = express.Router()
 const con=require('../database')
-const { verify } = require("jsonwebtoken");
 var bodyParser=require("body-parser");
 var parseUrlencoded = bodyParser.urlencoded({ extended: true });  
 const {sign}=require('jsonwebtoken')
-const {check,validationResult}=require('express-validator')
 const validateToken=require("../middlewares/authmiddelware")
 const bcrypt=require("bcrypt")
-const validateUserToken=require("../middlewares/WebsiteMiddleware");
-const { response } = require('express');
 router.post("/login",function(req,res)
 {
     
  
     loginqr=`SELECT * FROM users where username="${req.body.username}" `
-    console.log(loginqr)
     con.query(loginqr,(err,result,fields)=>{
             if(err)throw (err);
-            console.log(result)
+           
             if(result.length!=0)
             {
                 
@@ -28,7 +23,9 @@ router.post("/login",function(req,res)
                     else
                     {
                         const UserToken=sign({username:req.body.username,id:result[0].id},"importantsecret");
-                      res.json({"UserToken":UserToken,"username":req.body.username})
+                        res.cookie('UserToken', UserToken)
+                        
+                        res.json({"UserToken":UserToken,"username":req.body.username})
                    
                     }
                   })
@@ -86,7 +83,8 @@ router.post("/UserRegister",parseUrlencoded,function(req,res)
                     {
                        
                         const UserToken=sign({username:req.body.username,id:result.insertId},"importantsecret");
-                        res.json({UserToken: UserToken,username:user.username})
+                        
+                        // res.json({UserToken: UserToken,username:user.username})
                     }
                 })
             

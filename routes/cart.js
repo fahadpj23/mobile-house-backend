@@ -4,7 +4,7 @@ const con=require('../database')
 
 const validateUserToken=require("../middlewares/WebsiteMiddleware");
 
-router.post('/CartAdd',validateUserToken,(req,res)=>{
+router.post('/CartAdd',(req,res)=>{
         console.log(req.user)
         
          product=req.body
@@ -17,7 +17,12 @@ router.post('/CartAdd',validateUserToken,(req,res)=>{
         })
 })
 
-router.get('/getUserCart',validateUserToken,(req,res)=>{
+router.delete('/cartRemove',(req,res)=>{
+    console.log(req.query)
+    console.log("fdd")
+})
+
+router.get('/getUserCart',(req,res)=>{
     // getcart=`select id,name,sellingPrice,salesPrice,mrp,warranty,qty as maxqty,Brand,HSN_code,Tax,category,Description,variantid from products LEFT JOIN cart ON products.id=cart.productId where userId='${req.user.id}'`
     getcart=`select products.id,products.name,products.sellingPrice,products.salesPrice,products.mrp,products.warranty,products.qty as maxqty,products.Brand,products.HSN_code,products.Tax,products.category,products.Description,(select image from productimage where productimage.productId=products.id LIMIT 1) as image,products.variantid,cart.qty from products LEFT JOIN cart ON products.id=cart.productId where userId='${req.user.id}'`
     
